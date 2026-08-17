@@ -918,3 +918,14 @@
     width: 38px;
   }
 }
+
+/* ── Numbers 以下は左端まで背景を敷く ──
+   main-wrapper に margin-left を掛けるとサイドバー幅ぶんの帯が
+   下まで素の背景で残ってしまうため、ずらすのはヒーローだけにする。 */
+.mikage-scroll .main-wrapper {
+  margin-left: 0;
+}
+
+.mikage-scroll .hero {
+  margin-left: 66px;
+}

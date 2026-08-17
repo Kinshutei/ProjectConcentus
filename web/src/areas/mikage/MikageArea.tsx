@@ -248,7 +248,7 @@ function Numbers({
           <NumberCell value={frames} label="STREAMS" unit="枠" delay={0} />
           <NumberCell value={perfs} label="PERFORMANCES" unit="回" delay={80} />
           <NumberCell value={repertoire} label="REPERTOIRE" unit="曲" delay={160} />
-          <NumberCell value={artists} label="ARTISTS" unit="組" delay={240} />
+          <NumberCell value={artists} label="ARTISTS" unit="" delay={240} />
         </div>
       </div>
     </section>

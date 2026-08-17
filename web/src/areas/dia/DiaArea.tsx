@@ -329,49 +329,172 @@ function Streams({
   frames: Frame[]
   rowsByFrame: Map<string, Row[]>
 }) {
-  const [open, setOpen] = useState<string | null>(frames[0]?.frame_id ?? null)
+  const [defaultOpen, setDefaultOpen] = useState(false)
+  const [mountKey, setMountKey] = useState(0)
+  const [query, setQuery] = useState('')
+
+  const trimmed = query.trim()
+  const searching = trimmed.length > 0
+  const q = trimmed.toLowerCase()
+
+  const shown = searching
+    ? frames.filter((f) => (rowsByFrame.get(f.frame_id) ?? []).some((r) => hits(r, q)))
+    : frames
 
   return (
-    <div className="stream-list">
-      {frames.map((f) => {
-        const rows = rowsByFrame.get(f.frame_id) ?? []
-        const isOpen = open === f.frame_id
-        return (
-          <div key={f.frame_id} className={`stream-item${isOpen ? ' open' : ''}`}>
-            <button className="stream-head" onClick={() => setOpen(isOpen ? null : f.frame_id)}>
-              <span className="stream-date">{jstDate(f.started_at)}</span>
-              <span className="stream-title">{f.title}</span>
-              <span className="stream-count">{rows.length}</span>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: 360 }}>
+          <span style={{ position: 'absolute', left: 10, color: '#606060', fontSize: 14, pointerEvents: 'none' }}>&#128269;</span>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="曲名で検索..."
+            style={{
+              width: '100%',
+              padding: '7px 36px 7px 32px',
+              borderRadius: 20,
+              fontFamily: 'inherit',
+              fontSize: 15,
+              outline: 'none',
+              background: '#1c1c1c',
+              color: '#e8e8e8',
+              border: searching ? '1px solid #b32e46' : '1px solid #2e2e2e',
+              boxShadow: searching ? '0 0 0 2px rgba(179,46,70,0.25)' : undefined,
+              transition: 'border-color 0.15s, box-shadow 0.15s',
+            }}
+          />
+          {searching && (
+            <button
+              onClick={() => setQuery('')}
+              style={{ position: 'absolute', right: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', fontSize: 14, lineHeight: 1, padding: 0 }}
+              title="クリア"
+            >
+              &#10005;
             </button>
-            {isOpen && (
-              <div className="stream-body">
-                <a
-                  className="stream-link"
-                  href={watchUrl(f.video_id)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  ▶ YouTubeで開く
-                </a>
-                <table className="setlist-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>曲名</th>
-                      <th>アーティスト</th>
-                      <th>タグ</th>
-                      <th>再生</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((r) => (
-                      <tr key={r.perf.start_sec}>
+          )}
+        </div>
+        {searching ? (
+          <span style={{ fontSize: 13, color: '#606060' }}>{shown.length} 件の枠がヒット</span>
+        ) : (
+          <>
+            <button className="btn-secondary" onClick={() => { setDefaultOpen(true); setMountKey((k) => k + 1) }}>
+              &#9660; OPEN
+            </button>
+            <button className="btn-secondary" onClick={() => { setDefaultOpen(false); setMountKey((k) => k + 1) }}>
+              &#9660; CLOSE
+            </button>
+          </>
+        )}
+      </div>
+
+      {searching && shown.length === 0 && (
+        <p style={{ color: '#606060', fontSize: 14 }}>「{trimmed}」を含む枠が見つかりませんでした。</p>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {shown.map((f) => (
+          <Expander
+            key={f.frame_id + '_' + mountKey}
+            db={db}
+            frame={f}
+            rows={(rowsByFrame.get(f.frame_id) ?? []).filter((r) => !searching || hits(r, q))}
+            forceOpen={searching}
+            defaultOpen={defaultOpen}
+            query={q}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const hits = (r: Row, q: string) =>
+  !!r.song && (r.song.title.toLowerCase().includes(q) || r.song.artist.toLowerCase().includes(q))
+
+function Expander({
+  db,
+  frame,
+  rows,
+  forceOpen,
+  defaultOpen,
+  query,
+}: {
+  db: Db
+  frame: Frame
+  rows: Row[]
+  forceOpen: boolean
+  defaultOpen: boolean
+  query: string
+}) {
+  const [localOpen, setLocalOpen] = useState(defaultOpen)
+  const isOpen = forceOpen || localOpen
+  const showCollab = rows.some((r) => r.perf.collab.length > 0)
+
+  return (
+    <div className="expander">
+      <button className="expander-header" onClick={() => setLocalOpen((v) => !v)} aria-expanded={isOpen}>
+        <span style={{ marginRight: 8 }}>{isOpen ? '\u269c' : '\u25b6'}</span>
+        <span>
+          {jstDate(frame.started_at)}　{frame.title}
+        </span>
+      </button>
+
+      <div style={{ height: isOpen ? 'auto' : 0, overflow: 'hidden' }}>
+        <div className="expander-body">
+          <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 16 }}>
+            <div>
+              <img
+                src={'https://img.youtube.com/vi/' + frame.video_id + '/mqdefault.jpg'}
+                alt="サムネイル"
+                style={{ width: '100%', borderRadius: 6 }}
+                loading="lazy"
+              />
+              <a
+                href={watchUrl(frame.video_id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 12, color: '#b32e46', display: 'block', marginTop: 4 }}
+              >
+                &#9654; YouTubeで開く
+              </a>
+            </div>
+
+            <div style={{ overflowX: 'auto' }} className="setlist-table-wrap">
+              <table className="setlist-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>楽曲名</th>
+                    <th>原曲アーティスト</th>
+                    <th>URL</th>
+                    <th>タグ</th>
+                    {showCollab && <th>コラボ相手様</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => {
+                    const title = r.song?.title ?? ''
+                    const artist = r.song?.artist ?? ''
+                    const hitTitle = !!query && title.toLowerCase().includes(query)
+                    const hitArtist = !!query && artist.toLowerCase().includes(query)
+                    return (
+                      <tr
+                        key={r.perf.start_sec}
+                        style={hitTitle || hitArtist ? { backgroundColor: 'rgba(107,159,212,0.12)' } : undefined}
+                      >
                         <td>{r.no}</td>
-                        <td>
+                        <td style={hitTitle ? { fontWeight: 600, color: '#b32e46' } : undefined}>
                           {r.isFirst && <span className="first-badge">初</span>}
-                          {r.song?.title ?? ''}
+                          {title}
                         </td>
-                        <td>{r.song?.artist ?? ''}</td>
+                        <td style={hitArtist ? { fontWeight: 600, color: '#b32e46' } : undefined}>{artist}</td>
+                        <td>
+                          <a href={watchUrl(frame.video_id, r.perf.start_sec)} target="_blank" rel="noopener noreferrer">
+                            {hms(r.perf.start_sec)}
+                          </a>
+                        </td>
                         <td>
                           {r.perf.tags.map((id) => (
                             <span key={id} className="tag-chip">
@@ -379,24 +502,16 @@ function Streams({
                             </span>
                           ))}
                         </td>
-                        <td>
-                          <a
-                            href={watchUrl(f.video_id, r.perf.start_sec)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {hms(r.perf.start_sec)}
-                          </a>
-                        </td>
+                        {showCollab && <td>{r.perf.collab.join(' / ')}</td>}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )
-      })}
+        </div>
+      </div>
     </div>
   )
 }
@@ -439,9 +554,10 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
   )
 
   return (
-    <div className="songs-wrap">
+    <div>
       <h2 className="section-title">Sung Repertoire — {stats.length}</h2>
-      <table className="songs-table">
+      <div className="songs-table-wrap">
+        <table className="songs-table">
         <thead>
           <tr>
             {th('title', '曲名')}
@@ -460,7 +576,8 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   )
 }

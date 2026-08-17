@@ -669,7 +669,7 @@ function Repertoire({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
           <SortToggle value={sort} onChange={setSort} />
           <YearPicker years={pickableYears} value={year} onChange={setYear} />
         </div>
-        <RankCards items={ranking} paged />
+        <RankCards items={ranking} paged columns={2} rows={10} />
 
         <div className="section-head">
           <h3 style={{ margin: 0 }}>{t('songs.yearTitle')}</h3>

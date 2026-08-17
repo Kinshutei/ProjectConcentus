@@ -1,0 +1,147 @@
+/* 年代の絞り込み。配色は領域側の --rc-* を借りる */
+.yearpick {
+  position: relative;
+  display: inline-block;
+}
+
+.yearpick__btn {
+  font: inherit;
+  font-size: 12px;
+  color: inherit;
+  background: var(--rc-card, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--rc-line, rgba(255, 255, 255, 0.15));
+  border-radius: 14px;
+  padding: 3px 12px;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: border-color 0.15s;
+}
+
+.yearpick__btn:hover,
+.yearpick__btn.is-active {
+  border-color: var(--rc-accent, currentColor);
+}
+
+.yearpick__current {
+  color: var(--rc-accent, currentColor);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 吹き出し */
+.yearpick__pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  padding: 10px;
+  background: var(--rc-pop, #1b1b1b);
+  border: 1px solid var(--rc-line, rgba(255, 255, 255, 0.18));
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* 吹き出しの三角 */
+.yearpick__pop::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 22px;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  border-left: 1px solid var(--rc-line, rgba(255, 255, 255, 0.18));
+  border-top: 1px solid var(--rc-line, rgba(255, 255, 255, 0.18));
+  transform: rotate(45deg);
+}
+
+/* 正方形を9等分する */
+.yearpick__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  width: 186px;
+  height: 186px;
+}
+
+.yearpick__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 13px;
+  color: inherit;
+  background: var(--rc-card, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--rc-line, rgba(255, 255, 255, 0.12));
+  border-radius: 6px;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.yearpick__cell:hover {
+  border-color: var(--rc-accent, currentColor);
+}
+
+.yearpick__cell.is-on {
+  border-color: var(--rc-accent, currentColor);
+  color: var(--rc-accent, currentColor);
+  font-weight: 700;
+}
+
+.yearpick__cell--empty {
+  border-style: dashed;
+  opacity: 0.25;
+  cursor: default;
+}
+
+.yearpick__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.yearpick__clear {
+  font: inherit;
+  font-size: 11px;
+  color: inherit;
+  background: none;
+  border: 1px solid var(--rc-line, rgba(255, 255, 255, 0.15));
+  border-radius: 12px;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+
+.yearpick__clear:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.yearpick__pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+
+.yearpick__pager button {
+  font: inherit;
+  font-size: 10px;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.yearpick__pager button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

@@ -873,3 +873,15 @@
   border-color: #2e2e2e;
   color: #e8e8e8;
 }
+
+/* 年代選択の吹き出しは暗色の背景に合わせる */
+.dia-root .yearpick__pop {
+  --rc-pop: #151515;
+  border-color: #2e2e2e;
+}
+.dia-root .yearpick__btn,
+.dia-root .yearpick__cell,
+.dia-root .yearpick__clear {
+  background: #1c1c1c;
+  border-color: #2e2e2e;
+}

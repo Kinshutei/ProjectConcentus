@@ -717,3 +717,16 @@
   border-color: #d8cfc4;
   color: #3a7a7b;
 }
+
+/* 年代選択の吹き出しは生成りの背景に合わせる */
+.mikage-root .yearpick__btn,
+.mikage-root .yearpick__cell,
+.mikage-root .yearpick__clear {
+  background: #f5f0e8;
+  border-color: #d8cfc4;
+}
+.mikage-root .yearpick__pop {
+  --rc-pop: #f7f3ec;
+  border-color: #d8cfc4;
+  box-shadow: 0 8px 24px rgba(60, 50, 40, 0.18);
+}

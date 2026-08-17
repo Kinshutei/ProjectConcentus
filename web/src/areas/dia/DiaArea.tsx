@@ -4,6 +4,7 @@ import { hms, jstDate, watchUrl } from '../../data'
 import { Link } from '../../router'
 import TerminalMessage from './TerminalMessage'
 import RankCards, { type RankItem } from '../../components/RankCards'
+import YearPicker from '../../components/YearPicker'
 import './dia.css'
 
 const asset = (name: string) => `${import.meta.env.BASE_URL}dia/${name}`
@@ -601,8 +602,13 @@ function Charts({
   titles: { ranking: string; year: string; artist: string }
 }) {
   const [sort, setSort] = useState<SongSort>('count-desc')
+  const [year, setYear] = useState<string | null>(null)
 
-  const ranking: RankItem[] = sortSongs(stats, sort).map((s, i) => ({
+  const rankingSource = year
+    ? stats.filter((s) => (s.song.released || '').slice(0, 4) === year)
+    : stats
+
+  const ranking: RankItem[] = sortSongs(rankingSource, sort).map((s, i) => ({
     key: s.song.song_id,
     rank: i + 1,
     title: s.song.title,
@@ -611,6 +617,12 @@ function Charts({
     value: s.count,
     unit: '回',
   }))
+
+  const pickableYears = [...new Set(
+    stats
+      .map((s) => (s.song.released || '').slice(0, 4))
+      .filter((y) => /^\d{4}$/.test(y)),
+  )].sort((a, b) => b.localeCompare(a))
 
   const yearMap = new Map<string, number>()
   for (const s of stats) {
@@ -651,6 +663,7 @@ function Charts({
       <div className="section-head">
         <h3 style={{ margin: 0 }}>{titles.ranking}</h3>
         <SortToggle value={sort} onChange={setSort} />
+        <YearPicker years={pickableYears} value={year} onChange={setYear} />
       </div>
       <RankCards items={ranking} paged />
 

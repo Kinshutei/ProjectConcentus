@@ -548,7 +548,7 @@ function Charts({
     key: s.song.song_id,
     rank: i + 1,
     title: s.song.title,
-    titleRight: s.song.released ? `リリース日：${s.song.released}` : undefined,
+    titleRight: `リリース日：${s.song.released || ''}`,
     sub: s.song.artist,
     lines: creditLines(s.song),
     value: s.count,
@@ -613,15 +613,13 @@ function Charts({
   )
 }
 
-/** カードの3行目以降。作詞・作曲・編曲を1行ずつ出す */
+/** カードの3行目以降。登録が無くても見出しの語は残し、カードの高さを揃える */
 function creditLines(song: Song): string[] {
   return [
     ['作詞', song.lyricists],
     ['作曲', song.composers],
     ['編曲', song.arrangers],
-  ]
-    .filter(([, names]) => (names as string[]).length > 0)
-    .map(([label, names]) => `${label}　${(names as string[]).join(' / ')}`)
+  ].map(([label, names]) => `${label}　${(names as string[]).join(' / ')}`)
 }
 
 type SongSort = 'count-desc' | 'count-asc' | 'released-desc' | 'released-asc'

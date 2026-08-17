@@ -1,9 +1,10 @@
 === Concentus 移行 ===
-取得元: GitHub origin/main（キャッシュ）
+取得元: GitHub origin/main
 
 songs.json      1196曲 → 1189曲（除外 7件）
   正規化キーの衝突: なし
   既存の実時刻を 360枠 で引き継ぎました
+contents/wouca.json  pickup 6 / original 4 / short 6 / livestreaming 6
 
 singers.json    6名
 frames.json     361枠

@@ -1,0 +1,1109 @@
+/* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .wouca-root 配下へ
+   スコープしただけのもの。見た目を一致させるため宣言は変更していない。 */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;500;700&display=swap');
+.wouca-root *, .wouca-root *::before, .wouca-root *::after {
+  box-sizing: border-box;
+}
+.wouca-root * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='rgba(210,225,240,0.92)' stroke='rgba(0,0,0,0.4)' stroke-width='1.5'/%3E%3C/svg%3E") 8 8, auto !important;
+}
+.wouca-root a, .wouca-root button, .wouca-root [role="button"], .wouca-root select, .wouca-root label[for], .wouca-root input[type="checkbox"], .wouca-root input[type="radio"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%238fa8c0' stroke='rgba(0,0,0,0.4)' stroke-width='1.5'/%3E%3C/svg%3E") 8 8, pointer !important;
+}
+.wouca-root {
+  --bg:         #0f1923;
+  --bg-2:       #1a2738;
+  --bg-3:       #243447;
+  --accent:     #3b5c8a;
+  --steel:      #8fa8c0;
+  --text:       #d8e4ef;
+  --text-muted: #6a8099;
+  --border:     #243447;
+  --header-h:   64px;
+}
+.wouca-root {
+  scroll-behavior: smooth;
+}
+.wouca-root {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'M PLUS 1p', sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+.wouca-root ::-webkit-scrollbar {
+  width: 6px; height: 6px;
+}
+.wouca-root ::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.wouca-root ::-webkit-scrollbar-thumb {
+  background: var(--accent); border-radius: 3px;
+}
+.wouca-root ::-webkit-scrollbar-thumb:hover {
+  background: var(--steel);
+}
+.wouca-root a {
+  color: var(--steel);
+}
+.wouca-root a:hover {
+  color: var(--text);
+}
+.wouca-root h3 {
+  font-family: 'M PLUS 1p', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+.wouca-root .site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 200;
+}
+.wouca-root .header-logo {
+  flex-shrink: 0;
+}
+.wouca-root .logo-img {
+  height: 38px;
+  width: 38px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: invert(1);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+  display: block;
+}
+.wouca-root .header-nav {
+  display: flex;
+  gap: 40px;
+  margin-left: 32px;
+}
+.wouca-root .header-nav-link {
+  font-family: 'M PLUS 1p', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.wouca-root .header-nav-btn {
+  background: none;
+  border: none;
+  padding: 0;
+}
+.wouca-root .header-nav-link:hover, .wouca-root .header-nav-link.active {
+  color: var(--text);
+}
+.wouca-root .header-lang {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.wouca-root .lang-btn {
+  background: none;
+  border: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.wouca-root .lang-btn:hover {
+  color: var(--text);
+}
+.wouca-root .lang-btn.active {
+  color: var(--steel); background: var(--bg-3);
+}
+.wouca-root .hero-section {
+  position: relative;
+  width: 100%;
+  height: calc((100vh - var(--header-h)) / 2);
+  margin-top: var(--header-h);
+  overflow: hidden;
+  background: #000;
+}
+.wouca-root .hero-glitch-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.wouca-root .hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 1.5s ease;
+}
+.wouca-root .hero-catchcopy {
+  position: absolute;
+  bottom: 20px;
+  left: 54px;
+  z-index: 2;
+  font-size: clamp(72px, 12vw, 128px);
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  user-select: none;
+}
+.wouca-root .filter-section {
+  display: flex;
+  align-items: flex-start;
+  padding: 72px 56px;
+  gap: 64px;
+  border-bottom: 1px solid var(--border);
+}
+.wouca-root .filter-left {
+  flex: 1;
+}
+.wouca-root .filter-tagline {
+  font-family: 'M PLUS 1p', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text);
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+.wouca-root .filter-tagline-prefix {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.5em;
+  vertical-align: bottom;
+  margin-right: 0.15em;
+}
+.wouca-root .filter-tagline-prefix span:first-child {
+  align-self: flex-end;
+}
+.wouca-root .filter-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+.wouca-root .filter-right {
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+}
+.wouca-root .filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text-muted);
+  transition: color 0.2s, padding-left 0.15s;
+  font-family: 'M PLUS 1p', sans-serif;
+}
+.wouca-root .filter-item:first-child {
+  border-top: 1px solid var(--border);
+}
+.wouca-root .filter-item:hover {
+  color: var(--text); padding-left: 8px;
+}
+.wouca-root .filter-item.active {
+  color: var(--text);
+}
+.wouca-root .filter-item.active .filter-item-name::before {
+  content: '▶ ';
+  font-size: 0.65em;
+  color: var(--accent);
+}
+.wouca-root .filter-item-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.wouca-root .filter-item-arrow {
+  font-size: 1rem; color: var(--steel);
+}
+.wouca-root .close-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--steel);
+  font-size: 1.25rem;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  padding: 0 0 40px 0;
+  transition: background 0.2s, color 0.2s;
+}
+.wouca-root .close-tab-btn {
+  position: relative;
+}
+.wouca-root .close-tab-btn .close-default {
+  visibility: visible;
+}
+.wouca-root .close-tab-btn .close-hover {
+  position: absolute;
+  left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  width: fit-content;
+  max-width: 0;
+}
+.wouca-root .close-tab-btn:hover .close-default {
+  visibility: hidden;
+}
+.wouca-root .close-tab-btn:hover .close-hover {
+  color: var(--text);
+  animation: close-typewriter 0.45s steps(16, end) forwards;
+}
+@keyframes close-typewriter {
+  from { max-width: 0; }
+  to   { max-width: 300px; }
+
+}
+.wouca-root .main-content {
+  padding: 80px 100px;
+  min-height: 480px;
+}
+.wouca-root .status-text {
+  color: var(--text-muted);
+}
+.wouca-root .status-text.error {
+  color: #e05a6a;
+}
+.wouca-root .btn-secondary {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  letter-spacing: 0.02em;
+}
+.wouca-root .btn-secondary:hover {
+  background: var(--accent);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.wouca-root .expander {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.wouca-root .expander:hover {
+  border-color: var(--accent);
+}
+.wouca-root .expander-header {
+  width: 100%;
+  text-align: left;
+  background: var(--bg-2);
+  border: none;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+}
+.wouca-root .expander-header:hover {
+  background: var(--bg-3);
+}
+.wouca-root .expander-body {
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+}
+.wouca-root .setlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  text-align: left;
+}
+.wouca-root .setlist-table th {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+.wouca-root .setlist-table th:nth-child(1) {
+  width: 36px; text-align: left;
+}
+.wouca-root .setlist-table th:nth-child(2) {
+  width: 220px;
+}
+.wouca-root .setlist-table th:nth-child(3) {
+  width: 180px;
+}
+.wouca-root .setlist-table th:nth-child(4) {
+  width: 60px;
+}
+.wouca-root .setlist-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--bg-3);
+  color: var(--text);
+  white-space: nowrap;
+}
+.wouca-root .setlist-table td:nth-child(1) {
+  color: var(--text-muted); text-align: left; width: 36px;
+}
+.wouca-root .setlist-table td:nth-child(2) {
+  width: 220px; overflow: hidden; text-overflow: ellipsis; max-width: 220px;
+}
+.wouca-root .setlist-table td:nth-child(3) {
+  width: 180px; overflow: hidden; text-overflow: ellipsis; max-width: 180px; color: var(--text-muted);
+}
+.wouca-root .setlist-table td:nth-child(4) {
+  width: 60px;
+}
+.wouca-root .setlist-table tr:last-child td {
+  border-bottom: none;
+}
+.wouca-root .setlist-table tr:hover td {
+  background: var(--bg-3);
+}
+.wouca-root .setlist-table a {
+  color: var(--steel); text-decoration: none;
+}
+.wouca-root .setlist-table a:hover {
+  color: var(--text); text-decoration: underline;
+}
+.wouca-root .songs-table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(25 * 38px + 42px);
+  margin-bottom: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.wouca-root .songs-table-wrap::-webkit-scrollbar {
+  width: 12px; height: 12px;
+}
+.wouca-root .songs-table-wrap::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.wouca-root .songs-table-wrap::-webkit-scrollbar-thumb {
+  background: var(--accent); border-radius: 3px;
+}
+.wouca-root .songs-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--steel);
+}
+.wouca-root .songs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.wouca-root .songs-table thead {
+  position: sticky; top: 0; z-index: 1;
+}
+.wouca-root .songs-table th {
+  text-align: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+.wouca-root .songs-table th:hover {
+  background: var(--bg-3); color: var(--text);
+}
+.wouca-root .songs-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--bg-3);
+  color: var(--text);
+  white-space: nowrap;
+  vertical-align: top;
+}
+.wouca-root .songs-table th:nth-child(1), .wouca-root .songs-table td:nth-child(1) {
+  min-width: 190px;
+}
+.wouca-root .songs-table th:nth-child(2), .wouca-root .songs-table td:nth-child(2) {
+  min-width: 170px;
+}
+.wouca-root .songs-table th:nth-child(3), .wouca-root .songs-table td:nth-child(3) {
+  min-width: 150px;
+}
+.wouca-root .songs-table th:nth-child(4), .wouca-root .songs-table td:nth-child(4) {
+  min-width: 150px;
+}
+.wouca-root .songs-table th:nth-child(5), .wouca-root .songs-table td:nth-child(5) {
+  min-width: 110px;
+}
+.wouca-root .songs-table th:nth-child(6), .wouca-root .songs-table td:nth-child(6) {
+  min-width:  90px;
+}
+.wouca-root .songs-table th:nth-child(7), .wouca-root .songs-table td:nth-child(7) {
+  min-width:  80px;
+}
+.wouca-root .songs-table tr:hover td {
+  background: var(--bg-3);
+}
+.wouca-root .contents-section {
+  padding: 60px 48px;
+}
+.wouca-root .contents-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--steel);
+  margin-bottom: 24px;
+}
+.wouca-root .contents-divider {
+  border: none;
+  border-top: 1px solid #243447;
+  margin: 48px 0;
+}
+.wouca-root .short-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+.wouca-root .short-card {
+  position: relative; min-width: 0; width: 100%;
+}
+.wouca-root .short-embed-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 177.78%;
+  background: #0a1520;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.wouca-root .short-embed-wrap .pickup-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.wouca-root .pickup-section {
+  padding: 72px 56px;
+  border-top: 1px solid var(--border);
+}
+.wouca-root .pickup-heading {
+  font-family: 'M PLUS 1p', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 0 0 32px;
+}
+.wouca-root .pickup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-left: 0;
+  margin-right: 0;
+}
+.wouca-root .pickup-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.wouca-root .pickup-card:hover {
+  border-color: var(--accent);
+}
+.wouca-root .pickup-card.new-release {
+  border-color: var(--steel);
+}
+.wouca-root .new-release-badge {
+  position: absolute;
+  top: 8px; left: 8px;
+  background: var(--steel);
+  color: var(--bg);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  z-index: 1;
+}
+.wouca-root .pickup-embed-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.wouca-root .pickup-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.wouca-root .pickup-card-title {
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wouca-root .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 300;
+  display: flex;
+  justify-content: flex-end;
+}
+.wouca-root .modal-panel {
+  width: min(600px, 100vw);
+  height: 100%;
+  background: var(--bg-2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  position: relative;
+  padding: 80px 40px 40px;
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+
+}
+.wouca-root .modal-close {
+  position: absolute;
+  top: 24px; right: 24px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.wouca-root .modal-close:hover {
+  color: var(--text);
+}
+.wouca-root .modal-body {
+  color: var(--text);
+}
+.wouca-root .footer-full {
+  display: inline;
+}
+.wouca-root .footer-short {
+  display: none;
+}
+.wouca-root .footer-icons {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.wouca-root .footer-icon-link {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.wouca-root .footer-icon-link:hover {
+  color: var(--steel);
+}
+.wouca-root .footer-icon-link svg {
+  width: 18px; height: 18px; fill: currentColor;
+}
+@media (max-width: 960px) {
+.wouca-root .pickup-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+.wouca-root .filter-section {
+  flex-direction: column; padding: 48px 32px; gap: 40px;
+}
+.wouca-root .filter-tagline {
+  font-size: 1.8rem;
+}
+.wouca-root .filter-right {
+  min-width: 0; width: 100%;
+}
+.wouca-root .main-content {
+  padding: 40px 32px;
+}
+.wouca-root .pickup-section {
+  padding: 56px 32px;
+}
+}
+@media (max-width: 600px) {
+.wouca-root .site-header {
+  padding: 0 16px;
+}
+.wouca-root .header-nav {
+  gap: 18px;
+}
+.wouca-root .header-nav-link {
+  font-size: 0.68rem; letter-spacing: 0.1em;
+}
+.wouca-root .filter-section {
+  padding: 40px 20px;
+}
+.wouca-root .filter-tagline {
+  font-size: 1.4rem;
+}
+.wouca-root .main-content {
+  padding: 32px 20px;
+}
+.wouca-root .pickup-section {
+  padding: 40px 20px;
+}
+.wouca-root .pickup-grid {
+  grid-template-columns: 1fr;
+}
+.wouca-root .songs-table-wrap {
+  display: none;
+}
+.wouca-root .footer-full {
+  display: none;
+}
+.wouca-root .footer-short {
+  display: inline;
+}
+.wouca-root .footer-icons {
+  display: none;
+}
+.wouca-root .expander-body > div {
+  grid-template-columns: 1fr !important;
+}
+}
+.wouca-root .search-input::placeholder {
+  color: rgba(255,255,255,0.55);
+}
+@media (max-width: 600px) {
+.wouca-root .search-input::placeholder {
+  font-size: 0.72rem;
+}
+}
+.wouca-root .label-mobile {
+  display: none;
+}
+@media (max-width: 600px) {
+.wouca-root .label-pc {
+  display: none;
+}
+.wouca-root .label-mobile {
+  display: inline;
+}
+}
+.wouca-root .lang-mobile-wrap {
+  display: none;
+}
+@media (max-width: 600px) {
+.wouca-root .lang-mobile-wrap {
+  display: flex;
+}
+}
+.wouca-root .lang-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 198;
+}
+.wouca-root .lang-btn-toggle {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.wouca-root .lang-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 199;
+  min-width: 64px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.wouca-root .lang-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.wouca-root .lang-dropdown-item:hover {
+  background: var(--bg-3); color: var(--text);
+}
+.wouca-root .lang-dropdown-item.active {
+  color: var(--steel);
+}
+.wouca-root .songs-card-list {
+  display: none;
+}
+@media (max-width: 600px) {
+.wouca-root .songs-card-list {
+  display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.wouca-root .songs-card {
+  background: rgba(59, 92, 138, 0.06);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+.wouca-root .songs-card-top {
+  display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.wouca-root .songs-card-title-row {
+  flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.wouca-root .songs-card-title {
+  font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+.wouca-root .songs-card-artist {
+  font-size: 12px;
+    color: var(--text-muted);
+}
+.wouca-root .songs-card-count {
+  font-size: 15px;
+    font-weight: 700;
+    color: var(--steel);
+    white-space: nowrap;
+}
+.wouca-root .songs-card-sub {
+  font-size: 12px;
+    color: var(--text-muted);
+}
+.wouca-root .songs-card-detail {
+  display: none;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+}
+.wouca-root .songs-card.open .songs-card-detail {
+  display: block;
+}
+.wouca-root .songs-card-detail-row {
+  display: flex; gap: 6px; margin-bottom: 2px;
+}
+.wouca-root .songs-card-detail-label {
+  color: var(--text-muted); min-width: 32px;
+}
+.wouca-root .songs-card-more-btn {
+  width: 100%;
+    padding: 10px;
+    background: rgba(59, 92, 138, 0.1);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--steel);
+    cursor: pointer;
+    text-align: center;
+}
+}
+.wouca-root .setlist-card-list {
+  display: none;
+}
+@media (max-width: 600px) {
+.wouca-root .setlist-table-wrap {
+  display: none;
+}
+.wouca-root .setlist-card-list {
+  display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 0;
+}
+.wouca-root .setlist-card {
+  background: rgba(59, 92, 138, 0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+.wouca-root .setlist-card--hit {
+  background: rgba(107, 159, 212, 0.12);
+    border-color: var(--accent);
+}
+.wouca-root .setlist-card-row1 {
+  display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+}
+.wouca-root .setlist-card-no {
+  flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    min-width: 18px;
+}
+.wouca-root .setlist-card-title {
+  flex: 1;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.wouca-root .setlist-card-first-badge {
+  display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #d4a843;
+    border: 1px solid #d4a843;
+    border-radius: 3px;
+    padding: 1px 4px;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.wouca-root .setlist-card-artist {
+  font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+.wouca-root .setlist-card-link {
+  flex-shrink: 0;
+    color: var(--steel);
+    font-size: 14px;
+    text-decoration: none;
+    padding-left: 4px;
+}
+.wouca-root .setlist-card-row2 {
+  display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.wouca-root .setlist-card-meta-label {
+  color: var(--text-muted);
+    opacity: 0.7;
+    margin-right: 3px;
+}
+}
+.wouca-root .lite-yt-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  background-color: #0a1520;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wouca-root .lite-yt-play {
+  width: 52px;
+  height: 52px;
+  background: rgba(15, 25, 35, 0.78);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.wouca-root .lite-yt-play::after {
+  content: '';
+  border-style: solid;
+  border-width: 10px 0 10px 18px;
+  border-color: transparent transparent transparent #d8e4ef;
+  margin-left: 4px;
+}
+.wouca-root .lite-yt-btn:hover .lite-yt-play {
+  background: rgba(59, 92, 138, 0.92);
+}
+
+/* 統合DB側で足した要素。元の配色に寄せる */
+.wouca-root .wc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.wouca-root .wc-search {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.wouca-root .wc-search--wide {
+  max-width: 420px;
+  margin-bottom: 16px;
+}
+
+.wouca-root .wc-search__icon {
+  position: absolute;
+  left: 10px;
+  display: inline-flex;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.wouca-root .wc-search input {
+  width: 100%;
+  padding: 7px 34px;
+  border-radius: 20px;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wouca-root .wc-search input.searching {
+  border-color: currentColor;
+}
+
+.wouca-root .wc-search__clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 14px;
+  padding: 0;
+}
+
+.wouca-root .wc-hits {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.wouca-root .wc-expanders {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wouca-root .wc-frame-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+}
+
+.wouca-root .wc-frame-link {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.wouca-root .wc-first {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.85;
+}
+
+.wouca-root .wc-tag {
+  display: inline-block;
+  margin-right: 3px;
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 17px;
+  border: 1px solid currentColor;
+  border-radius: 9px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.wouca-root .rank-grid {
+  --rc-card: rgba(255, 255, 255, 0.05);
+  --rc-line: rgba(255, 255, 255, 0.16);
+  --rc-accent: currentColor;
+}
+
+.wouca-root .sort-toggle,
+.wouca-root .yearpick__btn,
+.wouca-root .yearpick__cell,
+.wouca-root .yearpick__clear {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.wouca-root .modal-body h2 {
+  margin-top: 0;
+}
+
+@media (max-width: 720px) {
+  .wouca-root .wc-frame-grid {
+    grid-template-columns: 1fr;
+  }
+}

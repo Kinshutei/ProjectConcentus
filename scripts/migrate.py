@@ -75,6 +75,12 @@ SINGERS = [
 # マスターは5リポジトリで完全一致するため、どれを取っても同じ
 MASTER = ("natsuyo_no_kasenjiki", "rkmusic_song_master.json")
 
+# サイトの「PICKUP / Original / Short / LiveStreaming」に出す動画。
+# 歌枠データとは別系統で、持っているシンガーだけにある。
+CONTENTS = {
+    "wouca": ("unofficial_uwoter_no_oheya", "wouca_contents.json"),
+}
+
 # 重複採番の未使用側5件と空行2件。歌唱データからの参照は無いので単純に落とす
 DROP_SONG_IDS = {
     "S0972",  # 1/2        … S0492 と重複
@@ -455,6 +461,22 @@ def main() -> None:
     dump(out / "frames.json", frames)
     for sid, perfs in perf_by_singer.items():
         dump(out / "performances" / f"{sid}.json", perfs)
+
+    # コンテンツ欄。持っているシンガーだけ取り込む
+    empty_contents = '{"pickup":[],"original":[],"short":[],"livestreaming":[]}'
+    for singer in SINGERS:
+        sid = singer["singer_id"]
+        path = out / "contents" / f"{sid}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if sid in CONTENTS:
+            repo, name = CONTENTS[sid]
+            data = fetch(repo, name, cache=cache, offline=args.offline)
+            text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+            path.write_text(text + "\n", encoding="utf-8")
+            say("contents/%s.json  %s" % (
+                sid, " / ".join("%s %d" % (k, len(v)) for k, v in data.items())))
+        elif not path.exists():
+            path.write_text(empty_contents + "\n", encoding="utf-8")
 
     # 雑談（FreeTalk）。既存5DBは曲しか持っていないので中身は空で作る。
     # TSGen が話題も抽出するため、以後は管理ツールから入力していく。

@@ -1,4 +1,4 @@
-import type { Db, Frame, Performance, Singer, Song, Talk, Tag } from './types'
+import type { Contents, Db, Frame, Performance, Singer, Song, Talk, Tag } from './types'
 
 const BASE = `${import.meta.env.BASE_URL}data`
 
@@ -31,6 +31,19 @@ export const loadPerformances = (singerId: string) =>
   load<Performance>(`performances/${singerId}.json`)
 
 export const loadTalks = (singerId: string) => load<Talk>(`talks/${singerId}.json`)
+
+const EMPTY_CONTENTS: Contents = { pickup: [], original: [], short: [], livestreaming: [] }
+
+/** コンテンツ欄。持っていないシンガーもあるので、取れなければ空で返す */
+export async function loadContents(singerId: string): Promise<Contents> {
+  try {
+    const res = await fetch(`${BASE}/contents/${singerId}.json`)
+    if (!res.ok) return EMPTY_CONTENTS
+    return { ...EMPTY_CONTENTS, ...(await res.json()) }
+  } catch {
+    return EMPTY_CONTENTS
+  }
+}
 
 /** started_at は UTC。JSTへ直してから日付・時刻を組み立てる */
 function toJst(iso: string): Date | null {

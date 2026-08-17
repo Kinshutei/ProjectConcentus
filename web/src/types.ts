@@ -51,6 +51,21 @@ export type Talk = {
   theme: string
 }
 
+export type ContentVideo = {
+  video_id: string
+  title: string
+  /** 「NEW」などの短い添え字。無いこともある */
+  note?: string
+}
+
+/** サイトの PICKUP / Original / Short / LiveStreaming に出す動画 */
+export type Contents = {
+  pickup: ContentVideo[]
+  original: ContentVideo[]
+  short: ContentVideo[]
+  livestreaming: ContentVideo[]
+}
+
 export type Tag = {
   tag_id: string
   label: string

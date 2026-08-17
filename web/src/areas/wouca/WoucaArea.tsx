@@ -273,6 +273,24 @@ export default function WoucaArea({
               <button className="filter-item" onClick={() => jumpTo('songs')}>
                 <span className="filter-item-name">Sung Repertoire</span>
               </button>
+              <a
+                href="https://shop.reality-studios.inc/collections/wouca"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="filter-item filter-item-link"
+              >
+                <span className="filter-item-name">Official SHOP LINK</span>
+                <span className="filter-item-arrow">↗</span>
+              </a>
+              <a
+                href="https://rkmusic.booth.pm/item_lists/nqXTgA1O"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="filter-item filter-item-link"
+              >
+                <span className="filter-item-name">BOOTH LINK</span>
+                <span className="filter-item-arrow">↗</span>
+              </a>
             </div>
           </section>
 

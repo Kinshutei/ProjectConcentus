@@ -946,3 +946,18 @@
   color: #5a8a8b;
   pointer-events: none;
 }
+
+/* ── 重なり順の整理 ──
+   サイドバー(z-index:150) が上部バー(20) より上に描かれるため、
+   ジャンプ時にバーの裏へ回った下端が突き抜けて見えていた。
+   バーを最前面に置き、さらにサイドバー自体をバーの下から始めて
+   両者が重ならないようにする。停止位置の計算には依存しない。 */
+.mikage-scroll .mk-topbar {
+  z-index: 400;
+}
+
+.mikage-scroll .sidebar {
+  top: var(--mk-bar-h);
+  height: calc(100vh - var(--mk-bar-h));
+  z-index: 150;
+}

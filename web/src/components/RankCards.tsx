@@ -6,9 +6,12 @@ export type RankItem = {
   /** 省略すると順位バッジを出さない */
   rank?: number
   title: string
+  /** 曲名の右に出す。リリース日など */
+  titleRight?: string
+  /** 2行目。アーティスト名など */
   sub?: string
-  /** 3行目に出す補足。作詞・作曲・編曲やリリース日など */
-  meta?: string
+  /** 3行目以降。作詞・作曲・編曲など1行ずつ */
+  lines?: string[]
   value: number
   unit: string
   /** 全体に占める割合。指定すると値の右に % を出す */
@@ -78,9 +81,16 @@ export default function RankCards({
           >
             {item.rank !== undefined && <span className="rank-card__no">{item.rank}</span>}
             <div className="rank-card__body">
-              <div className="rank-card__title">{item.title}</div>
+              <div className="rank-card__head">
+                <span className="rank-card__title">{item.title}</span>
+                {item.titleRight && <span className="rank-card__right">{item.titleRight}</span>}
+              </div>
               {item.sub && <div className="rank-card__sub">{item.sub}</div>}
-              {item.meta && <div className="rank-card__meta">{item.meta}</div>}
+              {item.lines?.map((line) => (
+                <div key={line} className="rank-card__line">
+                  {line}
+                </div>
+              ))}
             </div>
             <div className="rank-card__value">
               <strong>{item.value}</strong>

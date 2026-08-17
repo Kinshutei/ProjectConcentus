@@ -15,7 +15,7 @@
 .rank-card {
   display: grid;
   grid-template-columns: 34px 1fr auto;
-  align-items: center;
+  align-items: start;
   gap: 12px;
   padding: 9px 14px;
   background: var(--rc-card);
@@ -35,6 +35,7 @@
 
 .rank-card__no {
   font-size: 14px;
+  padding-top: 1px;
   text-align: center;
   opacity: 0.75;
   font-variant-numeric: tabular-nums;
@@ -44,8 +45,30 @@
   min-width: 0;
 }
 
+.rank-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .rank-card__title {
   font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-card__right {
+  font-size: 11px;
+  opacity: 0.55;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-card__line {
+  font-size: 11px;
+  opacity: 0.45;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -62,6 +85,7 @@
 .rank-card__value {
   display: flex;
   align-items: baseline;
+  padding-top: 1px;
   gap: 4px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -125,14 +149,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.rank-card__meta {
-  font-size: 11px;
-  opacity: 0.45;
-  margin-top: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 /* 見出しと並べ替えを横並びにする */
 .section-head {

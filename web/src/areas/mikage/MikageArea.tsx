@@ -548,8 +548,9 @@ function Charts({
     key: s.song.song_id,
     rank: i + 1,
     title: s.song.title,
+    titleRight: s.song.released ? `リリース日：${s.song.released}` : undefined,
     sub: s.song.artist,
-    meta: songMeta(s.song),
+    lines: creditLines(s.song),
     value: s.count,
     unit: '回',
   }))
@@ -612,17 +613,15 @@ function Charts({
   )
 }
 
-/** カード3行目の補足。作詞・作曲・編曲とリリース日をまとめる */
-function songMeta(song: Song): string {
-  const credit = (label: string, names: string[]) =>
-    names.length ? `${label} ${names.join(' / ')}` : ''
-  const parts = [
-    credit('作詞', song.lyricists),
-    credit('作曲', song.composers),
-    credit('編曲', song.arrangers),
-  ].filter(Boolean)
-  if (song.released) parts.push(song.released)
-  return parts.join('　')
+/** カードの3行目以降。作詞・作曲・編曲を1行ずつ出す */
+function creditLines(song: Song): string[] {
+  return [
+    ['作詞', song.lyricists],
+    ['作曲', song.composers],
+    ['編曲', song.arrangers],
+  ]
+    .filter(([, names]) => (names as string[]).length > 0)
+    .map(([label, names]) => `${label}　${(names as string[]).join(' / ')}`)
 }
 
 type SongSort = 'count-desc' | 'count-asc' | 'released-desc' | 'released-asc'

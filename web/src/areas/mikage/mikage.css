@@ -847,3 +847,28 @@
   display: block;
   text-decoration: none;
 }
+
+/* ── トップ部の高さをウインドウ高に揃える ──
+   上部バー＋ヒーローでちょうど1画面。Numbers はスクロールして初めて現れる。 */
+.mikage-scroll {
+  --mk-bar-h: 46px;
+  position: relative;
+}
+
+.mikage-scroll .mk-topbar {
+  height: var(--mk-bar-h);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.mikage-scroll .hero {
+  height: calc(100vh - var(--mk-bar-h));
+  min-height: 0;
+}
+
+/* サイドバーはトップ部までで終わらせる。固定をやめて一緒にスクロールさせる */
+.mikage-scroll .sidebar {
+  position: absolute;
+  top: 0;
+  height: 100vh;
+}

@@ -781,7 +781,8 @@
   color: #3a7a7b;
 }
 
-.mikage-scroll .section:nth-of-type(even) {
+/* Numbers 以下は同じ背景で通す（1つおきの色替えはやめる） */
+.mikage-scroll .section {
   background: rgba(255, 255, 255, 0.28);
 }
 

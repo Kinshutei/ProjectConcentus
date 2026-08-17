@@ -40,7 +40,7 @@
     "colArrange": "編曲",
     "colRelease": "リリース日",
     "colCount": "歌唱回数",
-    "rankingTitle": "歌唱回数ランキング（上位20曲）",
+    "rankingTitle": "歌唱回数ランキング",
     "reset": "リセット",
     "releaseDate": "リリース日",
     "showMore": "さらに表示（50曲分表示を追加）　あと{{count}}曲",
@@ -119,7 +119,9 @@
       },
       {
         "date": "2026-03-13",
-        "items": ["サイト公開"]
+        "items": [
+          "サイト公開"
+        ]
       }
     ]
   }

@@ -40,7 +40,7 @@
     "colArrange": "編曲",
     "colRelease": "發行日",
     "colCount": "演唱次數",
-    "rankingTitle": "演唱次數排名（前 20 首）",
+    "rankingTitle": "演唱次數排行",
     "reset": "重置",
     "releaseDate": "發行日",
     "showMore": "顯示更多（+50）　剩餘 {{count}} 首",
@@ -119,7 +119,9 @@
       },
       {
         "date": "2026-03-13",
-        "items": ["網站上線"]
+        "items": [
+          "網站上線"
+        ]
       }
     ]
   }

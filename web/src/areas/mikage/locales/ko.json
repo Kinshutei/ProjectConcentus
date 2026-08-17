@@ -40,7 +40,7 @@
     "colArrange": "편곡",
     "colRelease": "발매일",
     "colCount": "노래 횟수",
-    "rankingTitle": "노래 횟수 랭킹 (상위 20곡)",
+    "rankingTitle": "가창 횟수 랭킹",
     "reset": "리셋",
     "releaseDate": "발매일",
     "showMore": "더 보기（+50）　나머지 {{count}}곡",
@@ -119,7 +119,9 @@
       },
       {
         "date": "2026-03-13",
-        "items": ["사이트 오픈"]
+        "items": [
+          "사이트 오픈"
+        ]
       }
     ]
   }

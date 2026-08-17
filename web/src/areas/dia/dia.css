@@ -1,0 +1,853 @@
+/* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .dia-root 配下へ
+   スコープしただけのもの。見た目を一致させるため宣言は変更していない。 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+.dia-root *, .dia-root *::before, .dia-root *::after {
+  box-sizing: border-box;
+}
+.dia-root {
+  margin: 0;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 18px;
+  color: #e8e8e8;
+  background: #0e0e0e;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+.dia-root ::-webkit-scrollbar {
+  width: 6px; height: 6px;
+}
+.dia-root ::-webkit-scrollbar-track {
+  background: #141414;
+}
+.dia-root ::-webkit-scrollbar-thumb {
+  background: #2e2e2e; border-radius: 3px;
+}
+.dia-root ::-webkit-scrollbar-thumb:hover {
+  background: #3e3e3e;
+}
+.dia-root .layout {
+  display: flex;
+  min-height: 100vh;
+}
+.dia-root .sidebar {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+  border-right: 1px solid #1a1a1a;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 200;
+  transition: transform 0.3s ease;
+}
+.dia-root .sidebar-top {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 0 24px;
+  cursor: pointer;
+}
+.dia-root .sidebar-title {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  color: #686868;
+  margin-left: 10px;
+  transition: color 0.2s;
+  user-select: none;
+}
+.dia-root .sidebar-tagline {
+  writing-mode: vertical-rl;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: #707070;
+  user-select: none;
+}
+.dia-root .sidebar-top:hover .sidebar-title {
+  color: #a0a0a0;
+}
+.dia-root .sidebar-nav {
+  padding: 0 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.dia-root .sidebar-nav-item {
+  background: none;
+  border: none;
+  border-top: 1px solid #181818;
+  padding: 14px 20px;
+  text-align: left;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #aaaaaa;
+  cursor: pointer;
+  transition: color 0.4s, background 0.8s ease;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.dia-root .sidebar-nav-item:last-child {
+  border-bottom: 1px solid #181818;
+}
+.dia-root .sidebar-nav-item:hover {
+  color: #e0e0e0;
+  background: #b32e46;
+}
+.dia-root .sidebar-nav-item.active {
+  color: #b32e46;
+}
+.dia-root .main-area {
+  margin-left: 160px;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+.dia-root .hero-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+.dia-root .hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 1.5s ease;
+  pointer-events: none;
+}
+.dia-root .hero-video-indicators {
+  position: absolute;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+}
+.dia-root .hero-video-indicator {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+}
+.dia-root .hero-video-indicator:hover:not(.active) {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.45);
+}
+.dia-root .hero-video-indicator.active {
+  border-color: #b32e46;
+  color: #b32e46;
+  background: rgba(179, 46, 70, 0.12);
+}
+.dia-root .hero-progress-track {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 20;
+  overflow: hidden;
+}
+.dia-root .hero-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+.dia-root .hero-grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.55;
+}
+.dia-root .hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right,  rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.55) 35%, rgba(10,10,10,0.30) 100%),
+    linear-gradient(to bottom, rgba(10,10,10,0.10) 0%, rgba(10,10,10,0.50) 100%);
+  pointer-events: none;
+}
+.dia-root .hero-terminal {
+  position: absolute;
+  right: 7%;
+  top: 50%;
+  transform: translateY(-45%);
+  width: min(480px, 44vw);
+  max-height: 75vh;
+  z-index: 10;
+}
+.dia-root .terminal-panel {
+  padding: 22px 26px;
+  background: rgba(0, 6, 1, 0.68);
+  border: 1px solid rgba(51, 200, 80, 0.12);
+  position: relative;
+}
+.dia-root .terminal-scroll {
+  height: calc(0.72rem * 1.7 * 10);
+  overflow: hidden;
+}
+.dia-root .terminal-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.08) 3px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+}
+.dia-root .terminal-content {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+.dia-root .tl {
+  white-space: pre;
+  min-height: 1.2em;
+}
+.dia-root .tl--system {
+  color: #2ecc54;
+  text-shadow: 0 0 6px rgba(46, 204, 84, 0.55);
+}
+.dia-root .tl--header {
+  color: #1a8830;
+  text-shadow: none;
+  letter-spacing: 0.04em;
+}
+.dia-root .tl--warning {
+  color: #e0a820;
+  text-shadow: 0 0 6px rgba(220, 160, 0, 0.45);
+}
+.dia-root .tl--message {
+  color: #c8ffd4;
+  text-shadow: 0 0 10px rgba(160, 255, 180, 0.6);
+}
+.dia-root .tl--separator {
+  color: #1a6628;
+  text-shadow: none;
+}
+.dia-root .tl--status {
+  color: #2ecc54;
+  text-shadow: 0 0 6px rgba(46, 204, 84, 0.55);
+}
+.dia-root .tl--blank {
+  color: transparent;
+  pointer-events: none;
+}
+.dia-root .tl-cursor {
+  animation: tl-blink 1.1s step-end infinite;
+  color: #2ecc54;
+  text-shadow: 0 0 6px rgba(46, 204, 84, 0.8);
+}
+@keyframes tl-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+
+}
+.dia-root .hero-about {
+  position: absolute;
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(840px, 80vw);
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 8, 8, 0.50);
+  border: 1px solid #1e1e1e;
+  z-index: 10;
+}
+.dia-root .hero-about-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 10px 16px;
+  text-align: right;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #aaaaaa;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.dia-root .hero-about-close:hover {
+  color: #a0a0a0;
+}
+.dia-root .hero-about-body {
+  overflow-y: auto;
+  padding: 20px 22px 24px;
+  font-size: 0.82rem;
+}
+.dia-root .hero-about-body::-webkit-scrollbar {
+  width: 4px;
+}
+.dia-root .hero-about-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dia-root .hero-about-body::-webkit-scrollbar-thumb {
+  background: #2a2a2a; border-radius: 2px;
+}
+.dia-root .hero-streams {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  width: min(1100px, calc(100vw - 220px));
+  max-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 8, 8, 0.50);
+  border: 1px solid #1e1e1e;
+  z-index: 10;
+}
+.dia-root .hero-streams-body {
+  overflow-y: auto;
+  padding: 16px 22px 24px;
+  font-size: 0.82rem;
+}
+.dia-root .hero-streams-body::-webkit-scrollbar {
+  width: 4px;
+}
+.dia-root .hero-streams-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dia-root .hero-streams-body::-webkit-scrollbar-thumb {
+  background: #2a2a2a; border-radius: 2px;
+}
+.dia-root .content-area {
+  padding: 20px 24px 120px;
+  max-width: 1440px;
+}
+.dia-root .back-btn {
+  background: none;
+  border: none;
+  padding: 10px 0;
+  margin-bottom: 12px;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #484848;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.dia-root .back-btn:hover {
+  color: #a0a0a0;
+}
+.dia-root .status-text {
+  color: #888; font-size: 0.95rem;
+}
+.dia-root .status-text--error {
+  color: #c00;
+}
+.dia-root .hamburger {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 300;
+  background: rgba(14, 14, 14, 0.85);
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  width: 38px;
+  height: 38px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.dia-root .hamburger span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: #a0a0a0;
+  transition: transform 0.25s, opacity 0.25s;
+  transform-origin: center;
+}
+.dia-root .hamburger--open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.dia-root .hamburger--open span:nth-child(2) {
+  opacity: 0;
+}
+.dia-root .hamburger--open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+.dia-root .sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 190;
+}
+.dia-root .btn-secondary {
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-family: inherit;
+  font-size: 17px;
+  color: #a0a0a0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  letter-spacing: 0.02em;
+}
+.dia-root .btn-secondary:hover {
+  background: #242424;
+  color: #b32e46;
+  border-color: #3e3e3e;
+}
+.dia-root .expander {
+  border: 1px solid #222;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.dia-root .expander:hover {
+  border-color: #2e2e2e;
+}
+.dia-root .expander-header {
+  width: 100%;
+  text-align: left;
+  background: #161616;
+  border: none;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 400;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+}
+.dia-root .expander-header:hover {
+  background: #1e1e1e; color: #ffffff;
+}
+.dia-root .expander-body {
+  padding: 14px 16px;
+  background: #121212;
+  border-top: 1px solid #1e1e1e;
+}
+.dia-root .setlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 17px;
+  text-align: left;
+}
+.dia-root .setlist-table th {
+  padding: 5px 10px;
+  border-bottom: 1px solid #2a2a2a;
+  color: #606060;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+.dia-root .setlist-table th:nth-child(1) {
+  width: 36px; text-align: left;
+}
+.dia-root .setlist-table th:nth-child(2) {
+  width: 220px;
+}
+.dia-root .setlist-table th:nth-child(3) {
+  width: 180px;
+}
+.dia-root .setlist-table th:nth-child(4) {
+  width: 60px;
+}
+.dia-root .setlist-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #1a1a1a;
+  color: #c0c0c0;
+  white-space: nowrap;
+}
+.dia-root .setlist-table td:nth-child(1) {
+  color: #484848; text-align: left; width: 36px;
+}
+.dia-root .setlist-table td:nth-child(2) {
+  width: 220px; overflow: hidden; text-overflow: ellipsis; max-width: 220px;
+}
+.dia-root .setlist-table td:nth-child(3) {
+  width: 180px; overflow: hidden; text-overflow: ellipsis; max-width: 180px; color: #888;
+}
+.dia-root .setlist-table td:nth-child(4) {
+  width: 60px;
+}
+.dia-root .setlist-table tr:last-child td {
+  border-bottom: none;
+}
+.dia-root .setlist-table tr:hover td {
+  background: #1a1a1a;
+}
+.dia-root .setlist-table a {
+  color: #b32e46; text-decoration: none;
+}
+.dia-root .setlist-table a:hover {
+  color: #d4667a; text-decoration: underline;
+}
+.dia-root .setlist-card-list {
+  display: none;
+}
+@media (max-width: 768px) {
+.dia-root .setlist-table-wrap {
+  display: none;
+}
+.dia-root .setlist-card-list {
+  display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 0;
+}
+.dia-root .setlist-card {
+  background: rgba(107, 159, 212, 0.05);
+    border: 1px solid #1e2a38;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+.dia-root .setlist-card--hit {
+  background: rgba(107, 159, 212, 0.12);
+    border-color: #3a5a7a;
+}
+.dia-root .setlist-card-row1 {
+  display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+}
+.dia-root .setlist-card-no {
+  flex-shrink: 0;
+    color: #484848;
+    font-size: 11px;
+    min-width: 18px;
+}
+.dia-root .setlist-card-title {
+  flex: 1;
+    color: #e0e0e0;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.dia-root .setlist-card-first-badge {
+  display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #d4a843;
+    border: 1px solid #d4a843;
+    border-radius: 3px;
+    padding: 1px 4px;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.dia-root .setlist-card-artist {
+  font-size: 12px;
+    color: #888;
+    font-weight: 400;
+}
+.dia-root .setlist-card-link {
+  flex-shrink: 0;
+    color: #5a7fa8;
+    font-size: 14px;
+    text-decoration: none;
+    padding-left: 4px;
+}
+.dia-root .setlist-card-row2 {
+  display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #666;
+}
+.dia-root .setlist-card-meta-label {
+  color: #484848;
+    margin-right: 3px;
+}
+}
+.dia-root .songs-card-list {
+  display: none;
+}
+.dia-root .songs-table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(25 * 38px + 42px);
+  margin-bottom: 32px;
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+}
+.dia-root .songs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 17px;
+}
+.dia-root .songs-table thead {
+  position: sticky; top: 0; z-index: 1;
+}
+.dia-root .songs-table th {
+  text-align: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #2e2e2e;
+  background: #161616;
+  color: #606060;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+.dia-root .songs-table th:hover {
+  color: #a0a0a0; background: #1c1c1c;
+}
+.dia-root .songs-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #1a1a1a;
+  color: #c0c0c0;
+  white-space: nowrap;
+}
+.dia-root .songs-table th:nth-child(1), .dia-root .songs-table td:nth-child(1) {
+  min-width: 190px;
+}
+.dia-root .songs-table th:nth-child(2), .dia-root .songs-table td:nth-child(2) {
+  min-width: 170px;
+}
+.dia-root .songs-table th:nth-child(3), .dia-root .songs-table td:nth-child(3) {
+  min-width: 150px;
+}
+.dia-root .songs-table th:nth-child(4), .dia-root .songs-table td:nth-child(4) {
+  min-width: 150px;
+}
+.dia-root .songs-table th:nth-child(5), .dia-root .songs-table td:nth-child(5) {
+  min-width: 110px;
+}
+.dia-root .songs-table th:nth-child(6), .dia-root .songs-table td:nth-child(6) {
+  min-width:  90px;
+}
+.dia-root .songs-table th:nth-child(7), .dia-root .songs-table td:nth-child(7) {
+  min-width:  80px;
+}
+.dia-root .songs-table tr:hover td {
+  background: #181818;
+}
+.dia-root h3 {
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 1.0rem;
+  font-weight: 700;
+  color: #606060;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+.dia-root a {
+  color: #b32e46;
+}
+.dia-root a:hover {
+  color: #d4667a;
+}
+.dia-root .footer-full {
+  display: inline;
+}
+.dia-root .footer-short {
+  display: none;
+}
+@media (max-width: 640px) {
+.dia-root .footer-full {
+  display: none;
+}
+.dia-root .footer-short {
+  display: inline;
+}
+}
+@media (max-width: 768px) {
+.dia-root .sidebar {
+  transform: translateX(-100%);
+}
+.dia-root .sidebar--open {
+  transform: translateX(0);
+}
+.dia-root .sidebar-overlay {
+  display: block;
+}
+.dia-root .main-area {
+  margin-left: 0;
+}
+.dia-root .hamburger {
+  display: flex;
+}
+.dia-root .hero-terminal {
+  right: 5%;
+    left: 5%;
+    width: auto;
+    top: 52%;
+    transform: translateY(-48%);
+}
+.dia-root .hero-about {
+  left: 5%;
+    right: 5%;
+    width: auto;
+    top: 54%;
+    transform: translateY(-50%);
+    max-height: 65vh;
+}
+.dia-root .hero-streams {
+  left: 5%;
+    right: 5%;
+    width: auto;
+    top: 30px;
+    max-height: calc(100vh - 60px);
+}
+.dia-root .terminal-content {
+  font-size: 0.65rem;
+}
+.dia-root .terminal-scroll {
+  height: calc(0.65rem * 1.7 * 10);
+}
+.dia-root .content-area {
+  padding: 60px 16px 80px;
+}
+.dia-root .songs-table-wrap {
+  display: none;
+}
+.dia-root .songs-card-list {
+  display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.dia-root .songs-card {
+  background: rgba(179, 46, 70, 0.06);
+    border: 1px solid #2a1218;
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+.dia-root .songs-card-top {
+  display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.dia-root .songs-card-title-row {
+  flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dia-root .songs-card-title {
+  font-size: 14px;
+    font-weight: 600;
+    color: #e0e0e0;
+}
+.dia-root .songs-card-artist {
+  font-size: 12px;
+    color: #888;
+}
+.dia-root .songs-card-count {
+  font-size: 15px;
+    font-weight: 700;
+    color: #b32e46;
+    white-space: nowrap;
+}
+.dia-root .songs-card-sub {
+  font-size: 12px;
+    color: #666;
+}
+.dia-root .songs-card-detail {
+  display: none;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #888;
+    border-top: 1px solid #2a1218;
+    padding-top: 6px;
+}
+.dia-root .songs-card.open .songs-card-detail {
+  display: block;
+}
+.dia-root .songs-card-detail-row {
+  display: flex; gap: 6px; margin-bottom: 2px;
+}
+.dia-root .songs-card-detail-label {
+  color: #666; min-width: 32px;
+}
+.dia-root .songs-card-more-btn {
+  width: 100%;
+    padding: 10px;
+    background: rgba(179, 46, 70, 0.1);
+    border: 1px solid #3a1520;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #b32e46;
+    cursor: pointer;
+    text-align: center;
+}
+.dia-root .expander-body > div {
+  grid-template-columns: 1fr !important;
+}
+}
+
+/* 統合DB側で追加した要素。元の配色に合わせる */
+.dia-root .first-badge {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+}
+.dia-root .tag-chip {
+  display: inline-block;
+  margin-right: 3px;
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 17px;
+  border: 1px solid currentColor;
+  border-radius: 9px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.dia-root .sidebar-nav a.sidebar-nav-item {
+  display: block;
+  text-decoration: none;
+}

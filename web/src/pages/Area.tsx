@@ -3,6 +3,7 @@ import type { Db, Frame, Performance } from '../types'
 import { loadPerformances, jstDate } from '../data'
 import { Link } from '../router'
 import MikageArea from '../areas/mikage/MikageArea'
+import DiaArea from '../areas/dia/DiaArea'
 
 /**
  * 各シンガーの領域。デザインは領域ごとに持つ方針なので、
@@ -44,6 +45,9 @@ export default function Area({ db, singerId }: { db: Db; singerId: string }) {
 
   if (singerId === 'mikage') {
     return <MikageArea db={db} frames={frames} perfs={perfs} />
+  }
+  if (singerId === 'dia') {
+    return <DiaArea db={db} frames={frames} perfs={perfs} />
   }
   return <Placeholder name={singer.name} frames={frames} perfs={perfs} />
 }

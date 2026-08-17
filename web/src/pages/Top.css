@@ -1,0 +1,92 @@
+.top-hero {
+  padding: 84px 0 56px;
+  border-bottom: 1px solid var(--border);
+}
+
+.wordmark {
+  margin: 0;
+  font-size: clamp(40px, 9vw, 78px);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+.wordmark span {
+  display: block;
+}
+
+.wordmark span:nth-child(2) {
+  padding-left: 0.55em;
+}
+
+.wordmark span:nth-child(3) {
+  padding-left: 1.1em;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.top-lead {
+  margin: 28px 0 0;
+  color: var(--muted);
+}
+
+.singer-grid {
+  list-style: none;
+  margin: 48px 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+}
+
+.singer-card {
+  display: block;
+  position: relative;
+  padding: 24px 22px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.18s, transform 0.18s;
+}
+
+.singer-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--card);
+}
+
+.singer-card:hover {
+  border-color: var(--card);
+  transform: translateY(-2px);
+}
+
+.singer-en {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--card);
+}
+
+.singer-name {
+  display: block;
+  margin-top: 6px;
+  font-size: 23px;
+  font-weight: 600;
+}
+
+.singer-meta {
+  display: block;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.top-foot {
+  padding: 32px 20px 56px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}

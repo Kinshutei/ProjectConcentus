@@ -3,3 +3,7 @@
 
 # 管理ツールはローカル運用。リポジトリには含めない
 Concentus_管理ツール_*.html
+
+# ビルド成果物と依存
+web/node_modules/
+web/dist/

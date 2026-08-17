@@ -1,0 +1,58 @@
+:root {
+  --bg: #0c0f16;
+  --surface: #141926;
+  --border: #232a3b;
+  --text: #e8ebf2;
+  --muted: #8e99b0;
+  --accent: #6f9bd8;
+  --mono: ui-monospace, "Consolas", "Meiryo", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "Yu Gothic UI", "Hiragino Sans", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.state {
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--muted);
+}

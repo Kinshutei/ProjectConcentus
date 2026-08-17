@@ -1,0 +1,11 @@
+{
+  // 完全な静的サイトなので Worker スクリプトは持たない。
+  // ビルド成果物（web/dist）をそのまま配信する。
+  "name": "concentus",
+  "compatibility_date": "2026-08-17",
+  "assets": {
+    "directory": "./web/dist",
+    // クライアント側ルーティングのため、未知のパスは index.html を返す
+    "not_found_handling": "single-page-application"
+  }
+}

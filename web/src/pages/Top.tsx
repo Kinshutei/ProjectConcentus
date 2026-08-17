@@ -1,0 +1,51 @@
+import type { Db } from '../types'
+import { Link } from '../router'
+import './Top.css'
+
+export default function Top({ db }: { db: Db }) {
+  const counts = new Map<string, number>()
+  for (const f of db.frames) counts.set(f.singer_id, (counts.get(f.singer_id) ?? 0) + 1)
+
+  return (
+    <div className="top">
+      <header className="top-hero">
+        <div className="wrap">
+          <h1 className="wordmark">
+            <span>uta-</span>
+            <span>waku</span>
+            <span>archive</span>
+          </h1>
+          <p className="top-lead">
+            VSingerの歌枠を記録する、非公式ファンメイドのアーカイブです。
+          </p>
+        </div>
+      </header>
+
+      <main className="wrap">
+        <ul className="singer-grid">
+          {db.singers.map((s) => (
+            <li key={s.singer_id}>
+              <Link
+                to={`/${s.singer_id}`}
+                className="singer-card"
+                style={{ '--card': s.color ?? 'var(--accent)' } as React.CSSProperties}
+              >
+                <span className="singer-en">{s.name_en}</span>
+                <span className="singer-name">{s.name}</span>
+                <span className="singer-meta muted">
+                  {s.affiliation ?? '個人勢'} ・ 枠 {counts.get(s.singer_id) ?? 0}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </main>
+
+      <footer className="top-foot wrap muted">
+        <p>
+          当サイトは非公式のファンメイドであり、各シンガーおよび所属団体とは関係ありません。
+        </p>
+      </footer>
+    </div>
+  )
+}

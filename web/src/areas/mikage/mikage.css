@@ -802,3 +802,48 @@
 .mikage-scroll .section-head h3 {
   font-size: 0.75rem;
 }
+
+/* サイドバーぶん右へ寄せる。上部バーも同じだけずらす */
+.mikage-scroll .mk-topbar {
+  margin-left: 66px;
+}
+
+.mikage-scroll .main-wrapper {
+  margin-bottom: 0;
+  min-height: 0;
+}
+
+/* ヘッダーの節移動ボタン */
+.mikage-scroll .mk-jump {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.mikage-scroll .mk-jump button {
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #5a8a8b;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.mikage-scroll .mk-jump button:hover {
+  color: #3a7a7b;
+  border-color: #acd0d1;
+}
+
+/* サイドバーは元の見た目のまま、1ページ構成の節送りに使う */
+.mikage-scroll .sidebar {
+  height: 100vh;
+}
+
+.mikage-scroll .sidebar-nav a.sidebar-nav-btn {
+  display: block;
+  text-decoration: none;
+}

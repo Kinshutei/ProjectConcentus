@@ -15,6 +15,23 @@ const BG = `${import.meta.env.BASE_URL}mikage/background_0.png`
 const CHANNEL = 'https://www.youtube.com/channel/UC2daHxnuJJBM5NWci1RRkeA'
 const ROMAJI = 'MIKAGE'
 
+/** ヘッダーとサイドバーから飛べる節 */
+const SECTIONS = [
+  { id: 'numbers', label: 'Numbers' },
+  { id: 'setlist', label: 'Setlist' },
+  { id: 'repertoire', label: 'Repertoire' },
+]
+
+/** 上部バーに隠れないよう、その高さぶん手前で止める */
+function scrollToSection(id: string) {
+  const el = document.getElementById(id)
+  if (!el) return
+  const bar = document.querySelector('.mk-topbar')
+  const offset = bar ? bar.getBoundingClientRect().height : 0
+  const top = el.getBoundingClientRect().top + window.scrollY - offset - 8
+  window.scrollTo({ top, behavior: 'smooth' })
+}
+
 /** 1歌唱ぶんを表示用に組み立てたもの */
 type Row = {
   no: number
@@ -33,6 +50,7 @@ export default function MikageArea({
   perfs: Performance[]
 }) {
   const [lang, setLang] = useState(storedLang)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const t = useMemo(() => translator(lang), [lang])
 
   // 初披露は枠の開始時刻→枠内の秒 の順で song_id の初出を拾う
@@ -70,9 +88,13 @@ export default function MikageArea({
       style={{ backgroundImage: `url(${BG})`, backgroundRepeat: 'repeat' }}
     >
       <header className="mk-topbar">
-        <Link to="/" className="mk-topbar__home">
-          uta-waku archive
-        </Link>
+        <nav className="mk-jump">
+          {SECTIONS.map((sec) => (
+            <button key={sec.id} type="button" onClick={() => scrollToSection(sec.id)}>
+              {sec.label}
+            </button>
+          ))}
+        </nav>
         <div className="lang-selector">
           <select
             value={lang}
@@ -91,7 +113,37 @@ export default function MikageArea({
         </div>
       </header>
 
-      <div className="page">
+      <aside className={`sidebar${sidebarOpen ? ' sidebar-open' : ''}`}>
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen((o) => !o)}
+          aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+        >
+          <span>ME</span>
+          <span>NU</span>
+        </button>
+        <nav className="sidebar-nav">
+          {[...SECTIONS, { id: 'about', label: 'About' }, { id: 'links', label: 'Links' }].map(
+            (sec) => (
+              <button
+                key={sec.id}
+                className="sidebar-nav-btn"
+                onClick={() => {
+                  scrollToSection(sec.id)
+                  setSidebarOpen(false)
+                }}
+              >
+                <span className="sidebar-nav-text">{sec.label}</span>
+              </button>
+            ),
+          )}
+          <Link to="/" className="sidebar-nav-btn">
+            <span className="sidebar-nav-text">home</span>
+          </Link>
+        </nav>
+      </aside>
+
+      <div className="page main-wrapper">
         <Hero />
         <Numbers
           frames={frames.length}
@@ -197,6 +249,8 @@ function Numbers({
 
 /* ─────────────────────────────────────────── Setlist */
 
+const PER_PAGE = 10
+
 const hits = (r: Row, q: string) =>
   !!r.song && (r.song.title.toLowerCase().includes(q) || r.song.artist.toLowerCase().includes(q))
 
@@ -214,14 +268,20 @@ function Setlist({
   const [query, setQuery] = useState('')
   const [defaultOpen, setDefaultOpen] = useState(false)
   const [mountKey, setMountKey] = useState(0)
+  const [page, setPage] = useState(1)
 
   const trimmed = query.trim()
   const searching = trimmed.length > 0
   const q = trimmed.toLowerCase()
 
-  const shown = searching
+  const matched = searching
     ? frames.filter((f) => (rowsByFrame.get(f.frame_id) ?? []).some((r) => hits(r, q)))
     : frames
+
+  // 一度に出すのは10枠まで。多いとページが長くなりすぎる
+  const totalPages = Math.max(1, Math.ceil(matched.length / PER_PAGE))
+  const current = Math.min(page, totalPages)
+  const shown = matched.slice((current - 1) * PER_PAGE, current * PER_PAGE)
 
   return (
     <section className="section" id="setlist">
@@ -246,7 +306,7 @@ function Setlist({
           </div>
           {searching ? (
             <span style={{ fontSize: 13, color: '#606060' }}>
-              {t('streams.searchHits', { count: shown.length })}
+              {t('streams.searchHits', { count: matched.length })}
             </span>
           ) : (
             <>
@@ -272,7 +332,7 @@ function Setlist({
           )}
         </div>
 
-        {searching && shown.length === 0 && (
+        {searching && matched.length === 0 && (
           <p style={{ color: '#606060', fontSize: 14 }}>
             {t('streams.searchNoResults', { query: trimmed })}
           </p>
@@ -292,6 +352,32 @@ function Setlist({
             />
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="pager">
+            <button
+              type="button"
+              className="pager__btn"
+              onClick={() => setPage(current - 1)}
+              disabled={current <= 1}
+              aria-label="前のページ"
+            >
+              <span aria-hidden="true">◀</span>
+            </button>
+            <span className="pager__count">
+              <strong>{current}</strong> / {totalPages}
+            </span>
+            <button
+              type="button"
+              className="pager__btn"
+              onClick={() => setPage(current + 1)}
+              disabled={current >= totalPages}
+              aria-label="次のページ"
+            >
+              <span aria-hidden="true">▶</span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )

@@ -1,13 +1,12 @@
 === Concentus 移行 ===
-取得元: GitHub origin/main
+取得元: GitHub origin/main（キャッシュ）
 
 songs.json      1196曲 → 1189曲（除外 7件）
   正規化キーの衝突: なし
-
-YouTube API から started_at を取得します
+  既存の実時刻を 360枠 で引き継ぎました
 
 singers.json    6名
-frames.json     360枠
+frames.json     361枠
 performances/   5211歌唱
   mikage   3001行
   dia       516行
@@ -35,17 +34,11 @@ performances/   5211歌唱
   vo_solo                   1
   len_one                   1
 
-‼ 要修正: 1つの video_id に複数の配信がぶら下がっています
-   どちらかの 枠URL に誤った video_id が入っています。
-   このまま移行すると別々の配信が1枠に合体します。
-   wouca-SLv-acOdGy8
-     2025-11-30  【歌枠】自己紹介と、少し歌ったりもしたいです✽【wouca : RK Music】#utawouca 01
-     2025-12-02  【歌枠】祝・チャンネル登録5000人達成を歌で祝ヲウカ✽【wouca : RK Music】#utawouca 02
-     → 合計 12歌唱が1枠に合体しています
+video_id の重複: なし
 
 要対応
   参照切れ song_id            0件
-  started_at が暫定値（0時）  0枠
+  started_at が暫定値（0時）  1枠
   day_order の判断が要る日    11日
     mikage 2025-08-08: 2枠
     mikage 2025-08-30: 2枠

@@ -454,6 +454,13 @@ def main() -> None:
     for sid, perfs in perf_by_singer.items():
         dump(out / "performances" / f"{sid}.json", perfs)
 
+    # 雑談（FreeTalk）。既存5DBは曲しか持っていないので中身は空で作る。
+    # TSGen が話題も抽出するため、以後は管理ツールから入力していく。
+    for singer in SINGERS:
+        path = out / "talks" / f"{singer['singer_id']}.json"
+        if not path.exists():
+            dump(path, [])
+
     singers_out = [
         {k: s[k] for k in
          ("singer_id", "name", "name_en", "channel_id", "affiliation", "color")}

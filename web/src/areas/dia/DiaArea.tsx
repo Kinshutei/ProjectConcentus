@@ -665,7 +665,7 @@ function Charts({
   return (
     <>
       <h3 style={{ margin: '24px 0 8px' }}>{titles.ranking}</h3>
-      <RankCards items={ranking} />
+      <RankCards items={ranking} paged />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
       <RankCards items={years} paged />

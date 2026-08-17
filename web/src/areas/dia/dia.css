@@ -861,3 +861,8 @@
 .dia-root .pager__btn {
   border-color: #2e2e2e;
 }
+
+/* 楽曲表の見出しは sticky なので、行が透けないよう不透明にする */
+.dia-root .songs-table thead th {
+  background: #1a1a1a;
+}

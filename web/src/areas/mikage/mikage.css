@@ -701,3 +701,12 @@
 .mikage-root .pager__btn {
   border-color: #d8cfc4;
 }
+
+/* 楽曲表の見出しは sticky なので、行が透けないよう不透明にする。
+   元は rgba(172,208,209,0.35) で、下の行がそのまま見えていた。 */
+.mikage-root .songs-table thead th {
+  background: #dde9e6;
+}
+.mikage-root .songs-table thead th:hover {
+  background: #cfe1de;
+}

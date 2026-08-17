@@ -437,7 +437,7 @@ function Songs({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
         }}
       />
 
-      <h3 style={{ marginTop: 28 }}>{t('songs.colSong')}（{stats.length}）</h3>
+      <h3 style={{ marginTop: 28 }}>全楽曲（{stats.length}）</h3>
       <div className="songs-table-wrap">
         <table className="songs-table">
           <thead>
@@ -628,7 +628,7 @@ function Charts({
   return (
     <>
       <h3 style={{ margin: '24px 0 8px' }}>{titles.ranking}</h3>
-      <RankCards items={ranking} />
+      <RankCards items={ranking} paged />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
       <RankCards items={years} paged />

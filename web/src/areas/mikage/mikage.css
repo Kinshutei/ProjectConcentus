@@ -712,7 +712,7 @@
 }
 
 /* 並べ替えの選択肢は生成りの背景に合わせる */
-.mikage-root .sort-select {
+.mikage-root .sort-toggle {
   background: #f5f0e8;
   border-color: #d8cfc4;
   color: #3a7a7b;

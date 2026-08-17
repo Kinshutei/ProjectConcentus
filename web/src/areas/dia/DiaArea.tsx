@@ -650,7 +650,7 @@ function Charts({
     <>
       <div className="section-head">
         <h3 style={{ margin: 0 }}>{titles.ranking}</h3>
-        <SortSelect value={sort} onChange={setSort} />
+        <SortToggle value={sort} onChange={setSort} />
       </div>
       <RankCards items={ranking} paged />
 
@@ -701,19 +701,22 @@ function sortSongs(stats: { song: Song; count: number }[], sort: SongSort) {
   })
 }
 
-function SortSelect({ value, onChange }: { value: SongSort; onChange: (v: SongSort) => void }) {
+/** 押すたびに 回数多い→回数少ない→新しい→古い の順で切り替わる */
+function SortToggle({ value, onChange }: { value: SongSort; onChange: (v: SongSort) => void }) {
+  const index = SORT_LABELS.findIndex((o) => o.value === value)
+  const next = SORT_LABELS[(index + 1) % SORT_LABELS.length]
   return (
-    <select
-      className="sort-select"
-      value={value}
-      onChange={(e) => onChange(e.target.value as SongSort)}
-      aria-label="並べ替え"
+    <button
+      type="button"
+      className="sort-toggle"
+      onClick={() => onChange(next.value)}
+      title={`クリックで「${next.label}」に切り替え`}
+      aria-label="並べ替えを切り替える"
     >
-      {SORT_LABELS.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+      <span className="sort-toggle__mark" aria-hidden="true">
+        &#8645;
+      </span>
+      {SORT_LABELS[index === -1 ? 0 : index].label}
+    </button>
   )
 }

@@ -868,7 +868,7 @@
 }
 
 /* 並べ替えの選択肢は暗色の背景に合わせる */
-.dia-root .sort-select {
+.dia-root .sort-toggle {
   background: #1c1c1c;
   border-color: #2e2e2e;
   color: #e8e8e8;

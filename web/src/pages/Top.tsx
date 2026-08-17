@@ -26,7 +26,7 @@ export default function Top({ db }: { db: Db }) {
           {db.singers.map((s) => (
             <li key={s.singer_id}>
               <Link
-                to={`/${s.singer_id}`}
+                to={`/${s.url_path}`}
                 className="singer-card"
                 style={{ '--card': s.color ?? 'var(--accent)' } as React.CSSProperties}
               >

@@ -19,6 +19,6 @@ export default function App() {
 
   if (path === '/') return <Top db={db} />
 
-  const singerId = path.split('/').filter(Boolean)[0]
-  return <Area db={db} singerId={singerId} />
+  const slug = path.split('/').filter(Boolean)[0]
+  return <Area db={db} path={slug} />
 }

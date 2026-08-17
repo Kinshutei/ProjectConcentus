@@ -9,8 +9,9 @@ import DiaArea from '../areas/dia/DiaArea'
  * 各シンガーの領域。デザインは領域ごとに持つ方針なので、
  * 実装済みのものは専用コンポーネントへ、未実装のものは暫定表示へ振り分ける。
  */
-export default function Area({ db, singerId }: { db: Db; singerId: string }) {
-  const singer = db.singers.find((s) => s.singer_id === singerId)
+export default function Area({ db, path }: { db: Db; path: string }) {
+  const singer = db.singers.find((s) => s.url_path === path)
+  const singerId = singer?.singer_id ?? ''
   const [perfs, setPerfs] = useState<Performance[] | null>(null)
   const [error, setError] = useState('')
 

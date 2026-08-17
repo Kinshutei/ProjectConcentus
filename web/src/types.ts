@@ -1,5 +1,7 @@
 export type Singer = {
   singer_id: string
+  /** 公開URLのパス。旧DBのリポジトリ名を引き継ぐ */
+  url_path: string
   name: string
   name_en: string
   channel_id: string

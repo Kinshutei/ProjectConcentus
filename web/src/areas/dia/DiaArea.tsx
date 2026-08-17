@@ -16,13 +16,12 @@ const VIDEOS = [
   { src: asset('dia_moviecard_04.mp4'), grayscale: true, rate: 0.6 },
 ]
 
-type Tab = 'streams' | 'songs' | 'about' | 'changelog'
+type Tab = 'streams' | 'songs' | 'about'
 
 const NAV_ITEMS: { tab: Tab; label: string }[] = [
   { tab: 'streams', label: 'LiveStreaming INFO' },
   { tab: 'songs', label: 'Sung Repertoire' },
   { tab: 'about', label: 'About' },
-  { tab: 'changelog', label: '更新履歴' },
 ]
 
 const FADE_BEFORE = 1.5
@@ -277,13 +276,12 @@ export default function DiaArea({
             </section>
           )}
 
-          {(tab === 'songs' || tab === 'changelog') && (
+          {tab === 'songs' && (
             <main className="content-area">
               <button className="back-btn" onClick={toHome}>
                 ← BACK TO HOME
               </button>
-              {tab === 'songs' && <Songs db={db} perfs={perfs} />}
-              {tab === 'changelog' && <Changelog />}
+              <Songs db={db} perfs={perfs} />
             </main>
           )}
         </div>
@@ -583,16 +581,6 @@ function About() {
   )
 }
 
-function Changelog() {
-  return (
-    <div className="about-body">
-      <h2 className="section-title">更新履歴</h2>
-      <p>統合データベース uta-waku archive へ移行しました。</p>
-    </div>
-  )
-}
-
-/* 現行サイトと同じ3つのグラフ。集計は歌唱データから作る。 */
 /* 現行サイトのグラフに相当する集計。Plotlyを使わず順位カードで出す。 */
 function Charts({
   stats,

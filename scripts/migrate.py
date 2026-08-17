@@ -30,40 +30,42 @@ RAW = "https://raw.githubusercontent.com/Kinshutei/{repo}/main/{path}"
 # --- 収録シンガー -------------------------------------------------------------
 # channel_id は RKMusic_AllSinger_PFR/channels_config.json と
 # natsuyo_no_kasenjiki/fetch_contents.py から取得した実値。
+# url_path は公開URLのパス。旧DBのリポジトリ名をそのまま引き継ぐ
+# （水瀬凪さんは旧DBが無いため暫定値）。
 # color はユーザー指定の仮値。夜紺のみ既存DBのテーマカラー実値を使用
 SINGERS = [
     {
-        "singer_id": "mikage", "name": "深影", "name_en": "Mikage",
+        "singer_id": "mikage", "url_path": "Mikage_HishatainoHeya", "name": "深影", "name_en": "Mikage",
         "channel_id": "UC2daHxnuJJBM5NWci1RRkeA", "affiliation": "RK Music",
         "color": "#1e3a5f",  # ネイビー
         "repo": "Mikage_HishatainoHeya", "path": "streaminginfo_Mikage.json",
     },
     {
-        "singer_id": "dia", "name": "Diα", "name_en": "Dia",
+        "singer_id": "dia", "url_path": "dia_sing_for_answers", "name": "Diα", "name_en": "Dia",
         "channel_id": "UC80TduEq6Sp4n2DkiUH2eLQ", "affiliation": "RK Music",
         "color": "#c1272d",  # 紅
         "repo": "dia_sing_for_answers", "path": "streaminginfo_Dia.json",
     },
     {
-        "singer_id": "wouca", "name": "wouca", "name_en": "wouca",
+        "singer_id": "wouca", "url_path": "unofficial_uwoter_no_oheya", "name": "wouca", "name_en": "wouca",
         "channel_id": "UC8TVZmQuOl0GNbpvThwwSdQ", "affiliation": "RK Music",
         "color": "#b8bec7",  # シルバー
         "repo": "unofficial_uwoter_no_oheya", "path": "streaminginfo_wouca.json",
     },
     {
-        "singer_id": "kisaki", "name": "妃玖", "name_en": "Kisaki",
+        "singer_id": "kisaki", "url_path": "Imomushi_Hanemushi_Teams", "name": "妃玖", "name_en": "Kisaki",
         "channel_id": "UCFBc8kuCtTwmtdsBcJoZ3qA", "affiliation": "RK Music",
         "color": "#3a9d5c",  # 緑
         "repo": "Imomushi_Hanemushi_Teams", "path": "streaming_info.json",
     },
     {
-        "singer_id": "nagi", "name": "水瀬凪", "name_en": "Minase Nagi",
+        "singer_id": "nagi", "url_path": "minase_nagi", "name": "水瀬凪", "name_en": "Minase Nagi",
         "channel_id": "UCAplyWK80Y6_YTkb3CCDk1Q", "affiliation": "RK Music",
         "color": "#7ec8e3",  # 水色
         "repo": None, "path": None,  # 既存データ無し。これから登録する
     },
     {
-        "singer_id": "yako", "name": "夜紺火花", "name_en": "Yakon Hibana",
+        "singer_id": "yako", "url_path": "natsuyo_no_kasenjiki", "name": "夜紺火花", "name_en": "Yakon Hibana",
         "channel_id": "UCgKjo_iSJpFmXQypArDztYA", "affiliation": None,
         "color": "#16203a",  # 夜紺。natsuyo_no_kasenjiki のテーマカラー実値
         "repo": "natsuyo_no_kasenjiki", "path": "streaminginfo_Yako.json",
@@ -463,7 +465,7 @@ def main() -> None:
 
     singers_out = [
         {k: s[k] for k in
-         ("singer_id", "name", "name_en", "channel_id", "affiliation", "color")}
+         ("singer_id", "url_path", "name", "name_en", "channel_id", "affiliation", "color")}
         | {"active": True}
         for s in SINGERS
     ]

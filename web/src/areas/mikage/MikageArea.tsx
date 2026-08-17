@@ -7,7 +7,7 @@ import YearPicker from '../../components/YearPicker'
 import { LANGS, storedLang, translator } from './i18n'
 import './mikage.css'
 
-type Tab = 'streams' | 'songs' | 'about' | 'changelog'
+type Tab = 'streams' | 'songs' | 'about'
 type T = ReturnType<typeof translator>
 
 const BG = `${import.meta.env.BASE_URL}mikage/background_0.png`
@@ -99,7 +99,7 @@ export default function MikageArea({
           <span>NU</span>
         </button>
         <nav className="sidebar-nav">
-          {(['streams', 'songs', 'about', 'changelog'] as Tab[]).map((key) => (
+          {(['streams', 'songs', 'about'] as Tab[]).map((key) => (
             <button
               key={key}
               className={`sidebar-nav-btn${tab === key ? ' active' : ''}`}
@@ -119,7 +119,6 @@ export default function MikageArea({
           {tab === 'streams' && <Streams db={db} frames={frames} rowsByFrame={rowsByFrame} t={t} />}
           {tab === 'songs' && <Songs db={db} perfs={perfs} t={t} />}
           {tab === 'about' && <About t={t} />}
-          {tab === 'changelog' && <Changelog t={t} />}
         </div>
         <Footer />
       </div>
@@ -427,7 +426,7 @@ function Songs({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
   )
 }
 
-/* ─────────────────────────────────────────── About / Changelog */
+/* ─────────────────────────────────────────── About */
 
 function About({ t }: { t: T }) {
   return (
@@ -439,17 +438,6 @@ function About({ t }: { t: T }) {
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.9 }}>
         データは <code>uta-waku archive</code> の統合データベースから読み込んでいます。
-      </p>
-    </div>
-  )
-}
-
-function Changelog({ t }: { t: T }) {
-  return (
-    <div style={{ paddingTop: 35, maxWidth: 760 }}>
-      <h3>{t('tab.changelog')}</h3>
-      <p style={{ fontSize: 15, lineHeight: 1.9 }}>
-        統合データベース <code>uta-waku archive</code> へ移行しました。
       </p>
     </div>
   )

@@ -1,0 +1,427 @@
+/* 深影の領域。現行サイトの配色（生成り＋青緑）をそのまま踏襲する。 */
+.mikage {
+  --mk-bg: #f2ede4;
+  --mk-panel: #f7f3ec;
+  --mk-line: #d8cfc4;
+  --mk-text: #2a2a2a;
+  --mk-muted: #6d6d6d;
+  --mk-accent: #3a7a7b;
+  --mk-accent-soft: #acd0d1;
+  --mk-gold: #d4a843;
+
+  min-height: 100vh;
+  background: var(--mk-bg);
+  color: var(--mk-text);
+}
+
+.mk-head {
+  border-bottom: 1px solid var(--mk-line);
+  background: var(--mk-panel);
+}
+
+.mk-head-inner,
+.mk-tabs-inner,
+.mk-main,
+.mk-foot {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.mk-head-inner {
+  padding-top: 26px;
+  padding-bottom: 22px;
+}
+
+.mk-crumb {
+  margin: 0;
+  font-size: 12px;
+  color: var(--mk-muted);
+}
+
+.mk-crumb a:hover {
+  color: var(--mk-accent);
+}
+
+.mk-head h1 {
+  margin: 6px 0 0;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+}
+
+.mk-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--mk-muted);
+}
+
+.mk-tabs {
+  border-bottom: 1px solid var(--mk-line);
+  background: var(--mk-panel);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.mk-tabs-inner {
+  display: flex;
+  gap: 4px;
+}
+
+.mk-tabs button {
+  border: none;
+  background: none;
+  padding: 12px 18px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--mk-muted);
+  cursor: pointer;
+}
+
+.mk-tabs button.on {
+  color: var(--mk-accent);
+  box-shadow: inset 0 -2px 0 var(--mk-accent);
+  font-weight: 600;
+}
+
+.mk-main {
+  padding-top: 26px;
+  padding-bottom: 60px;
+}
+
+.mk-h2 {
+  font-size: 15px;
+  margin: 30px 0 12px;
+  color: var(--mk-accent);
+  letter-spacing: 0.04em;
+}
+
+.mk-h2:first-child {
+  margin-top: 0;
+}
+
+/* ツールバー */
+.mk-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.mk-search {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.mk-search--wide {
+  max-width: 420px;
+  margin-bottom: 12px;
+}
+
+.mk-search span[aria-hidden] {
+  position: absolute;
+  left: 11px;
+  font-size: 13px;
+  color: var(--mk-muted);
+  pointer-events: none;
+}
+
+.mk-search input {
+  width: 100%;
+  padding: 7px 34px;
+  border: 1px solid var(--mk-line);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--mk-text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.mk-search input:focus {
+  border-color: var(--mk-accent-soft);
+  box-shadow: 0 0 0 2px rgba(138, 184, 185, 0.3);
+}
+
+.mk-search-clear {
+  position: absolute;
+  right: 10px;
+  border: none;
+  background: none;
+  color: var(--mk-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+}
+
+.mk-btn {
+  border: 1px solid var(--mk-line);
+  background: #fff;
+  border-radius: 16px;
+  padding: 5px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--mk-muted);
+  cursor: pointer;
+}
+
+.mk-btn:hover {
+  border-color: var(--mk-accent-soft);
+  color: var(--mk-accent);
+}
+
+.mk-hits,
+.mk-empty {
+  font-size: 13px;
+  color: var(--mk-muted);
+}
+
+/* 枠のアコーディオン */
+.mk-expanders {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mk-exp {
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  background: var(--mk-panel);
+  overflow: hidden;
+}
+
+.mk-exp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  flex-wrap: wrap;
+}
+
+.mk-exp-head:hover {
+  background: #efe9e0;
+}
+
+.mk-exp-mark {
+  color: var(--mk-accent);
+  font-size: 12px;
+}
+
+.mk-exp-date {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--mk-muted);
+}
+
+.mk-exp-title {
+  flex: 1;
+  min-width: 200px;
+}
+
+.mk-exp-tags {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.mk-tag {
+  display: inline-block;
+  border: 1px solid var(--mk-accent-soft);
+  color: var(--mk-accent);
+  border-radius: 9px;
+  padding: 0 7px;
+  font-size: 11px;
+  line-height: 17px;
+  white-space: nowrap;
+}
+
+.mk-exp-body {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 16px;
+  padding: 4px 14px 16px;
+  border-top: 1px solid var(--mk-line);
+}
+
+.mk-exp-thumb img {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.mk-exp-link {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--mk-accent);
+}
+
+.mk-exp-link:hover {
+  text-decoration: underline;
+}
+
+/* テーブル */
+.mk-table-wrap {
+  overflow-x: auto;
+}
+
+.mk-setlist,
+.mk-songs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mk-setlist th,
+.mk-songs-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--mk-muted);
+  border-bottom: 1px solid var(--mk-line);
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+.mk-setlist td,
+.mk-songs-table td {
+  border-bottom: 1px solid rgba(216, 207, 196, 0.55);
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+.mk-setlist tr.hit {
+  background: rgba(172, 208, 209, 0.18);
+}
+
+.mk-hit-text {
+  color: var(--mk-accent);
+  font-weight: 600;
+}
+
+.mk-no {
+  font-family: var(--mono);
+  color: var(--mk-muted);
+  white-space: nowrap;
+}
+
+.mk-cell-note,
+.mk-cell-artist {
+  color: var(--mk-muted);
+  font-size: 12px;
+}
+
+.mk-cell-tags {
+  white-space: nowrap;
+}
+
+.mk-first {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mk-gold);
+  border: 1px solid var(--mk-gold);
+  border-radius: 3px;
+  padding: 0 4px;
+  letter-spacing: 0.05em;
+}
+
+.mk-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.mk-sort-mark {
+  margin-left: 4px;
+  color: var(--mk-accent-soft);
+}
+
+/* 上位20の棒 */
+.mk-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mk-bars li {
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) 1fr 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.mk-bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mk-bar-track {
+  background: rgba(172, 208, 209, 0.25);
+  border-radius: 3px;
+  height: 12px;
+}
+
+.mk-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--mk-accent-soft);
+}
+
+.mk-bar-count {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--mk-muted);
+  text-align: right;
+}
+
+/* About */
+.mk-about p {
+  max-width: 60ch;
+  font-size: 14px;
+}
+
+.mk-links {
+  padding-left: 1.2em;
+  font-size: 14px;
+}
+
+.mk-links a {
+  color: var(--mk-accent);
+}
+
+.mk-links a:hover {
+  text-decoration: underline;
+}
+
+/* フッター */
+.mk-foot {
+  border-top: 1px solid var(--mk-line);
+  padding-top: 20px;
+  padding-bottom: 40px;
+  font-size: 12px;
+  color: var(--mk-muted);
+}
+
+@media (max-width: 720px) {
+  .mk-exp-body {
+    grid-template-columns: 1fr;
+  }
+}

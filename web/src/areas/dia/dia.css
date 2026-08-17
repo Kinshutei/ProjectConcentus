@@ -866,3 +866,10 @@
 .dia-root .songs-table thead th {
   background: #1a1a1a;
 }
+
+/* 並べ替えの選択肢は暗色の背景に合わせる */
+.dia-root .sort-select {
+  background: #1c1c1c;
+  border-color: #2e2e2e;
+  color: #e8e8e8;
+}

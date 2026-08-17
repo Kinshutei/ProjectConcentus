@@ -40,7 +40,7 @@
     "colArrange": "Arranger",
     "colRelease": "Release Date",
     "colCount": "Times Sung",
-    "rankingTitle": "Most Sung Songs",
+    "rankingTitle": "Play Count",
     "reset": "Reset",
     "releaseDate": "Release",
     "showMore": "Show more (+50)　{{count}} remaining",

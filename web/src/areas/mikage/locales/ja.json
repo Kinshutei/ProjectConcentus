@@ -40,7 +40,7 @@
     "colArrange": "編曲",
     "colRelease": "リリース日",
     "colCount": "歌唱回数",
-    "rankingTitle": "歌唱回数ランキング",
+    "rankingTitle": "歌唱回数",
     "reset": "リセット",
     "releaseDate": "リリース日",
     "showMore": "さらに表示（50曲分表示を追加）　あと{{count}}曲",

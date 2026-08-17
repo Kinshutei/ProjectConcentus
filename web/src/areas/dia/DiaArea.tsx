@@ -563,7 +563,7 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
 
       <Charts
         stats={filtered}
-        titles={{ ranking: 'よく歌われている曲', year: 'リリース年の分布', artist: 'アーティスト別' }}
+        titles={{ ranking: '歌唱回数', year: 'リリース年の分布', artist: 'アーティスト別' }}
       />
     </div>
   )
@@ -600,17 +600,17 @@ function Charts({
   stats: { song: Song; count: number }[]
   titles: { ranking: string; year: string; artist: string }
 }) {
-  const ranking: RankItem[] = [...stats]
-    .sort((a, b) => b.count - a.count || a.song.title.localeCompare(b.song.title, 'ja'))
-    .map((s, i) => ({
-      key: s.song.song_id,
-      rank: i + 1,
-      title: s.song.title,
-      sub: s.song.artist,
-      meta: songMeta(s.song),
-      value: s.count,
-      unit: '回',
-    }))
+  const [sort, setSort] = useState<SongSort>('count-desc')
+
+  const ranking: RankItem[] = sortSongs(stats, sort).map((s, i) => ({
+    key: s.song.song_id,
+    rank: i + 1,
+    title: s.song.title,
+    sub: s.song.artist,
+    meta: songMeta(s.song),
+    value: s.count,
+    unit: '回',
+  }))
 
   const yearMap = new Map<string, number>()
   for (const s of stats) {
@@ -648,7 +648,10 @@ function Charts({
 
   return (
     <>
-      <h3 style={{ margin: '24px 0 8px' }}>{titles.ranking}</h3>
+      <div className="section-head">
+        <h3 style={{ margin: 0 }}>{titles.ranking}</h3>
+        <SortSelect value={sort} onChange={setSort} />
+      </div>
       <RankCards items={ranking} paged />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
@@ -671,4 +674,46 @@ function songMeta(song: Song): string {
   ].filter(Boolean)
   if (song.released) parts.push(song.released)
   return parts.join('　')
+}
+
+type SongSort = 'count-desc' | 'count-asc' | 'released-desc' | 'released-asc'
+
+const SORT_LABELS: { value: SongSort; label: string }[] = [
+  { value: 'count-desc', label: '回数が多い順' },
+  { value: 'count-asc', label: '回数が少ない順' },
+  { value: 'released-desc', label: 'リリースが新しい順' },
+  { value: 'released-asc', label: 'リリースが古い順' },
+]
+
+/** リリース日が空の曲は、どちらの向きでも末尾へ送る */
+function sortSongs(stats: { song: Song; count: number }[], sort: SongSort) {
+  const byTitle = (a: { song: Song }, b: { song: Song }) =>
+    a.song.title.localeCompare(b.song.title, 'ja')
+  return [...stats].sort((a, b) => {
+    if (sort === 'count-desc') return b.count - a.count || byTitle(a, b)
+    if (sort === 'count-asc') return a.count - b.count || byTitle(a, b)
+    const ra = a.song.released || ''
+    const rb = b.song.released || ''
+    if (!ra && !rb) return byTitle(a, b)
+    if (!ra) return 1
+    if (!rb) return -1
+    return (sort === 'released-desc' ? rb.localeCompare(ra) : ra.localeCompare(rb)) || byTitle(a, b)
+  })
+}
+
+function SortSelect({ value, onChange }: { value: SongSort; onChange: (v: SongSort) => void }) {
+  return (
+    <select
+      className="sort-select"
+      value={value}
+      onChange={(e) => onChange(e.target.value as SongSort)}
+      aria-label="並べ替え"
+    >
+      {SORT_LABELS.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  )
 }

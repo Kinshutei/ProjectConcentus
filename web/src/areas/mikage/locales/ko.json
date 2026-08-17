@@ -40,7 +40,7 @@
     "colArrange": "편곡",
     "colRelease": "발매일",
     "colCount": "노래 횟수",
-    "rankingTitle": "가창 횟수 랭킹",
+    "rankingTitle": "가창 횟수",
     "reset": "리셋",
     "releaseDate": "발매일",
     "showMore": "더 보기（+50）　나머지 {{count}}곡",

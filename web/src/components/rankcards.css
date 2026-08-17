@@ -50,6 +50,12 @@
   border-color: var(--rc-accent);
 }
 
+/* 累計で上位50%に入る範囲。色は領域ごとに --rc-hl で差し替える */
+.rank-card--hl {
+  background: var(--rc-hl, rgba(255, 255, 255, 0.1));
+  border-color: var(--rc-hl-line, var(--rc-line));
+}
+
 .rank-card--top .rank-card__no {
   color: var(--rc-accent);
   font-weight: 700;
@@ -204,4 +210,22 @@
 .sort-toggle__mark {
   opacity: 0.6;
   font-size: 11px;
+}
+
+/* ハイライトの凡例 */
+.hl-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.hl-note::before {
+  content: '';
+  width: 22px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--rc-hl, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--rc-hl-line, var(--rc-line));
 }

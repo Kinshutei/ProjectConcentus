@@ -961,3 +961,9 @@
   height: calc(100vh - var(--mk-bar-h));
   z-index: 150;
 }
+
+/* 上位50%のハイライト。青緑を淡く敷く */
+.mikage-root .rank-grid {
+  --rc-hl: rgba(172, 208, 209, 0.28);
+  --rc-hl-line: #8ab8b9;
+}

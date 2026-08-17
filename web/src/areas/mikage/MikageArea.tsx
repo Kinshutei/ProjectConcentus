@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Db, Frame, Performance, Song } from '../../types'
 import { hms, jstDate, watchUrl } from '../../data'
 import { Link } from '../../router'
-import RankCards, { type RankItem } from '../../components/RankCards'
+import RankCards, { markTopHalf, type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Reveal'
 import { SearchIcon } from '../../components/icons'
@@ -673,13 +673,15 @@ function Repertoire({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
 
         <div className="section-head">
           <h3 style={{ margin: 0 }}>{t('songs.yearTitle')}</h3>
+          <span className="hl-note">上位50%</span>
         </div>
-        <RankCards items={years} paged columns={3} rows={10} />
+        <RankCards items={markTopHalf(years)} paged columns={3} rows={10} />
 
         <div className="section-head">
           <h3 style={{ margin: 0 }}>{t('songs.artistTitle')}</h3>
+          <span className="hl-note">上位50%</span>
         </div>
-        <RankCards items={artists} paged columns={3} rows={10} />
+        <RankCards items={markTopHalf(artists)} paged columns={3} rows={10} />
       </div>
     </section>
   )

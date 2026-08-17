@@ -5,7 +5,7 @@ import { Link } from '../../router'
 import TerminalMessage from './TerminalMessage'
 import { SearchIcon } from '../../components/icons'
 import AboutText from '../../components/AboutText'
-import RankCards, { type RankItem } from '../../components/RankCards'
+import RankCards, { markTopHalf, type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import './dia.css'
 
@@ -665,10 +665,10 @@ function Charts({
       <RankCards items={ranking} paged />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
-      <RankCards items={years} paged columns={3} rows={10} />
+      <RankCards items={markTopHalf(years)} paged columns={3} rows={10} />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.artist}</h3>
-      <RankCards items={artists} paged columns={3} rows={10} />
+      <RankCards items={markTopHalf(artists)} paged columns={3} rows={10} />
     </>
   )
 }

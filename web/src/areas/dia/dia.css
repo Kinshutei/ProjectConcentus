@@ -885,3 +885,9 @@
   background: #1c1c1c;
   border-color: #2e2e2e;
 }
+
+/* 上位50%のハイライト。紅を淡く敷く */
+.dia-root .rank-grid {
+  --rc-hl: rgba(179, 46, 70, 0.18);
+  --rc-hl-line: #b32e46;
+}

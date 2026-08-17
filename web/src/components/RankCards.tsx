@@ -16,6 +16,25 @@ export type RankItem = {
   unit: string
   /** 全体に占める割合。指定すると値の右に % を出す */
   ratio?: number
+  /** 累計で上位50%に入るもの。背景を淡く敷いて範囲を示す */
+  highlight?: boolean
+}
+
+/**
+ * 値の大きい順に足していき、合計の半分に達するまでを highlight にする。
+ * 「どこまでで半分を占めるのか」を一目で分かるようにするための印。
+ */
+export function markTopHalf(items: RankItem[]): RankItem[] {
+  const total = items.reduce((sum, i) => sum + i.value, 0)
+  if (total <= 0) return items
+  let acc = 0
+  let reached = false
+  return items.map((item) => {
+    if (reached) return item
+    acc += item.value
+    if (acc >= total / 2) reached = true
+    return { ...item, highlight: true }
+  })
 }
 
 
@@ -83,7 +102,11 @@ export default function RankCards({
         {shown.map((item) => (
           <div
             key={item.key}
-            className={`rank-card${item.rank !== undefined && item.rank <= 3 ? ' rank-card--top' : ''}`}
+            className={
+              'rank-card' +
+              (item.rank !== undefined && item.rank <= 3 ? ' rank-card--top' : '') +
+              (item.highlight ? ' rank-card--hl' : '')
+            }
           >
             {item.rank !== undefined && <span className="rank-card__no">{item.rank}</span>}
             <div className="rank-card__body">

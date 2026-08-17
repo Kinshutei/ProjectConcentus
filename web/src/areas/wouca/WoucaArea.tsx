@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ContentVideo, Contents, Db, Frame, Performance, Song } from '../../types'
 import { hms, jstDate, loadContents, watchUrl } from '../../data'
 import { Link } from '../../router'
-import RankCards, { markTopHalf, type RankItem } from '../../components/RankCards'
+import RankCards, { HighlightNote, markTopHalf, type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import AboutText from '../../components/AboutText'
 import { SearchIcon } from '../../components/icons'
@@ -715,13 +715,13 @@ function Repertoire({ db, perfs }: { db: Db; perfs: Performance[] }) {
 
       <div className="section-head">
         <h3 style={{ margin: 0 }}>リリース年の分布</h3>
-        <span className="hl-note">上位50%</span>
+        <HighlightNote />
       </div>
       <RankCards items={markTopHalf(years)} paged columns={3} rows={10} />
 
       <div className="section-head">
         <h3 style={{ margin: 0 }}>原曲アーティスト分布</h3>
-        <span className="hl-note">上位50%</span>
+        <HighlightNote />
       </div>
       <RankCards items={markTopHalf(artists)} paged columns={3} rows={10} />
     </div>

@@ -68,6 +68,16 @@ function Pager({ page, total, onChange }: { page: number; total: number; onChang
   )
 }
 
+/** ハイライトの凡例。色見本は薄めず、文字だけ落とす */
+export function HighlightNote({ label = '上位50%' }: { label?: string }) {
+  return (
+    <span className="hl-note">
+      <span className="hl-note__swatch" aria-hidden="true" />
+      <span className="hl-note__text">{label}</span>
+    </span>
+  )
+}
+
 /**
  * 順位つきのカード一覧。10件を超えるものはページ送りにする。
  * Plotly を使うと 1.4MB(gzip) 増えるため、集計表示はこちらで賄う。

@@ -711,7 +711,7 @@ function Repertoire({ db, perfs }: { db: Db; perfs: Performance[] }) {
         <SortToggle value={sort} onChange={setSort} />
         <YearPicker years={pickableYears} value={year} onChange={setYear} />
       </div>
-      <RankCards items={ranking} paged columns={2} rows={10} />
+      <RankCards items={ranking} columns={2} rows={5} />
 
       <div className="section-head">
         <h3 style={{ margin: 0 }}>リリース年の分布</h3>

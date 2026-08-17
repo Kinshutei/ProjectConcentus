@@ -517,11 +517,8 @@ function Expander({
   )
 }
 
-type SortKey = 'title' | 'artist' | 'released' | 'count'
-
 function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
-  const [sortKey, setSortKey] = useState<SortKey>('count')
-  const [desc, setDesc] = useState(true)
+  const [query, setQuery] = useState('')
 
   const stats = useMemo(() => {
     const counts = new Map<string, number>()
@@ -531,57 +528,43 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
       const song = db.songById.get(id)
       if (song) list.push({ song, count })
     }
-    const dir = desc ? -1 : 1
-    return list.sort((a, b) =>
-      sortKey === 'count'
-        ? (a.count - b.count) * dir
-        : String(a.song[sortKey] ?? '').localeCompare(String(b.song[sortKey] ?? ''), 'ja') * dir,
-    )
-  }, [perfs, db, sortKey, desc])
+    return list
+  }, [perfs, db])
 
-  const th = (key: SortKey, label: string) => (
-    <th
-      onClick={() => {
-        if (sortKey === key) setDesc((d) => !d)
-        else {
-          setSortKey(key)
-          setDesc(key === 'count')
-        }
-      }}
-      style={{ cursor: 'pointer' }}
-    >
-      {label} {sortKey === key ? (desc ? '▼' : '▲') : '⇅'}
-    </th>
-  )
+  const q = query.trim().toLowerCase()
+  const filtered = q
+    ? stats.filter(
+        (s) => s.song.title.toLowerCase().includes(q) || s.song.artist.toLowerCase().includes(q),
+      )
+    : stats
 
   return (
     <div>
-      <Charts stats={stats}
-        titles={{ ranking: 'よく歌われている曲 TOP20', year: 'リリース年の分布', artist: 'アーティスト別' }}
-      />
-      <h2 className="section-title">Sung Repertoire — {stats.length}</h2>
-      <div className="songs-table-wrap">
-        <table className="songs-table">
-        <thead>
-          <tr>
-            {th('title', '曲名')}
-            {th('artist', 'アーティスト')}
-            {th('released', 'リリース')}
-            {th('count', '歌唱回数')}
-          </tr>
-        </thead>
-        <tbody>
-          {stats.map((s) => (
-            <tr key={s.song.song_id}>
-              <td>{s.song.title}</td>
-              <td>{s.song.artist}</td>
-              <td>{s.song.released}</td>
-              <td>{s.count}</td>
-            </tr>
-          ))}
-        </tbody>
-        </table>
+      <h2 className="section-title">Sung Repertoire &mdash; {stats.length}</h2>
+      <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: 360, marginBottom: 16 }}>
+        <span style={{ position: 'absolute', left: 10, color: '#606060', fontSize: 14, pointerEvents: 'none' }}>&#128269;</span>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="曲名・アーティストで絞り込み"
+          style={{
+            width: '100%',
+            padding: '7px 36px 7px 32px',
+            borderRadius: 20,
+            fontFamily: 'inherit',
+            fontSize: 15,
+            outline: 'none',
+            background: '#1c1c1c',
+            color: '#e8e8e8',
+            border: q ? '1px solid #b32e46' : '1px solid #2e2e2e',
+          }}
+        />
       </div>
+
+      <Charts
+        stats={filtered}
+        titles={{ ranking: 'よく歌われている曲', year: 'リリース年の分布', artist: 'アーティスト別' }}
+      />
     </div>
   )
 }
@@ -624,6 +607,7 @@ function Charts({
       rank: i + 1,
       title: s.song.title,
       sub: s.song.artist,
+      meta: songMeta(s.song),
       value: s.count,
       unit: '回',
     }))
@@ -674,4 +658,17 @@ function Charts({
       <RankCards items={artists} paged />
     </>
   )
+}
+
+/** カード3行目の補足。作詞・作曲・編曲とリリース日をまとめる */
+function songMeta(song: Song): string {
+  const credit = (label: string, names: string[]) =>
+    names.length ? `${label} ${names.join(' / ')}` : ''
+  const parts = [
+    credit('作詞', song.lyricists),
+    credit('作曲', song.composers),
+    credit('編曲', song.arrangers),
+  ].filter(Boolean)
+  if (song.released) parts.push(song.released)
+  return parts.join('　')
 }

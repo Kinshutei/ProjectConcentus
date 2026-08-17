@@ -7,9 +7,11 @@ export type RankItem = {
   rank?: number
   title: string
   sub?: string
+  /** 3行目に出す補足。作詞・作曲・編曲やリリース日など */
+  meta?: string
   value: number
   unit: string
-  /** 全体に占める割合。指定すると値の下に % を出す */
+  /** 全体に占める割合。指定すると値の右に % を出す */
   ratio?: number
 }
 
@@ -78,6 +80,7 @@ export default function RankCards({
             <div className="rank-card__body">
               <div className="rank-card__title">{item.title}</div>
               {item.sub && <div className="rank-card__sub">{item.sub}</div>}
+              {item.meta && <div className="rank-card__meta">{item.meta}</div>}
             </div>
             <div className="rank-card__value">
               <strong>{item.value}</strong>

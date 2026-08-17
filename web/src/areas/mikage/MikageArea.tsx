@@ -381,17 +381,13 @@ function Expander({
 
 /* ─────────────────────────────────────────── 楽曲 */
 
-type Stat = { song: Song; count: number }
-type SortKey = 'title' | 'artist' | 'released' | 'count'
-
 function Songs({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
-  const [sortKey, setSortKey] = useState<SortKey>('count')
-  const [desc, setDesc] = useState(true)
+  const [query, setQuery] = useState('')
 
   const stats = useMemo(() => {
     const counts = new Map<string, number>()
     for (const p of perfs) counts.set(p.song_id, (counts.get(p.song_id) ?? 0) + 1)
-    const list: Stat[] = []
+    const list: { song: Song; count: number }[] = []
     for (const [id, count] of counts) {
       const song = db.songById.get(id)
       if (song) list.push({ song, count })
@@ -399,73 +395,33 @@ function Songs({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
     return list
   }, [perfs, db])
 
-  const sorted = useMemo(() => {
-    const dir = desc ? -1 : 1
-    return [...stats].sort((a, b) => {
-      if (sortKey === 'count') return (a.count - b.count) * dir
-      return String(a.song[sortKey] ?? '').localeCompare(String(b.song[sortKey] ?? ''), 'ja') * dir
-    })
-  }, [stats, sortKey, desc])
-
-
-  const th = (key: SortKey, label: string) => (
-    <th
-      onClick={() => {
-        if (sortKey === key) setDesc((d) => !d)
-        else {
-          setSortKey(key)
-          setDesc(key === 'count')
-        }
-      }}
-      style={{ cursor: 'pointer' }}
-    >
-      {label}
-      <span style={{ marginLeft: 4, color: sortKey === key ? '#3a7a7b' : '#acd0d1' }}>
-        {sortKey === key ? (desc ? '▼' : '▲') : '⇅'}
-      </span>
-    </th>
-  )
+  const q = query.trim().toLowerCase()
+  const filtered = q
+    ? stats.filter(
+        (s) => s.song.title.toLowerCase().includes(q) || s.song.artist.toLowerCase().includes(q),
+      )
+    : stats
 
   return (
     <div style={{ paddingTop: 35 }}>
+      <div className="mk-search mk-search--wide">
+        <span aria-hidden>&#128269;</span>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="曲名・アーティストで絞り込み"
+          className={q ? 'searching' : ''}
+        />
+      </div>
+
       <Charts
-        stats={stats}
+        stats={filtered}
         titles={{
           ranking: t('songs.rankingTitle'),
           year: t('songs.yearTitle'),
           artist: t('songs.artistTitle'),
         }}
       />
-
-      <h3 style={{ marginTop: 28 }}>全楽曲（{stats.length}）</h3>
-      <div className="songs-table-wrap">
-        <table className="songs-table">
-          <thead>
-            <tr>
-              {th('title', t('songs.colSong'))}
-              {th('artist', t('songs.colArtist'))}
-              <th>{t('songs.colLyrics')}</th>
-              <th>{t('songs.colCompose')}</th>
-              <th>{t('songs.colArrange')}</th>
-              {th('released', t('songs.colRelease'))}
-              {th('count', t('songs.colCount'))}
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((s) => (
-              <tr key={s.song.song_id}>
-                <td>{s.song.title}</td>
-                <td>{s.song.artist}</td>
-                <td>{s.song.lyricists.join(' / ')}</td>
-                <td>{s.song.composers.join(' / ')}</td>
-                <td>{s.song.arrangers.join(' / ')}</td>
-                <td>{s.song.released}</td>
-                <td style={{ textAlign: 'center' }}>{s.count}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   )
 }
@@ -587,6 +543,7 @@ function Charts({
       rank: i + 1,
       title: s.song.title,
       sub: s.song.artist,
+      meta: songMeta(s.song),
       value: s.count,
       unit: '回',
     }))
@@ -637,4 +594,17 @@ function Charts({
       <RankCards items={artists} paged />
     </>
   )
+}
+
+/** カード3行目の補足。作詞・作曲・編曲とリリース日をまとめる */
+function songMeta(song: Song): string {
+  const credit = (label: string, names: string[]) =>
+    names.length ? `${label} ${names.join(' / ')}` : ''
+  const parts = [
+    credit('作詞', song.lyricists),
+    credit('作曲', song.composers),
+    credit('編曲', song.arrangers),
+  ].filter(Boolean)
+  if (song.released) parts.push(song.released)
+  return parts.join('　')
 }

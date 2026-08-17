@@ -1,0 +1,185 @@
+/* 縦スクロール構成の共通土台。配色は領域側の変数を使う。
+   夜紺火花DBと同じ「性質の違うブロックを縦に積む」形にするためのもの。 */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── ヒーロー ── */
+.hero {
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero__inner {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero__unofficial {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  opacity: 0.55;
+}
+
+.hero__name {
+  margin: 18px 0 0;
+  font-size: clamp(44px, 10vw, 96px);
+  line-height: 1.02;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.hero__romaji {
+  margin: 10px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.42em;
+  opacity: 0.5;
+}
+
+.hero__lead {
+  margin: 26px 0 0;
+  font-size: 14px;
+  opacity: 0.75;
+  max-width: 46ch;
+  line-height: 2;
+}
+
+.hero__scroll {
+  margin: 46px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  opacity: 0.45;
+}
+
+.hero__scroll::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 40px;
+  margin-top: 8px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+/* ── セクション ── */
+.section {
+  padding: 72px 0;
+}
+
+.section__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section__head {
+  margin-bottom: 26px;
+}
+
+.section__title {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+
+.section__sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.55;
+  letter-spacing: 0.06em;
+}
+
+/* ── 数値 ── */
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px;
+}
+
+.number__value {
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.number__value em {
+  font-style: normal;
+  font-size: 13px;
+  margin-left: 4px;
+  opacity: 0.6;
+}
+
+.number__label {
+  margin-top: 2px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  opacity: 0.5;
+}
+
+/* ── リンク ── */
+.link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.link-list a {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--rc-line, rgba(255, 255, 255, 0.15));
+  border-radius: 8px;
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+
+.link-list a:hover {
+  border-color: var(--rc-accent, currentColor);
+}
+
+.link-list small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+/* ── 最下部の注記 ── */
+.site-note {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+  font-size: 11px;
+  opacity: 0.5;
+  line-height: 1.9;
+}
+
+.site-note strong {
+  display: block;
+  letter-spacing: 0.16em;
+  margin-bottom: 4px;
+}

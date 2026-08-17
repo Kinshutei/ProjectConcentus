@@ -18,8 +18,6 @@ const VIDEOS = [
 const FADE_BEFORE = 1.2
 const CONTACT = 'https://x.com/WL_GE_inn'
 
-type Tab = 'streams' | 'songs' | null
-
 type Row = { no: number; song: Song | undefined; perf: Performance; isFirst: boolean }
 
 /** サムネイルを押すまで iframe を作らない。一覧を軽く保つため */
@@ -66,7 +64,6 @@ export default function WoucaArea({
   frames: Frame[]
   perfs: Performance[]
 }) {
-  const [tab, setTab] = useState<Tab>(null)
   const [aboutOpen, setAboutOpen] = useState(false)
   const [contents, setContents] = useState<Contents>({
     pickup: [],
@@ -203,15 +200,26 @@ export default function WoucaArea({
     return map
   }, [db, frames, perfs])
 
-  const openTab = (next: Tab) => {
-    setTab(next)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  /** 節の先頭が固定ヘッダーの真下に来るよう止める */
+  const jumpTo = (id: string) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    const header = document.querySelector('.wouca-root .site-header')
+    const headerH = header ? header.getBoundingClientRect().height : 0
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY - headerH,
+      behavior: 'smooth',
+    })
   }
 
   return (
     <div className="wouca-root">
       <header className="site-header">
-        <div className="header-logo" onClick={() => openTab(null)} style={{ cursor: 'pointer' }}>
+        <div
+          className="header-logo"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="logo-img" style={{ backgroundImage: `url(${LOGO})` }} />
         </div>
         <nav className="header-nav">
@@ -230,8 +238,7 @@ export default function WoucaArea({
         </nav>
       </header>
 
-      {tab === null && (
-        <>
+      <>
           <section
             className="hero-section"
             onMouseMove={(e) => {
@@ -260,10 +267,10 @@ export default function WoucaArea({
               <p className="filter-sub">We love wouca / everybody&apos;s crazy about her</p>
             </div>
             <div className="filter-right">
-              <button className="filter-item" onClick={() => openTab('streams')}>
+              <button className="filter-item" onClick={() => jumpTo('streams')}>
                 <span className="filter-item-name">LiveStreaming Info</span>
               </button>
-              <button className="filter-item" onClick={() => openTab('songs')}>
+              <button className="filter-item" onClick={() => jumpTo('songs')}>
                 <span className="filter-item-name">Sung Repertoire</span>
               </button>
             </div>
@@ -278,21 +285,17 @@ export default function WoucaArea({
             <hr className="contents-divider" />
             <ContentGrid title="LiveStreaming" videos={contents.livestreaming} />
           </section>
-        </>
-      )}
 
-      {tab !== null && (
-        <main className="main-content">
-          <button className="close-tab-btn" onClick={() => openTab(null)}>
-            <span className="close-default">
-              {tab === 'songs' ? '× CLOSE SONG REPERTOIRE' : '× CLOSE LIVESTREAMING'}
-            </span>
-            <span className="close-hover">&gt;&gt;&gt; BACK TO HOME</span>
-          </button>
-          {tab === 'streams' && <Streams db={db} frames={frames} rowsByFrame={rowsByFrame} />}
-          {tab === 'songs' && <Repertoire db={db} perfs={perfs} />}
-        </main>
-      )}
+          <section className="main-content wc-section" id="streams">
+            <h2 className="contents-heading">LiveStreaming Info</h2>
+            <Streams db={db} frames={frames} rowsByFrame={rowsByFrame} />
+          </section>
+
+          <section className="main-content wc-section" id="songs">
+            <h2 className="contents-heading">Sung Repertoire</h2>
+            <Repertoire db={db} perfs={perfs} />
+          </section>
+      </>
 
       {aboutOpen && (
         <div className="modal-overlay" onClick={() => setAboutOpen(false)}>

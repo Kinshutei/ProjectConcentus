@@ -1107,3 +1107,14 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* 1ページ構成にしたぶんの節。コンテンツ欄と同じ間隔で積む */
+.wouca-root .wc-section {
+  scroll-margin-top: var(--header-h);
+  padding-top: 8px;
+  padding-bottom: 56px;
+}
+
+.wouca-root .wc-section > .contents-heading {
+  margin-bottom: 18px;
+}

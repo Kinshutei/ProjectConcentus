@@ -872,3 +872,46 @@
   top: 0;
   height: 100vh;
 }
+
+/* ── SCROLL の縦組み表示 ──
+   サイドバーの右隣に白い帯を立て、その中に縦書きで置く。
+   文字の下に細い縦線を伸ばす。 */
+.mikage-scroll .hero {
+  position: relative;
+}
+
+.mikage-scroll .hero__scroll {
+  position: absolute;
+  left: 66px;
+  bottom: 0;
+  margin: 0;
+  width: 46px;
+  padding: 28px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  writing-mode: vertical-rl;
+  font-size: 10px;
+  letter-spacing: 0.42em;
+  color: #2a2a2a;
+  opacity: 1;
+}
+
+/* 文字の下に伸びる線。縦書きなので高さで長さを決める */
+.mikage-scroll .hero__scroll::after {
+  content: '';
+  width: 1px;
+  height: 96px;
+  margin-top: 22px;
+  background: #2a2a2a;
+  opacity: 0.55;
+}
+
+@media (max-width: 720px) {
+  .mikage-scroll .hero__scroll {
+    left: auto;
+    right: 0;
+    width: 38px;
+  }
+}

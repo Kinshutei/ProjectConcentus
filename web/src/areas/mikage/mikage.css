@@ -929,3 +929,20 @@
 .mikage-scroll .hero {
   margin-left: 66px;
 }
+
+/* 上部バーは背景を全幅に敷く。左端に隙間があるとサイドバーの残りが覗く */
+.mikage-scroll .mk-topbar {
+  margin-left: 0;
+  padding-left: 66px;
+  background: #f7f3ec;
+  backdrop-filter: none;
+}
+
+/* 手書き風の検索アイコン */
+.mikage-scroll .mk-search__icon {
+  position: absolute;
+  left: 10px;
+  display: inline-flex;
+  color: #5a8a8b;
+  pointer-events: none;
+}

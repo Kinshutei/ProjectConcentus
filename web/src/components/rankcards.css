@@ -6,10 +6,32 @@
   --rc-accent: currentColor;
   --rc-muted: inherit;
 
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 6px;
   margin: 0 0 12px;
+  align-items: start;
+}
+
+.rank-grid--col2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rank-grid--col3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .rank-grid--col3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .rank-grid--col2,
+  .rank-grid--col3 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .rank-card {
@@ -48,19 +70,19 @@
 .rank-card__head {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .rank-card__title {
-  font-size: 14px;
+  font-size: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .rank-card__right {
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.55;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -75,7 +97,7 @@
 }
 
 .rank-card__sub {
-  font-size: 11px;
+  font-size: 13px;
   opacity: 0.6;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -18,7 +18,6 @@ export type RankItem = {
   ratio?: number
 }
 
-const PER_PAGE = 10
 
 /** ◀ 現在 / 総数 ▶ の送り。1ページに収まるときは出さない */
 function Pager({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) {
@@ -57,23 +56,30 @@ function Pager({ page, total, onChange }: { page: number; total: number; onChang
 export default function RankCards({
   items,
   paged = false,
+  columns = 1,
+  rows = 10,
 }: {
   items: RankItem[]
-  /** true なら10件ごとにページ送り、false なら先頭10件のみ */
+  /** true ならページ送り、false なら先頭1ページ分のみ */
   paged?: boolean
+  /** 横に並べる列数 */
+  columns?: 1 | 2 | 3
+  /** 縦に並べる最大数。1ページの件数は columns × rows */
+  rows?: number
 }) {
   const [page, setPage] = useState(1)
   if (items.length === 0) return <div className="empty-note">該当するデータがありません。</div>
 
-  const totalPages = paged ? Math.max(1, Math.ceil(items.length / PER_PAGE)) : 1
+  const perPage = columns * rows
+  const totalPages = paged ? Math.max(1, Math.ceil(items.length / perPage)) : 1
   const current = Math.min(page, totalPages)
   const shown = paged
-    ? items.slice((current - 1) * PER_PAGE, current * PER_PAGE)
-    : items.slice(0, PER_PAGE)
+    ? items.slice((current - 1) * perPage, current * perPage)
+    : items.slice(0, perPage)
 
   return (
     <>
-      <div className="rank-grid">
+      <div className={`rank-grid rank-grid--col${columns}`}>
         {shown.map((item) => (
           <div
             key={item.key}

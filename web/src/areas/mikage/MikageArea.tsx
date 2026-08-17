@@ -5,6 +5,7 @@ import { Link } from '../../router'
 import RankCards, { type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Reveal'
+import { SearchIcon } from '../../components/icons'
 import { LANGS, storedLang, translator } from './i18n'
 import '../../components/scroll.css'
 import './mikage.css'
@@ -54,7 +55,7 @@ export default function MikageArea({
   const t = useMemo(() => translator(lang), [lang])
 
   // 初披露は枠の開始時刻→枠内の秒 の順で song_id の初出を拾う
-  const { rowsByFrame, firstCount } = useMemo(() => {
+  const rowsByFrame = useMemo(() => {
     const at = new Map(frames.map((f) => [f.frame_id, f.started_at]))
     const first = new Map<string, string>()
     for (const p of [...perfs].sort(
@@ -79,7 +80,7 @@ export default function MikageArea({
           })),
       )
     }
-    return { rowsByFrame: map, firstCount: first.size }
+    return map
   }, [frames, perfs, db])
 
   return (
@@ -149,7 +150,13 @@ export default function MikageArea({
           frames={frames.length}
           perfs={perfs.length}
           repertoire={new Set(perfs.map((p) => p.song_id)).size}
-          firsts={firstCount}
+          artists={
+            new Set(
+              perfs
+                .map((p) => db.songById.get(p.song_id)?.artist?.trim())
+                .filter((a): a is string => !!a),
+            ).size
+          }
         />
         <Setlist db={db} frames={frames} rowsByFrame={rowsByFrame} t={t} />
         <Repertoire db={db} perfs={perfs} t={t} />
@@ -225,12 +232,12 @@ function Numbers({
   frames,
   perfs,
   repertoire,
-  firsts,
+  artists,
 }: {
   frames: number
   perfs: number
   repertoire: number
-  firsts: number
+  artists: number
 }) {
   return (
     <section className="section" id="numbers">
@@ -240,7 +247,7 @@ function Numbers({
           <NumberCell value={frames} label="STREAMS" unit="枠" delay={0} />
           <NumberCell value={perfs} label="PERFORMANCES" unit="回" delay={80} />
           <NumberCell value={repertoire} label="REPERTOIRE" unit="曲" delay={160} />
-          <NumberCell value={firsts} label="FIRST TIME" unit="曲" delay={240} />
+          <NumberCell value={artists} label="ARTISTS" unit="組" delay={240} />
         </div>
       </div>
     </section>
@@ -290,7 +297,9 @@ function Setlist({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
           <div className="mk-search">
-            <span aria-hidden>🔍</span>
+            <span className="mk-search__icon" aria-hidden>
+              <SearchIcon />
+            </span>
             <input
               type="text"
               value={query}
@@ -642,7 +651,9 @@ function Repertoire({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
         <SectionHead title="Repertoire" sub={`${stats.length}曲`} />
 
         <div className="mk-search mk-search--wide">
-          <span aria-hidden>🔍</span>
+          <span className="mk-search__icon" aria-hidden>
+              <SearchIcon />
+            </span>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -661,12 +672,12 @@ function Repertoire({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
         <div className="section-head">
           <h3 style={{ margin: 0 }}>{t('songs.yearTitle')}</h3>
         </div>
-        <RankCards items={years} paged />
+        <RankCards items={years} paged columns={3} rows={10} />
 
         <div className="section-head">
           <h3 style={{ margin: 0 }}>{t('songs.artistTitle')}</h3>
         </div>
-        <RankCards items={artists} paged />
+        <RankCards items={artists} paged columns={3} rows={10} />
       </div>
     </section>
   )

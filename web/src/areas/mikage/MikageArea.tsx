@@ -23,13 +23,14 @@ const SECTIONS = [
   { id: 'repertoire', label: 'Repertoire' },
 ]
 
-/** 上部バーに隠れないよう、その高さぶん手前で止める */
+/** 節の先頭が上部バーの真下に来るよう止める。
+ *  余白を足すと、その分だけ手前の節が上に覗いてしまう。 */
 function scrollToSection(id: string) {
   const el = document.getElementById(id)
   if (!el) return
   const bar = document.querySelector('.mk-topbar')
-  const offset = bar ? bar.getBoundingClientRect().height : 0
-  const top = el.getBoundingClientRect().top + window.scrollY - offset - 8
+  const barH = bar ? bar.getBoundingClientRect().height : 0
+  const top = el.getBoundingClientRect().top + window.scrollY - barH
   window.scrollTo({ top, behavior: 'smooth' })
 }
 

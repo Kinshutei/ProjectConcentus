@@ -882,7 +882,9 @@
 
 .mikage-scroll .hero__scroll {
   position: absolute;
-  left: 66px;
+  /* .hero は main-wrapper で既に66px右へ寄っているので、ここは0で
+     サイドバーの右端にぴたりと接する */
+  left: 0;
   bottom: 0;
   margin: 0;
   width: 46px;

@@ -107,7 +107,7 @@ export default function MikageArea({
             </button>
           ))}
           <Link to="/" className="sidebar-nav-btn">
-            <span className="sidebar-nav-text">archive</span>
+            <span className="sidebar-nav-text">home</span>
           </Link>
         </nav>
       </aside>

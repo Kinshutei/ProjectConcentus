@@ -1,0 +1,126 @@
+/* 順位カード。配色は領域側の変数を使い、構造だけここで定義する。
+   領域は --rc-* を上書きすることで自分の色に合わせる。 */
+.rank-grid {
+  --rc-card: rgba(255, 255, 255, 0.04);
+  --rc-line: rgba(255, 255, 255, 0.12);
+  --rc-accent: currentColor;
+  --rc-muted: inherit;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.rank-card {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  background: var(--rc-card);
+  border: 1px solid var(--rc-line);
+  border-radius: 8px;
+  transition: border-color 0.15s;
+}
+
+.rank-card:hover {
+  border-color: var(--rc-accent);
+}
+
+.rank-card--top .rank-card__no {
+  color: var(--rc-accent);
+  font-weight: 700;
+}
+
+.rank-card__no {
+  font-size: 14px;
+  text-align: center;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-card__body {
+  min-width: 0;
+}
+
+.rank-card__title {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-card__sub {
+  font-size: 11px;
+  opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-card__value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-card__value strong {
+  font-size: 17px;
+  color: var(--rc-accent);
+}
+
+.rank-card__unit {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.rank-card__ratio {
+  margin-left: 8px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.empty-note {
+  font-size: 13px;
+  opacity: 0.6;
+  padding: 12px 0;
+}
+
+/* ページ送り */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 4px 0 20px;
+}
+
+.pager__btn {
+  border: 1px solid var(--rc-line, rgba(255, 255, 255, 0.12));
+  background: none;
+  color: inherit;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.pager__btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pager__btn:not(:disabled):hover {
+  border-color: currentColor;
+}
+
+.pager__count {
+  font-size: 12px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}

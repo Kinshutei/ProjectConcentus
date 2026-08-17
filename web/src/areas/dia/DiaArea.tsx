@@ -3,7 +3,7 @@ import type { Db, Frame, Performance, Song } from '../../types'
 import { hms, jstDate, watchUrl } from '../../data'
 import { Link } from '../../router'
 import TerminalMessage from './TerminalMessage'
-import Chart from '../../components/Chart'
+import RankCards, { type RankItem } from '../../components/RankCards'
 import './dia.css'
 
 const asset = (name: string) => `${import.meta.env.BASE_URL}dia/${name}`
@@ -556,23 +556,8 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
 
   return (
     <div>
-      <Charts
-        stats={stats}
+      <Charts stats={stats}
         titles={{ ranking: 'よく歌われている曲 TOP20', year: 'リリース年の分布', artist: 'アーティスト別' }}
-        colors={{
-          font: '#8a8a8a',
-          axis: '#6a6a6a',
-          grid: 'rgba(255,255,255,0.08)',
-          bar: (r) => `rgba(179,46,70,${0.3 + 0.7 * r})`,
-          scale: [
-            [0.0, '#2a0d13'],
-            [0.4, '#6b1b29'],
-            [0.7, '#b32e46'],
-            [1.0, '#e0748a'],
-          ],
-          treeLine: '#0e0e0e',
-          treeFont: '#e8e8e8',
-        }}
       />
       <h2 className="section-title">Sung Repertoire — {stats.length}</h2>
       <div className="songs-table-wrap">
@@ -624,139 +609,69 @@ function Changelog() {
 }
 
 /* 現行サイトと同じ3つのグラフ。集計は歌唱データから作る。 */
+/* 現行サイトのグラフに相当する集計。Plotlyを使わず順位カードで出す。 */
 function Charts({
   stats,
-  colors,
   titles,
 }: {
   stats: { song: Song; count: number }[]
   titles: { ranking: string; year: string; artist: string }
-  colors: {
-    font: string
-    axis: string
-    grid: string
-    bar: (ratio: number) => string
-    scale: [number, string][]
-    treeLine: string
-    treeFont: string
-  }
 }) {
-  const top20 = [...stats].sort((a, b) => b.count - a.count).slice(0, 20)
-  const maxCount = top20[0]?.count ?? 1
+  const ranking: RankItem[] = [...stats]
+    .sort((a, b) => b.count - a.count || a.song.title.localeCompare(b.song.title, 'ja'))
+    .map((s, i) => ({
+      key: s.song.song_id,
+      rank: i + 1,
+      title: s.song.title,
+      sub: s.song.artist,
+      value: s.count,
+      unit: '回',
+    }))
 
   const yearMap = new Map<string, number>()
   for (const s of stats) {
     const year = (s.song.released || '').slice(0, 4)
     if (/^\d{4}$/.test(year)) yearMap.set(year, (yearMap.get(year) ?? 0) + 1)
   }
-  const years = [...yearMap.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+  const yearTotal = [...yearMap.values()].reduce((a, b) => a + b, 0)
+  const years: RankItem[] = [...yearMap.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([year, n], i) => ({
+      key: year,
+      rank: i + 1,
+      title: year + '年',
+      value: n,
+      unit: '曲',
+      ratio: yearTotal ? n / yearTotal : 0,
+    }))
 
   const artistMap = new Map<string, number>()
   for (const s of stats) {
     const a = s.song.artist?.trim()
     if (a) artistMap.set(a, (artistMap.get(a) ?? 0) + s.count)
   }
-  const artists = [...artistMap.entries()].sort((a, b) => b[1] - a[1])
-  const artistTotal = artists.reduce((sum, a) => sum + a[1], 0)
-
-  const common = {
-    config: { displayModeBar: false, responsive: true, scrollZoom: false },
-    style: { width: '100%' },
-    useResizeHandler: true,
-  } as const
+  const artistTotal = [...artistMap.values()].reduce((a, b) => a + b, 0)
+  const artists: RankItem[] = [...artistMap.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ja'))
+    .map(([name, n], i) => ({
+      key: name,
+      rank: i + 1,
+      title: name,
+      value: n,
+      unit: '回',
+      ratio: artistTotal ? n / artistTotal : 0,
+    }))
 
   return (
     <>
       <h3 style={{ margin: '24px 0 8px' }}>{titles.ranking}</h3>
-      <Chart
-        {...common}
-        data={[
-          {
-            type: 'bar',
-            orientation: 'h',
-            x: top20.map((s) => s.count),
-            y: top20.map((s) => s.song.title),
-            text: top20.map((s) => String(s.count)),
-            textposition: 'outside',
-            marker: { color: top20.map((s) => colors.bar(s.count / maxCount)), line: { width: 0 } },
-            customdata: top20.map((s) => [s.song.artist]),
-            hovertemplate: '<b>%{y}</b><br>%{x}<br>Artist: %{customdata[0]}<extra></extra>',
-          },
-        ]}
-        layout={{
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(0,0,0,0)',
-          font: { family: 'Noto Sans JP', color: colors.font, size: 12 },
-          yaxis: { autorange: 'reversed', showgrid: false, tickfont: { size: 11 }, color: colors.font },
-          xaxis: { showgrid: true, gridcolor: colors.grid, zeroline: false, color: colors.axis },
-          margin: { l: 160, r: 55, t: 16, b: 10 },
-          height: Math.max(380, top20.length * 26),
-          dragmode: false,
-        }}
-      />
+      <RankCards items={ranking} />
 
-      {years.length > 0 && (
-        <>
-          <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
-          <Chart
-            {...common}
-            data={[
-              {
-                type: 'bar',
-                x: years.map(([y]) => y),
-                y: years.map(([, v]) => v),
-                text: years.map(([, v]) => String(v)),
-                textposition: 'outside',
-                marker: { color: years.map(([, v]) => v), colorscale: colors.scale, line: { width: 0 } },
-                hovertemplate: '<b>%{x}</b><br>%{y}<extra></extra>',
-              },
-            ]}
-            layout={{
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(0,0,0,0)',
-              font: { family: 'Noto Sans JP', color: colors.font, size: 12 },
-              xaxis: { showgrid: false, color: colors.axis, tickangle: -45, tickfont: { size: 11 } },
-              yaxis: { showgrid: true, gridcolor: colors.grid, zeroline: false, color: colors.axis },
-              margin: { l: 40, r: 20, t: 24, b: 60 },
-              height: 320,
-              dragmode: false,
-            }}
-          />
-        </>
-      )}
+      <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
+      <RankCards items={years} paged />
 
-      {artists.length > 0 && (
-        <>
-          <h3 style={{ margin: '24px 0 8px' }}>{titles.artist}</h3>
-          <Chart
-            {...common}
-            data={[
-              {
-                type: 'treemap',
-                labels: artists.map(([name]) => name),
-                parents: artists.map(() => ''),
-                values: artists.map(([, v]) => v),
-                text: artists.map(([, v]) => ((v / artistTotal) * 100).toFixed(1) + '%'),
-                texttemplate: '<b>%{label}</b><br>%{value}<br>%{text}',
-                hovertemplate: '<b>%{label}</b><br>%{value} (%{text})<extra></extra>',
-                marker: {
-                  colors: artists.map(([, v]) => v),
-                  colorscale: colors.scale,
-                  line: { width: 2, color: colors.treeLine },
-                  pad: { t: 22, l: 4, r: 4, b: 4 },
-                },
-              },
-            ]}
-            layout={{
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              font: { family: 'Noto Sans JP', color: colors.treeFont },
-              margin: { t: 4, l: 0, r: 0, b: 0 },
-              height: 420,
-              dragmode: false,
-            }}
-          />
-        </>
-      )}
+      <h3 style={{ margin: '24px 0 8px' }}>{titles.artist}</h3>
+      <RankCards items={artists} paged />
     </>
   )
 }

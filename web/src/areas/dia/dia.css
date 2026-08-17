@@ -851,3 +851,13 @@
   display: block;
   text-decoration: none;
 }
+
+/* 順位カードを暗色＋紅の配色に合わせる */
+.dia-root .rank-grid {
+  --rc-card: rgba(255, 255, 255, 0.03);
+  --rc-line: #2e2e2e;
+  --rc-accent: #b32e46;
+}
+.dia-root .pager__btn {
+  border-color: #2e2e2e;
+}

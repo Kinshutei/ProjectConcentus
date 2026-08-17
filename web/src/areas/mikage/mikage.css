@@ -963,7 +963,7 @@
 }
 
 /* 上位50%のハイライト。青緑を淡く敷く */
-.mikage-root .rank-grid {
+.mikage-root {
   --rc-hl: rgba(172, 208, 209, 0.28);
   --rc-hl-line: #8ab8b9;
 }

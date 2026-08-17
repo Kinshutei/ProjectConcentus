@@ -887,7 +887,7 @@
 }
 
 /* 上位50%のハイライト。紅を淡く敷く */
-.dia-root .rank-grid {
+.dia-root {
   --rc-hl: rgba(179, 46, 70, 0.18);
   --rc-hl-line: #b32e46;
 }

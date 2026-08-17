@@ -1120,7 +1120,7 @@
 }
 
 /* 上位50%のハイライト。woucaは水面の青を淡く敷く */
-.wouca-root .rank-grid {
+.wouca-root {
   --rc-hl: rgba(120, 190, 210, 0.18);
   --rc-hl-line: rgba(120, 190, 210, 0.55);
 }

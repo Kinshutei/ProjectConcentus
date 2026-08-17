@@ -1,0 +1,450 @@
+[
+  {
+    "tag_id": "genre_vocaloid",
+    "label": "ボカロ",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 10,
+    "active": true,
+    "note": "VOCALOID・CeVIO・UTAU等の合成音声を用いたオリジナル曲。歌い手によるカバーが原曲扱いの場合も含む"
+  },
+  {
+    "tag_id": "genre_anime",
+    "label": "アニソン",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 20,
+    "active": true,
+    "note": "アニメのOP/ED/挿入歌・キャラクターソング。ゲーム原作アニメの主題歌はこちらを優先"
+  },
+  {
+    "tag_id": "genre_jpop",
+    "label": "J-POP",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 30,
+    "active": true,
+    "note": "タイアップを持たない一般邦楽。昭和期のものは genre_kayo と使い分ける"
+  },
+  {
+    "tag_id": "genre_game",
+    "label": "ゲーム",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 40,
+    "active": true,
+    "note": "ゲーム作品の主題歌・BGM。アニメ化作品の主題歌は genre_anime を優先"
+  },
+  {
+    "tag_id": "genre_tokusatsu",
+    "label": "特撮",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 50,
+    "active": true,
+    "note": "特撮作品の主題歌・挿入歌"
+  },
+  {
+    "tag_id": "genre_western",
+    "label": "洋楽",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 60,
+    "active": true,
+    "note": "日本国外のアーティストによる楽曲。K-POPを含めるかは要判断（現時点では含める運用）"
+  },
+  {
+    "tag_id": "genre_touhou",
+    "label": "東方",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 70,
+    "active": true,
+    "note": "東方Projectのアレンジ楽曲。原曲がインストのため、歌詞付きアレンジが対象"
+  },
+  {
+    "tag_id": "genre_original",
+    "label": "オリジナル曲",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 80,
+    "active": true,
+    "note": "VSinger本人またはRK Music等の関係者によるオリジナル楽曲。誰のオリ曲かは songs.artist が持つ"
+  },
+  {
+    "tag_id": "genre_kayo",
+    "label": "歌謡曲・演歌",
+    "scope": "song",
+    "group": "ジャンル",
+    "exclusive": false,
+    "order": 90,
+    "active": true,
+    "note": "昭和期の歌謡曲・演歌。年代そのものは songs.released から導出できるのでタグにしない"
+  },
+
+  {
+    "tag_id": "fmt_vertical",
+    "label": "縦型",
+    "scope": "frame",
+    "group": "形式",
+    "exclusive": false,
+    "order": 10,
+    "active": true,
+    "note": "縦型（ショート/スマホ向け）配信。移行時は枠タイトルの「縦型」文字列から自動付与できる（GitHub基準の実測127枠）"
+  },
+  {
+    "tag_id": "fmt_sleep",
+    "label": "睡眠・作業用",
+    "scope": "frame",
+    "group": "形式",
+    "exclusive": false,
+    "order": 20,
+    "active": true,
+    "note": "就寝時・作業中のBGM用途を明示した枠"
+  },
+
+  {
+    "tag_id": "ev_endurance",
+    "label": "耐久",
+    "scope": "frame",
+    "group": "特別枠",
+    "exclusive": false,
+    "order": 10,
+    "active": true,
+    "note": "長時間・曲数の目標を掲げた耐久枠（GitHub基準の実測24枠）"
+  },
+  {
+    "tag_id": "ev_anniversary",
+    "label": "記念・周年",
+    "scope": "frame",
+    "group": "特別枠",
+    "exclusive": false,
+    "order": 20,
+    "active": true,
+    "note": "周年・登録者数記念など。何の記念かは枠タイトルが持つ（実測14枠）"
+  },
+  {
+    "tag_id": "ev_request",
+    "label": "リクエスト",
+    "scope": "frame",
+    "group": "特別枠",
+    "exclusive": false,
+    "order": 30,
+    "active": true,
+    "note": "リスナーからのリクエストを主体にした枠。枠全体ではなく個別の曲がリクエストの場合は歌唱側で扱う必要があるが、現時点では枠タグのみ用意"
+  },
+  {
+    "tag_id": "ev_guerrilla",
+    "label": "ゲリラ",
+    "scope": "frame",
+    "group": "特別枠",
+    "exclusive": false,
+    "order": 40,
+    "active": true,
+    "note": "事前告知のない突発配信"
+  },
+  {
+    "tag_id": "ev_collab",
+    "label": "コラボ",
+    "scope": "frame",
+    "group": "特別枠",
+    "exclusive": false,
+    "order": 50,
+    "active": true,
+    "note": "複数シンガーが参加した枠。参加者そのものは performances.collab が持つ。この枠は frames 上で1件として扱う"
+  },
+  {
+    "tag_id": "ev_debut",
+    "label": "初配信",
+    "scope": "frame",
+    "group": "特別枠",
+    "exclusive": false,
+    "order": 60,
+    "active": true,
+    "note": "デビュー配信・初の歌枠など、そのシンガーにとって最初の枠"
+  },
+
+  {
+    "tag_id": "pj_rkmusic_relay",
+    "label": "#RKMusic歌枠リレー",
+    "scope": "frame",
+    "group": "企画",
+    "exclusive": false,
+    "order": 10,
+    "active": true,
+    "note": "旧DBの補足情報から移行（実測12件）"
+  },
+  {
+    "tag_id": "pj_orikyoku_relay",
+    "label": "#オリ曲で紡ぐ歌枠リレー",
+    "scope": "frame",
+    "group": "企画",
+    "exclusive": false,
+    "order": 20,
+    "active": true,
+    "note": "旧DBの補足情報から移行（実測6件）"
+  },
+  {
+    "tag_id": "pj_tamashii_relay",
+    "label": "#魂の灯り歌枠リレー",
+    "scope": "frame",
+    "group": "企画",
+    "exclusive": false,
+    "order": 30,
+    "active": true,
+    "note": "旧DBの補足情報から移行（実測6件）"
+  },
+  {
+    "tag_id": "pj_shijuka_relay",
+    "label": "#四十華紅白歌枠リレー",
+    "scope": "frame",
+    "group": "企画",
+    "exclusive": false,
+    "order": 40,
+    "active": true,
+    "note": "旧DBの補足情報から移行（実測5件）"
+  },
+  {
+    "tag_id": "pj_aiwotsunagu_relay",
+    "label": "#愛をつなぐ歌枠リレー",
+    "scope": "frame",
+    "group": "企画",
+    "exclusive": false,
+    "order": 50,
+    "active": true,
+    "note": "旧DBの補足情報から移行（実測5件）"
+  },
+
+  {
+    "tag_id": "lim_vocaloid",
+    "label": "ボカロ縛り",
+    "scope": "frame",
+    "group": "縛り",
+    "exclusive": false,
+    "order": 10,
+    "active": true,
+    "note": "選曲をボカロに限定した枠。曲側の genre_vocaloid とは別物（枠の企画性を表す）"
+  },
+  {
+    "tag_id": "lim_showa",
+    "label": "昭和縛り",
+    "scope": "frame",
+    "group": "縛り",
+    "exclusive": false,
+    "order": 20,
+    "active": true,
+    "note": "昭和期の楽曲に限定した枠"
+  },
+  {
+    "tag_id": "lim_heisei",
+    "label": "平成縛り",
+    "scope": "frame",
+    "group": "縛り",
+    "exclusive": false,
+    "order": 30,
+    "active": true,
+    "note": "平成期の楽曲に限定した枠"
+  },
+  {
+    "tag_id": "lim_anime",
+    "label": "アニソン縛り",
+    "scope": "frame",
+    "group": "縛り",
+    "exclusive": false,
+    "order": 40,
+    "active": true,
+    "note": "選曲をアニソンに限定した枠"
+  },
+
+  {
+    "tag_id": "arr_original",
+    "label": "原曲音源",
+    "scope": "performance",
+    "group": "編成",
+    "exclusive": true,
+    "order": 10,
+    "active": true,
+    "note": "市販カラオケ音源・原曲オフボーカルでの歌唱。歌枠の既定値"
+  },
+  {
+    "tag_id": "arr_piano",
+    "label": "ピアノ",
+    "scope": "performance",
+    "group": "編成",
+    "exclusive": true,
+    "order": 20,
+    "active": true,
+    "note": "ピアノ伴奏によるアレンジ歌唱。弾き語り・伴奏者ありの双方を含む"
+  },
+  {
+    "tag_id": "arr_acoustic",
+    "label": "アコースティック",
+    "scope": "performance",
+    "group": "編成",
+    "exclusive": true,
+    "order": 30,
+    "active": true,
+    "note": "アコースティックギター等による生楽器アレンジ。ピアノ主体の場合は arr_piano を使う"
+  },
+  {
+    "tag_id": "arr_acappella",
+    "label": "アカペラ",
+    "scope": "performance",
+    "group": "編成",
+    "exclusive": true,
+    "order": 40,
+    "active": true,
+    "note": "伴奏なしの歌唱。旧DBの補足情報から移行（実測4件）"
+  },
+  {
+    "tag_id": "arr_band",
+    "label": "バンド",
+    "scope": "performance",
+    "group": "編成",
+    "exclusive": true,
+    "order": 50,
+    "active": true,
+    "note": "バンド編成でのアレンジ歌唱"
+  },
+
+  {
+    "tag_id": "len_full",
+    "label": "フル",
+    "scope": "performance",
+    "group": "尺",
+    "exclusive": true,
+    "order": 10,
+    "active": true,
+    "note": "フルコーラス。歌枠の既定値"
+  },
+  {
+    "tag_id": "len_one",
+    "label": "ワンコーラス",
+    "scope": "performance",
+    "group": "尺",
+    "exclusive": true,
+    "order": 20,
+    "active": true,
+    "note": "1番のみ等の短縮歌唱。旧DBの補足情報から移行（実測1件）"
+  },
+  {
+    "tag_id": "len_tv",
+    "label": "TVサイズ",
+    "scope": "performance",
+    "group": "尺",
+    "exclusive": true,
+    "order": 30,
+    "active": true,
+    "note": "アニメOP/EDの放送尺（約90秒）"
+  },
+  {
+    "tag_id": "len_medley",
+    "label": "メドレー内",
+    "scope": "performance",
+    "group": "尺",
+    "exclusive": true,
+    "order": 40,
+    "active": true,
+    "note": "メドレーの一部として歌われた抜粋。1曲あたりの尺が短く、歌唱回数の集計を歪めうるため識別する"
+  },
+
+  {
+    "tag_id": "vo_solo",
+    "label": "独唱",
+    "scope": "performance",
+    "group": "歌唱形態",
+    "exclusive": true,
+    "order": 10,
+    "active": true,
+    "note": "単独での歌唱。既定値。旧DBの補足情報にも出現（実測1件）"
+  },
+  {
+    "tag_id": "vo_duet",
+    "label": "デュエット",
+    "scope": "performance",
+    "group": "歌唱形態",
+    "exclusive": true,
+    "order": 20,
+    "active": true,
+    "note": "2人でパートを分担しての歌唱。相手は performances.collab が持つ"
+  },
+  {
+    "tag_id": "vo_harmony",
+    "label": "ハモリ",
+    "scope": "performance",
+    "group": "歌唱形態",
+    "exclusive": true,
+    "order": 30,
+    "active": true,
+    "note": "主旋律に対しハーモニーを重ねる歌唱。旧DBの補足情報「即興ハモリ収録」から移行"
+  },
+  {
+    "tag_id": "vo_chorus",
+    "label": "合唱",
+    "scope": "performance",
+    "group": "歌唱形態",
+    "exclusive": true,
+    "order": 40,
+    "active": true,
+    "note": "3人以上での歌唱"
+  },
+
+  {
+    "tag_id": "sp_parody",
+    "label": "替え歌",
+    "scope": "performance",
+    "group": "その他",
+    "exclusive": false,
+    "order": 10,
+    "active": true,
+    "note": "歌詞を差し替えた歌唱。原曲の song_id は維持する"
+  },
+  {
+    "tag_id": "sp_english",
+    "label": "英語詞",
+    "scope": "performance",
+    "group": "その他",
+    "exclusive": false,
+    "order": 20,
+    "active": true,
+    "note": "英語詞版での歌唱。原曲が洋楽の場合は付けない（genre_western で足りる）"
+  },
+  {
+    "tag_id": "sp_transpose",
+    "label": "移調",
+    "scope": "performance",
+    "group": "その他",
+    "exclusive": false,
+    "order": 30,
+    "active": true,
+    "note": "原曲からキーを変更しての歌唱。旧DBの キー 欄は全2,961行が未使用だったため、フィールドではなくタグで扱う"
+  },
+  {
+    "tag_id": "sp_impromptu",
+    "label": "即興",
+    "scope": "performance",
+    "group": "その他",
+    "exclusive": false,
+    "order": 40,
+    "active": true,
+    "note": "その場での即興的な歌唱・アレンジ"
+  },
+  {
+    "tag_id": "sp_trouble",
+    "label": "ハプニング",
+    "scope": "performance",
+    "group": "その他",
+    "exclusive": false,
+    "order": 50,
+    "active": true,
+    "note": "配信途切れ・音声不具合等が発生した歌唱。旧DBの補足情報「途中で途切れハプあり」から移行"
+  }
+]

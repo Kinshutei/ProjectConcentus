@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concentus 管理ツール v1.00</title>
+<style>
+  :root{
+    --bg:#0f1420; --surface:#171d2b; --surface2:#1e2537; --border:#2b3346;
+    --text:#e6e9f0; --muted:#8f9bb3; --accent:#5b8dd9; --ok:#4caf7d;
+    --warn:#d9a441; --err:#d9605b; --mono:ui-monospace,"Consolas","Meiryo",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:"Segoe UI","Yu Gothic UI",sans-serif;font-size:13px}
+  h1{font-size:15px;margin:0;font-weight:600;letter-spacing:.04em}
+  h1 small{color:var(--muted);font-weight:400;margin-left:8px;font-size:11px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+         padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .cred{display:flex;align-items:center;gap:6px}
+  .cred label{color:var(--muted);font-size:11px;white-space:nowrap}
+  input,select,textarea,button{font-family:inherit;font-size:12px;color:var(--text);
+    background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:5px 8px;outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+  input[type=password]{width:150px;font-family:var(--mono)}
+  button{cursor:pointer;background:var(--surface2)}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  button.primary:disabled{opacity:.45;cursor:not-allowed}
+  button.danger{color:var(--err)}
+  nav{display:flex;gap:2px;padding:0 16px;background:var(--surface);
+      border-bottom:1px solid var(--border)}
+  nav button{border:none;border-radius:0;background:none;padding:9px 18px;color:var(--muted)}
+  nav button.on{color:var(--text);box-shadow:inset 0 -2px 0 var(--accent)}
+  main{padding:16px}
+  .panel{display:none}
+  .panel.on{display:block}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .grow{flex:1;min-width:120px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+        padding:12px 14px;margin-bottom:12px}
+  .card h2{font-size:12px;margin:0 0 10px;color:var(--muted);font-weight:600;
+           letter-spacing:.06em;text-transform:uppercase}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{border-bottom:1px solid var(--border);padding:5px 7px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:11px;position:sticky;top:0;background:var(--surface)}
+  tbody tr:hover{background:var(--surface2)}
+  tr.sel{background:#22304a}
+  .scroll{max-height:340px;overflow:auto;border:1px solid var(--border);border-radius:6px}
+  .mono{font-family:var(--mono)}
+  .muted{color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
+  .taggrp{margin-bottom:8px}
+  .taggrp b{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}
+  .taggrp label{display:inline-flex;align-items:center;gap:3px;margin:0 10px 3px 0;
+                font-size:12px;cursor:pointer;white-space:nowrap}
+  .pill{display:inline-block;background:var(--surface2);border:1px solid var(--border);
+        border-radius:10px;padding:1px 7px;font-size:11px;margin:1px 2px 1px 0}
+  .log{font-family:var(--mono);font-size:11px;white-space:pre-wrap;line-height:1.55;
+       max-height:420px;overflow:auto}
+  .badge{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--surface2);
+         border:1px solid var(--border);color:var(--muted)}
+  .badge.dirty{color:var(--warn);border-color:var(--warn)}
+  textarea{width:100%;min-height:110px;font-family:var(--mono);resize:vertical}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Concentus 管理ツール <small>v1.00 — uta-waku archive</small></h1>
+  <div class="cred">
+    <label>GitHub PAT</label>
+    <input type="password" id="ghToken" placeholder="ghp_…" autocomplete="off">
+  </div>
+  <div class="cred">
+    <label>YouTube API Key</label>
+    <input type="password" id="ytKey" placeholder="AIza…" autocomplete="off">
+  </div>
+  <button id="saveCred">保存</button>
+  <button id="reload" class="primary">GitHubから読み込む</button>
+  <span id="loadSt" class="muted"></span>
+</header>
+
+<nav>
+  <button data-tab="frames" class="on">枠</button>
+  <button data-tab="setlist">セトリ</button>
+  <button data-tab="songs">楽曲マスター</button>
+  <button data-tab="push">検証 &amp; Push</button>
+</nav>
+
+<main>
+
+<!-- ===== 枠 ===== -->
+<section class="panel on" id="tab-frames">
+  <div class="card">
+    <h2>枠の追加</h2>
+    <div class="row">
+      <select id="fSinger"></select>
+      <input id="fUrl" class="grow" placeholder="YouTubeのURL または video_id">
+      <button id="fFetch">YouTubeから取得</button>
+      <button id="fAdd" class="primary">枠を追加</button>
+    </div>
+    <div class="row">
+      <input id="fTitle" class="grow" placeholder="枠名">
+      <input id="fStarted" class="mono" style="width:230px" placeholder="started_at (ISO8601)">
+      <input id="fDur" class="mono" style="width:90px" placeholder="秒数">
+      <select id="fType">
+        <option value="">type未設定</option>
+        <option>LiveArchive</option><option>Movie</option><option>Short</option>
+      </select>
+      <label class="muted">day_order <input id="fDayOrder" class="mono" style="width:50px" value="0"></label>
+    </div>
+    <div id="fTags"></div>
+    <div class="hint" id="fHint"></div>
+  </div>
+
+  <div class="card">
+    <h2>枠の一覧 <span id="fCount" class="badge"></span></h2>
+    <div class="row">
+      <select id="fFilter"></select>
+      <input id="fSearch" class="grow" placeholder="枠名で絞り込み">
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th style="width:150px">started_at</th><th>枠名</th>
+          <th style="width:110px">video_id</th><th style="width:60px">曲数</th>
+          <th style="width:200px">タグ</th><th style="width:56px"></th></tr></thead>
+        <tbody id="fList"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== セトリ ===== -->
+<section class="panel" id="tab-setlist">
+  <div class="card">
+    <h2>対象の枠</h2>
+    <div class="row">
+      <select id="sSinger"></select>
+      <select id="sFrame" class="grow"></select>
+      <span id="sInfo" class="muted mono"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>TSGen の出力から取り込む</h2>
+    <textarea id="sTsgen" placeholder="RKMusic_TSGen の output.txt を貼り付ける。&#10;「♪ 歌唱」の行だけを拾って start_sec に変換する。"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button id="sImport">♪ 歌唱の行を取り込む</button>
+      <label class="muted"><input type="checkbox" id="sImportClear"> 既存の行を置き換える</label>
+      <span id="sImportSt" class="muted"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>歌唱 <span id="sCount" class="badge"></span></h2>
+    <div class="row">
+      <button id="sAddRow">行を追加</button>
+      <span class="hint">start_sec の昇順が歌唱順になる。保存時に自動で並べ替える。</span>
+    </div>
+    <div class="scroll" style="max-height:460px">
+      <table>
+        <thead><tr><th style="width:92px">開始</th><th style="width:270px">曲</th>
+          <th>タグ</th><th style="width:150px">補足</th><th style="width:40px"></th></tr></thead>
+        <tbody id="sList"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 楽曲マスター ===== -->
+<section class="panel" id="tab-songs">
+  <div class="card">
+    <h2>楽曲の追加</h2>
+    <div class="row">
+      <input id="mTitle" class="grow" placeholder="曲名">
+      <input id="mArtist" class="grow" placeholder="原曲アーティスト">
+      <input id="mReleased" class="mono" style="width:120px" placeholder="YYYY-MM-DD">
+    </div>
+    <div class="row">
+      <input id="mLyr" class="grow" placeholder="作詞（/ 区切りで複数）">
+      <input id="mCom" class="grow" placeholder="作曲（/ 区切り）">
+      <input id="mArr" class="grow" placeholder="編曲（/ 区切り）">
+    </div>
+    <div id="mTags"></div>
+    <div class="row">
+      <button id="mAdd" class="primary">追加</button>
+      <span id="mSt"></span>
+    </div>
+    <div class="hint">曲名＋アーティストの正規化キーが既存と一致する場合は追加できない。
+      同じ曲に別IDを振ると横比較が壊れるため。</div>
+  </div>
+
+  <div class="card">
+    <h2>検索 <span id="mCount" class="badge"></span></h2>
+    <input id="mSearch" class="grow" placeholder="曲名・アーティスト・song_id" style="width:100%">
+    <div class="scroll" style="margin-top:8px">
+      <table>
+        <thead><tr><th style="width:64px">ID</th><th>曲名</th><th style="width:170px">アーティスト</th>
+          <th style="width:90px">リリース</th><th style="width:60px">歌唱数</th>
+          <th style="width:170px">タグ</th></tr></thead>
+        <tbody id="mList"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 検証 & Push ===== -->
+<section class="panel" id="tab-push">
+  <div class="card">
+    <h2>変更状況</h2>
+    <div id="pDirty" class="log muted">読み込み前</div>
+  </div>
+  <div class="card">
+    <h2>検証</h2>
+    <div class="row">
+      <button id="pValidate">検証する</button>
+      <button id="pPush" class="primary" disabled>GitHubへPush</button>
+      <input id="pMsg" class="grow" placeholder="コミットメッセージ">
+    </div>
+    <div id="pLog" class="log muted">未実行</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+'use strict';
+
+// ---------------------------------------------------------------- 設定
+const OWNER = 'Kinshutei';
+const REPO  = 'ProjectConcentus';
+const BRANCH = 'main';
+const FILES = {
+  singers: 'data/singers.json',
+  songs:   'data/songs.json',
+  frames:  'data/frames.json',
+  tags:    'data/tags.json',
+};
+const perfPath = id => `data/performances/${id}.json`;
+
+// ---------------------------------------------------------------- 状態
+const S = {
+  singers: [], songs: [], frames: [], tags: [],
+  perf: {},            // singer_id -> 行配列
+  sha:  {},            // path -> blob sha
+  dirty: new Set(),    // 変更されたパス
+  songIndex: new Map(),// song_id -> song
+  normIndex: new Map(), // norm_key -> song_id（重複採番の検出用）
+};
+
+let curFrame = null;   // セトリタブで編集中の frame_id
+
+// ---------------------------------------------------------------- 小物
+const $  = id => document.getElementById(id);
+const el = (tag, props = {}, ...kids) => {
+  const n = Object.assign(document.createElement(tag), props);
+  kids.flat().forEach(k => n.append(k));
+  return n;
+};
+const esc = s => String(s ?? '');
+
+function hms(sec) {
+  sec = Math.max(0, Math.floor(Number(sec) || 0));
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+/** started_at は UTC の ISO8601。表示はJSTに直す。date はこの変換で導出する。 */
+function jst(iso, withTime = true) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso.slice(0, withTime ? 16 : 10);
+  const s = new Date(d.getTime() + 9 * 3600 * 1000).toISOString();
+  return withTime ? `${s.slice(0, 10)} ${s.slice(11, 16)}` : s.slice(0, 10);
+}
+
+function toSec(text) {
+  const parts = String(text).trim().split(':').map(Number);
+  if (parts.some(isNaN) || !parts.length) return null;
+  return parts.reduce((a, b) => a * 60 + b, 0);
+}
+
+/** migrate.py の norm_key と同一規則。ここがずれると重複検出が効かない。
+ *  区切りの  は除去処理の「後」に付ける。Python の \s は 〜 を
+ *  空白として扱うが JS の \s は扱わないため、先に連結すると結果がずれる。 */
+function normKey(title, artist) {
+  const clean = v => String(v ?? '').normalize('NFKC').toLowerCase()
+    .replace(/[\s　・,、。!！?？'"「」()（）~〜ー-]/g, '');
+  return `${clean(title)}${clean(artist)}`;
+}
+
+/** 1行1レコードで書く。migrate.py の dump() と揃えている。 */
+function dumpRows(rows) {
+  return '[\n' + rows.map(r => JSON.stringify(r)).join(',\n') + '\n]\n';
+}
+
+function b64encode(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+
+function markDirty(path) { S.dirty.add(path); renderDirty(); }
+
+// ---------------------------------------------------------------- 認証
+function ghToken() { return localStorage.getItem('gh_token') || ''; }
+function ytKey()   { return localStorage.getItem('yt_api_key') || ''; }
+
+$('saveCred').onclick = () => {
+  const t = $('ghToken').value.trim(), y = $('ytKey').value.trim();
+  if (t && !t.startsWith('***')) localStorage.setItem('gh_token', t);
+  if (y && !y.startsWith('***')) localStorage.setItem('yt_api_key', y);
+  maskCreds();
+  $('loadSt').textContent = '認証情報を保存しました';
+};
+function maskCreds() {
+  const t = ghToken(), y = ytKey();
+  $('ghToken').value = t ? '***' + t.slice(-4) : '';
+  $('ytKey').value   = y ? '***' + y.slice(-4) : '';
+}
+
+// ---------------------------------------------------------------- GitHub
+async function ghGet(path) {
+  const headers = { Accept: 'application/vnd.github+json' };
+  if (ghToken()) headers.Authorization = `Bearer ${ghToken()}`;
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
+  const res = await fetch(url, { headers });
+  if (res.status === 404) return { data: null, sha: null };
+  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
+  const json = await res.json();
+  const text = new TextDecoder().decode(
+    Uint8Array.from(atob(json.content.replace(/\n/g, '')), c => c.charCodeAt(0)));
+  return { data: JSON.parse(text), sha: json.sha };
+}
+
+async function ghPut(path, text, message) {
+  if (!ghToken()) throw new Error('GitHub PAT が未設定です');
+  const body = {
+    message, branch: BRANCH, content: b64encode(text),
+  };
+  if (S.sha[path]) body.sha = S.sha[path];
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,
+    { method: 'PUT',
+      headers: { Authorization: `Bearer ${ghToken()}`,
+                 Accept: 'application/vnd.github+json' },
+      body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`${path}: HTTP ${res.status} ${await res.text()}`);
+  S.sha[path] = (await res.json()).content.sha;
+}
+
+// ---------------------------------------------------------------- 読み込み
+$('reload').onclick = loadAll;
+
+async function loadAll() {
+  $('loadSt').textContent = '読み込み中…';
+  try {
+    for (const [key, path] of Object.entries(FILES)) {
+      const { data, sha } = await ghGet(path);
+      S[key] = data || [];
+      S.sha[path] = sha;
+    }
+    S.perf = {}; S.dirty.clear();
+    for (const s of S.singers) {
+      const path = perfPath(s.singer_id);
+      const { data, sha } = await ghGet(path);
+      S.perf[s.singer_id] = data || [];
+      S.sha[path] = sha;
+    }
+    reindex();
+    renderAll();
+    $('loadSt').innerHTML = `<span class="ok">読み込み完了</span> ` +
+      `楽曲${S.songs.length} / 枠${S.frames.length} / 歌唱${totalPerf()}`;
+  } catch (e) {
+    $('loadSt').innerHTML = `<span class="err">${esc(e.message)}</span>`;
+  }
+}
+
+function totalPerf() {
+  return Object.values(S.perf).reduce((n, a) => n + a.length, 0);
+}
+
+function reindex() {
+  S.songIndex = new Map(S.songs.map(s => [s.song_id, s]));
+  S.normIndex = new Map();
+  for (const s of S.songs) {
+    const k = s.norm_key || normKey(s.title, s.artist);
+    if (s.title) S.normIndex.set(k, s.song_id);
+  }
+}
+
+// ---------------------------------------------------------------- タブ
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.panel').forEach(p =>
+    p.classList.toggle('on', p.id === 'tab-' + b.dataset.tab));
+});
+
+// ---------------------------------------------------------------- タグUI
+/** tags.json から入力UIを作る。exclusive なグループはラジオにして矛盾を防ぐ。 */
+function buildTagUI(container, scope, selected, onChange) {
+  container.innerHTML = '';
+  const active = S.tags.filter(t => t.scope === scope && t.active !== false);
+  const groups = [...new Set(active.map(t => t.group))];
+  const chosen = new Set(selected);
+
+  // 廃止済みタグが既存データに残っている場合も表示だけはする
+  const dead = selected.filter(id =>
+    !active.some(t => t.tag_id === id) &&
+    S.tags.some(t => t.tag_id === id && t.scope === scope));
+
+  for (const g of groups) {
+    const items = active.filter(t => t.group === g).sort((a, b) => a.order - b.order);
+    const excl = items[0].exclusive;
+    const box = el('div', { className: 'taggrp' }, el('b', { textContent: g + (excl ? '（排他）' : '') }));
+    if (excl) {
+      const name = `${scope}-${g}-${Math.random().toString(36).slice(2)}`;
+      const mk = (value, label) => {
+        const input = el('input', { type: 'radio', name });
+        input.checked = value === null ? !items.some(i => chosen.has(i.tag_id))
+                                       : chosen.has(value);
+        input.onchange = () => {
+          items.forEach(i => chosen.delete(i.tag_id));
+          if (value) chosen.add(value);
+          onChange([...chosen]);
+        };
+        return el('label', { title: value ? (items.find(i => i.tag_id === value).note || '') : '' },
+                  input, label);
+      };
+      box.append(mk(null, 'なし'));
+      items.forEach(i => box.append(mk(i.tag_id, i.label)));
+    } else {
+      items.forEach(i => {
+        const input = el('input', { type: 'checkbox', checked: chosen.has(i.tag_id) });
+        input.onchange = () => {
+          input.checked ? chosen.add(i.tag_id) : chosen.delete(i.tag_id);
+          onChange([...chosen]);
+        };
+        box.append(el('label', { title: i.note || '' }, input, i.label));
+      });
+    }
+    container.append(box);
+  }
+  if (dead.length) {
+    container.append(el('div', { className: 'hint warn',
+      textContent: `廃止済みタグが付いています: ${dead.join(', ')}` }));
+  }
+}
+
+function tagLabel(id) {
+  const t = S.tags.find(x => x.tag_id === id);
+  return t ? t.label : id;
+}
+function tagPills(ids) {
+  return (ids || []).map(id => el('span', { className: 'pill', textContent: tagLabel(id) }));
+}
+
+// ---------------------------------------------------------------- 枠タブ
+let newFrameTags = [];
+
+function renderSingerSelects() {
+  const opts = () => S.singers.map(s =>
+    el('option', { value: s.singer_id, textContent: s.name }));
+  $('fSinger').replaceChildren(...opts());
+  $('sSinger').replaceChildren(...opts());
+  $('fFilter').replaceChildren(
+    el('option', { value: '', textContent: '全シンガー' }), ...opts());
+}
+
+$('fFetch').onclick = async () => {
+  const raw = $('fUrl').value.trim();
+  const vid = extractVideoId(raw);
+  if (!vid) { $('fHint').innerHTML = '<span class="err">video_id を取れません</span>'; return; }
+  if (!ytKey()) { $('fHint').innerHTML = '<span class="err">YouTube API Key が未設定です</span>'; return; }
+  $('fHint').textContent = '取得中…';
+  try {
+    const url = 'https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,'
+      + `contentDetails&id=${vid}&key=${ytKey()}`;
+    const json = await (await fetch(url)).json();
+    const item = json.items && json.items[0];
+    if (!item) { $('fHint').innerHTML = '<span class="err">動画が見つかりません</span>'; return; }
+    const live = item.liveStreamingDetails || {};
+    $('fTitle').value   = item.snippet.title;
+    $('fStarted').value = live.actualStartTime || item.snippet.publishedAt;
+    const dur = isoDuration(item.contentDetails && item.contentDetails.duration);
+    $('fDur').value  = dur ?? '';
+    $('fType').value = dur == null ? '' : (dur >= 360 ? 'LiveArchive' : 'Movie');
+    $('fHint').innerHTML = `<span class="ok">取得しました</span> video_id=${vid}`;
+  } catch (e) {
+    $('fHint').innerHTML = `<span class="err">${esc(e.message)}</span>`;
+  }
+};
+
+function extractVideoId(text) {
+  const m = String(text).match(/(?:v=|live\/|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  if (m) return m[1];
+  return /^[A-Za-z0-9_-]{11}$/.test(text.trim()) ? text.trim() : null;
+}
+function isoDuration(v) {
+  const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(v || '');
+  if (!m) return null;
+  return (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0));
+}
+
+$('fAdd').onclick = () => {
+  const singer = $('fSinger').value;
+  const vid = extractVideoId($('fUrl').value);
+  if (!vid) { $('fHint').innerHTML = '<span class="err">video_id を取れません</span>'; return; }
+  const fid = `${singer}-${vid}`;
+  if (S.frames.some(f => f.frame_id === fid)) {
+    $('fHint').innerHTML = '<span class="err">この枠は既に登録されています</span>'; return;
+  }
+  const dup = S.frames.find(f => f.video_id === vid);
+  if (dup) {
+    $('fHint').innerHTML = `<span class="err">同じ video_id が ${dup.frame_id} で使われています</span>`;
+    return;
+  }
+  S.frames.push({
+    frame_id: fid, singer_id: singer, video_id: vid,
+    title: $('fTitle').value.trim(),
+    started_at: $('fStarted').value.trim(),
+    day_order: Number($('fDayOrder').value) || 0,
+    type: $('fType').value || null,
+    duration_sec: $('fDur').value ? Number($('fDur').value) : null,
+    tags: [...newFrameTags],
+  });
+  sortFrames();
+  markDirty(FILES.frames);
+  newFrameTags = [];
+  ['fUrl', 'fTitle', 'fStarted', 'fDur'].forEach(id => $(id).value = '');
+  $('fDayOrder').value = '0';
+  buildTagUI($('fTags'), 'frame', newFrameTags, v => newFrameTags = v);
+  renderFrames(); renderFrameSelect();
+  $('fHint').innerHTML = `<span class="ok">${fid} を追加しました</span>`;
+};
+
+function sortFrames() {
+  S.frames.sort((a, b) =>
+    (a.started_at || '').localeCompare(b.started_at || '') ||
+    (a.day_order - b.day_order) || a.frame_id.localeCompare(b.frame_id));
+}
+
+function perfCount(fid) {
+  const sid = S.frames.find(f => f.frame_id === fid)?.singer_id;
+  return (S.perf[sid] || []).filter(p => p.frame_id === fid).length;
+}
+
+function renderFrames() {
+  const filter = $('fFilter').value, q = $('fSearch').value.trim().toLowerCase();
+  const rows = S.frames.filter(f =>
+    (!filter || f.singer_id === filter) &&
+    (!q || (f.title || '').toLowerCase().includes(q)));
+  $('fCount').textContent = `${rows.length} / ${S.frames.length}`;
+  $('fList').replaceChildren(...rows.map(f => {
+    const del = el('button', { className: 'danger', textContent: '削除' });
+    del.onclick = () => {
+      const n = perfCount(f.frame_id);
+      if (n && !confirm(`${n}件の歌唱も一緒に消えます。よろしいですか。`)) return;
+      S.frames = S.frames.filter(x => x !== f);
+      S.perf[f.singer_id] = (S.perf[f.singer_id] || []).filter(p => p.frame_id !== f.frame_id);
+      markDirty(FILES.frames); markDirty(perfPath(f.singer_id));
+      renderFrames(); renderFrameSelect();
+    };
+    return el('tr', {},
+      el('td', { className: 'mono muted', textContent: jst(f.started_at) }),
+      el('td', { textContent: f.title || '(枠名なし)' }),
+      el('td', { className: 'mono muted', textContent: f.video_id }),
+      el('td', { className: 'mono', textContent: String(perfCount(f.frame_id)) }),
+      el('td', {}, ...tagPills(f.tags)),
+      el('td', {}, del));
+  }));
+}
+$('fFilter').onchange = renderFrames;
+$('fSearch').oninput  = renderFrames;
+
+// ---------------------------------------------------------------- セトリタブ
+function renderFrameSelect() {
+  const sid = $('sSinger').value;
+  const list = S.frames.filter(f => f.singer_id === sid);
+  $('sFrame').replaceChildren(...list.map(f => el('option', {
+    value: f.frame_id,
+    textContent: `${jst(f.started_at, false)}  ${f.title || f.video_id}`,
+  })));
+  if (list.length) {
+    curFrame = list.some(f => f.frame_id === curFrame) ? curFrame : list[0].frame_id;
+    $('sFrame').value = curFrame;
+  } else { curFrame = null; }
+  renderSetlist();
+}
+$('sSinger').onchange = renderFrameSelect;
+$('sFrame').onchange  = () => { curFrame = $('sFrame').value; renderSetlist(); };
+
+function curRows() {
+  const f = S.frames.find(x => x.frame_id === curFrame);
+  if (!f) return [];
+  return (S.perf[f.singer_id] || []).filter(p => p.frame_id === curFrame)
+    .sort((a, b) => a.start_sec - b.start_sec);
+}
+
+function renderSetlist() {
+  const f = S.frames.find(x => x.frame_id === curFrame);
+  $('sInfo').textContent = f ? `${f.video_id} / ${jst(f.started_at) || 'started_at未設定'} JST` : '';
+  const rows = curRows();
+  $('sCount').textContent = `${rows.length}曲`;
+  $('sList').replaceChildren(...rows.map((p, i) => setlistRow(p, i)));
+}
+
+function setlistRow(p, index) {
+  const start = el('input', { className: 'mono', style: 'width:78px', value: hms(p.start_sec) });
+  start.onchange = () => {
+    const v = toSec(start.value);
+    if (v === null) { start.value = hms(p.start_sec); return; }
+    p.start_sec = v; markDirty(perfPath(frameSinger())); renderSetlist();
+  };
+
+  const song = S.songIndex.get(p.song_id);
+  const pick = el('input', { style: 'width:100%',
+    value: song ? `${song.title} / ${song.artist}` : (p.song_id || ''),
+    placeholder: '曲名で検索' });
+  const list = el('div', { className: 'hint' });
+  pick.oninput = () => {
+    const q = pick.value.trim().toLowerCase();
+    list.replaceChildren();
+    if (q.length < 1) return;
+    S.songs.filter(s => s.title &&
+        (`${s.title} ${s.artist}`.toLowerCase().includes(q) || s.song_id === q.toUpperCase()))
+      .slice(0, 8)
+      .forEach(s => {
+        const b = el('button', { textContent: `${s.title} / ${s.artist}`,
+                                 style: 'display:block;width:100%;text-align:left;margin:1px 0' });
+        b.onclick = () => {
+          p.song_id = s.song_id;
+          markDirty(perfPath(frameSinger()));
+          renderSetlist();
+        };
+        list.append(b);
+      });
+  };
+
+  const tagBox = el('div');
+  buildTagUI(tagBox, 'performance', p.tags || [], v => {
+    p.tags = v; markDirty(perfPath(frameSinger()));
+  });
+
+  const note = el('input', { style: 'width:100%', value: p.note || '' });
+  note.onchange = () => { p.note = note.value; markDirty(perfPath(frameSinger())); };
+
+  const del = el('button', { className: 'danger', textContent: '×' });
+  del.onclick = () => {
+    const sid = frameSinger();
+    S.perf[sid] = S.perf[sid].filter(x => x !== p);
+    markDirty(perfPath(sid)); renderSetlist();
+  };
+
+  const idCell = el('td', {},
+    el('div', { className: 'muted mono', textContent: `${index + 1}. ${p.song_id || '未設定'}` }),
+    pick, list);
+  return el('tr', {}, el('td', {}, start), idCell, el('td', {}, tagBox),
+                      el('td', {}, note), el('td', {}, del));
+}
+
+function frameSinger() {
+  return S.frames.find(f => f.frame_id === curFrame)?.singer_id;
+}
+
+$('sAddRow').onclick = () => {
+  if (!curFrame) return;
+  const sid = frameSinger();
+  const last = curRows().slice(-1)[0];
+  S.perf[sid].push({
+    frame_id: curFrame, song_id: '', start_sec: last ? last.start_sec + 300 : 0,
+    tags: [], collab: [], note: '',
+  });
+  markDirty(perfPath(sid)); renderSetlist();
+};
+
+$('sImport').onclick = () => {
+  if (!curFrame) { $('sImportSt').innerHTML = '<span class="err">枠を選んでください</span>'; return; }
+  const sid = frameSinger();
+  const secs = [];
+  for (const line of $('sTsgen').value.split(/\r?\n/)) {
+    if (!line.includes('♪')) continue;
+    const m = line.match(/(\d+):(\d{2}):(\d{2})/);
+    if (m) secs.push((+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]));
+  }
+  if (!secs.length) { $('sImportSt').innerHTML = '<span class="err">「♪」の行が見つかりません</span>'; return; }
+  if ($('sImportClear').checked) {
+    S.perf[sid] = S.perf[sid].filter(p => p.frame_id !== curFrame);
+  }
+  const known = new Set(curRows().map(p => p.start_sec));
+  let added = 0;
+  for (const s of secs) {
+    if (known.has(s)) continue;
+    S.perf[sid].push({ frame_id: curFrame, song_id: '', start_sec: s,
+                       tags: [], collab: [], note: '' });
+    added++;
+  }
+  markDirty(perfPath(sid)); renderSetlist();
+  $('sImportSt').innerHTML = `<span class="ok">${added}行を追加しました</span>` +
+    (secs.length - added ? `（重複 ${secs.length - added}行は無視）` : '');
+};
+
+// ---------------------------------------------------------------- 楽曲タブ
+let newSongTags = [];
+
+function nextSongId() {
+  let max = 0;
+  for (const s of S.songs) {
+    const m = /^S(\d+)$/.exec(s.song_id);
+    if (m) max = Math.max(max, +m[1]);
+  }
+  return 'S' + String(max + 1).padStart(4, '0');
+}
+
+$('mAdd').onclick = () => {
+  const title = $('mTitle').value.trim(), artist = $('mArtist').value.trim();
+  if (!title) { $('mSt').innerHTML = '<span class="err">曲名が空です</span>'; return; }
+  const key = normKey(title, artist);
+  if (S.normIndex.has(key)) {
+    const id = S.normIndex.get(key);
+    const s = S.songIndex.get(id);
+    $('mSt').innerHTML = `<span class="err">既に登録されています → ${id}` +
+      ` 「${esc(s.title)} / ${esc(s.artist)}」</span>`;
+    return;
+  }
+  const split = v => v.split('/').map(x => x.trim()).filter(Boolean);
+  const song = {
+    song_id: nextSongId(), title, artist,
+    lyricists: split($('mLyr').value), composers: split($('mCom').value),
+    arrangers: split($('mArr').value), released: $('mReleased').value.trim(),
+    song_tags: [...newSongTags], norm_key: key,
+  };
+  S.songs.push(song);
+  reindex(); markDirty(FILES.songs);
+  ['mTitle', 'mArtist', 'mReleased', 'mLyr', 'mCom', 'mArr'].forEach(id => $(id).value = '');
+  newSongTags = [];
+  buildTagUI($('mTags'), 'song', newSongTags, v => newSongTags = v);
+  renderSongs();
+  $('mSt').innerHTML = `<span class="ok">${song.song_id} を追加しました</span>`;
+};
+
+function songUsage() {
+  const c = new Map();
+  for (const rows of Object.values(S.perf))
+    for (const p of rows) c.set(p.song_id, (c.get(p.song_id) || 0) + 1);
+  return c;
+}
+
+function renderSongs() {
+  const q = $('mSearch').value.trim().toLowerCase();
+  const use = songUsage();
+  const rows = S.songs.filter(s => !q ||
+    `${s.song_id} ${s.title} ${s.artist}`.toLowerCase().includes(q)).slice(0, 300);
+  $('mCount').textContent = `${S.songs.length}曲`;
+  $('mList').replaceChildren(...rows.map(s => el('tr', {},
+    el('td', { className: 'mono muted', textContent: s.song_id }),
+    el('td', { textContent: s.title }),
+    el('td', { className: 'muted', textContent: s.artist }),
+    el('td', { className: 'mono muted', textContent: s.released || '' }),
+    el('td', { className: 'mono', textContent: String(use.get(s.song_id) || 0) }),
+    el('td', {}, ...tagPills(s.song_tags)))));
+}
+$('mSearch').oninput = renderSongs;
+
+// ---------------------------------------------------------------- 検証
+function validate() {
+  const issues = [];
+  const add = (level, msg) => issues.push({ level, msg });
+
+  const ids = new Set();
+  const byVideo = new Map();
+  for (const f of S.frames) {
+    if (ids.has(f.frame_id)) add('err', `frame_id が重複: ${f.frame_id}`);
+    ids.add(f.frame_id);
+    if (byVideo.has(f.video_id))
+      add('err', `同じ video_id が複数の枠に: ${f.video_id}`
+                 + ` (${byVideo.get(f.video_id)}, ${f.frame_id})`);
+    else byVideo.set(f.video_id, f.frame_id);
+    if (!f.started_at) add('warn', `started_at が未設定: ${f.frame_id}`);
+  }
+
+  // started_at が同値（または未設定）で day_order も同じだと順序が決まらない。
+  // started_at が実時刻で埋まっていれば同日に複数枠があっても問題ない。
+  const byStart = new Map();
+  for (const f of S.frames) {
+    const key = `${f.singer_id}|${f.started_at || '(未設定)'}|${f.day_order}`;
+    if (byStart.has(key))
+      add('warn', `started_at と day_order が同一で順序が決まりません: `
+                  + `${byStart.get(key)} と ${f.frame_id}`);
+    else byStart.set(key, f.frame_id);
+  }
+
+  const tagById = new Map(S.tags.map(t => [t.tag_id, t]));
+  const checkTags = (tags, scope, where) => {
+    const groups = new Map();
+    for (const id of tags || []) {
+      const t = tagById.get(id);
+      if (!t) { add('err', `未知のタグ ${id}: ${where}`); continue; }
+      if (t.scope !== scope) add('err', `scope 違いのタグ ${id}(${t.scope}): ${where}`);
+      if (t.exclusive) {
+        if (groups.has(t.group))
+          add('err', `排他グループ「${t.group}」に複数: ${groups.get(t.group)}, ${id} — ${where}`);
+        else groups.set(t.group, id);
+      }
+    }
+  };
+
+  S.frames.forEach(f => checkTags(f.tags, 'frame', f.frame_id));
+  S.songs.forEach(s => checkTags(s.song_tags, 'song', s.song_id));
+
+  const known = new Set(S.songs.map(s => s.song_id));
+  const normSeen = new Map();
+  for (const s of S.songs) {
+    if (!s.title) { add('warn', `曲名が空: ${s.song_id}`); continue; }
+    const k = s.norm_key || normKey(s.title, s.artist);
+    if (normSeen.has(k))
+      add('err', `重複採番: ${normSeen.get(k)} と ${s.song_id}「${s.title} / ${s.artist}」`);
+    else normSeen.set(k, s.song_id);
+  }
+
+  for (const [sid, rows] of Object.entries(S.perf)) {
+    const perFrame = new Map();
+    for (const p of rows) {
+      const where = `${sid} ${p.frame_id} @${hms(p.start_sec)}`;
+      if (!ids.has(p.frame_id)) add('err', `存在しない枠を参照: ${where}`);
+      if (!p.song_id) add('warn', `song_id が未設定: ${where}`);
+      else if (!known.has(p.song_id)) add('err', `未知の song_id ${p.song_id}: ${where}`);
+      checkTags(p.tags, 'performance', where);
+      const key = `${p.frame_id}|${p.start_sec}`;
+      if (perFrame.has(key)) add('err', `同じ枠で start_sec が重複: ${where}`);
+      else perFrame.set(key, true);
+    }
+  }
+  return issues;
+}
+
+$('pValidate').onclick = () => {
+  const issues = validate();
+  const errs = issues.filter(i => i.level === 'err');
+  const warns = issues.filter(i => i.level === 'warn');
+  const lines = [
+    `エラー ${errs.length}件 / 警告 ${warns.length}件`, '',
+    ...errs.map(i => `[エラー] ${i.msg}`),
+    ...warns.slice(0, 200).map(i => `[警告] ${i.msg}`),
+  ];
+  if (warns.length > 200) lines.push(`… ほか警告 ${warns.length - 200}件`);
+  $('pLog').innerHTML = lines.map(l =>
+    l.startsWith('[エラー]') ? `<span class="err">${esc(l)}</span>` :
+    l.startsWith('[警告]')   ? `<span class="warn">${esc(l)}</span>` : esc(l)).join('\n');
+  $('pPush').disabled = errs.length > 0 || S.dirty.size === 0;
+};
+
+function renderDirty() {
+  if (!S.dirty.size) { $('pDirty').innerHTML = '<span class="muted">変更なし</span>'; return; }
+  $('pDirty').innerHTML = [...S.dirty].sort()
+    .map(p => `<span class="warn">変更</span> ${esc(p)}`).join('\n');
+}
+
+$('pPush').onclick = async () => {
+  const msg = $('pMsg').value.trim() || 'Update Concentus data';
+  $('pPush').disabled = true;
+  const done = [];
+  try {
+    for (const path of [...S.dirty].sort()) {
+      let text;
+      if (path === FILES.frames) { sortFrames(); text = dumpRows(S.frames); }
+      else if (path === FILES.songs)   text = dumpRows(S.songs);
+      else if (path === FILES.singers) text = dumpRows(S.singers);
+      else if (path === FILES.tags)    text = dumpRows(S.tags);
+      else {
+        const sid = path.split('/').pop().replace('.json', '');
+        const rows = (S.perf[sid] || []).slice()
+          .sort((a, b) => a.frame_id.localeCompare(b.frame_id) || a.start_sec - b.start_sec);
+        text = dumpRows(rows);
+      }
+      await ghPut(path, text, msg);
+      done.push(path);
+    }
+    S.dirty.clear(); renderDirty();
+    $('pLog').innerHTML = `<span class="ok">Push しました</span>\n` +
+      done.map(esc).join('\n');
+  } catch (e) {
+    $('pLog').innerHTML = `<span class="err">${esc(e.message)}</span>\n` +
+      `成功: ${done.join(', ') || 'なし'}`;
+    $('pPush').disabled = false;
+  }
+};
+
+// ---------------------------------------------------------------- 初期化
+function renderAll() {
+  renderSingerSelects();
+  buildTagUI($('fTags'), 'frame', newFrameTags, v => newFrameTags = v);
+  buildTagUI($('mTags'), 'song',  newSongTags,  v => newSongTags  = v);
+  renderFrames(); renderFrameSelect(); renderSongs(); renderDirty();
+}
+
+maskCreds();
+renderDirty();
+if (ghToken()) loadAll();
+</script>
+</body>
+</html>

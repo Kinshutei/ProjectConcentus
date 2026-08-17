@@ -1,0 +1,68 @@
+=== Concentus 移行 ===
+取得元: GitHub origin/main
+
+songs.json      1196曲 → 1189曲（除外 7件）
+  正規化キーの衝突: なし
+
+YouTube API から started_at を取得します
+
+singers.json    6名
+frames.json     360枠
+performances/   5211歌唱
+  mikage   3001行
+  dia       516行
+  wouca    1174行
+  kisaki    440行
+  nagi        0行  ← これから登録
+  yako       80行
+
+自動付与したタグ
+  fmt_vertical            127
+  ev_endurance             24
+  ev_anniversary           13
+  pj_rkmusic_relay         12
+  ev_request                8
+  pj_orikyoku_relay         6
+  pj_tamashii_relay         6
+  pj_shijuka_relay          5
+  pj_aiwotsunagu_relay      5
+  fmt_sleep                 4
+  arr_acappella             4
+  ev_guerrilla              3
+  vo_harmony                1
+  sp_impromptu              1
+  sp_trouble                1
+  vo_solo                   1
+  len_one                   1
+
+‼ 要修正: 1つの video_id に複数の配信がぶら下がっています
+   どちらかの 枠URL に誤った video_id が入っています。
+   このまま移行すると別々の配信が1枠に合体します。
+   wouca-SLv-acOdGy8
+     2025-11-30  【歌枠】自己紹介と、少し歌ったりもしたいです✽【wouca : RK Music】#utawouca 01
+     2025-12-02  【歌枠】祝・チャンネル登録5000人達成を歌で祝ヲウカ✽【wouca : RK Music】#utawouca 02
+     → 合計 12歌唱が1枠に合体しています
+
+要対応
+  参照切れ song_id            0件
+  started_at が暫定値（0時）  0枠
+  day_order の判断が要る日    11日
+    mikage 2025-08-08: 2枠
+    mikage 2025-08-30: 2枠
+    mikage 2025-11-15: 2枠
+    mikage 2025-11-29: 2枠
+    mikage 2025-12-13: 2枠
+    mikage 2026-01-29: 2枠
+    mikage 2026-02-25: 2枠
+    mikage 2026-07-07: 2枠
+    wouca 2026-04-16: 2枠
+    wouca 2026-05-23: 2枠
+    wouca 2026-08-15: 2枠
+  タグに変換できなかった補足情報 なし
+
+タグ候補（文脈判断が要るため未適用）
+  ev_collab          6枠  dia-bnpDmyT2y3U, wouca-0MeRzNFq9NA, wouca-4ZK_Y1LTbDs, wouca-Rbvxlw8Jzss …
+  lim_showa          1枠  wouca-0MeRzNFq9NA
+  lim_anime          1枠  kisaki-bNUp9SaFAjQ
+  lim_vocaloid       1枠  kisaki-1f_AF0xHo_c
+  lim_heisei         1枠  kisaki-Sgct4PszV-E

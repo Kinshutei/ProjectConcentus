@@ -7,3 +7,4 @@ Concentus_管理ツール_*.html
 # ビルド成果物と依存
 web/node_modules/
 web/dist/
+node_modules/

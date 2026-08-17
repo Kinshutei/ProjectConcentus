@@ -3,6 +3,7 @@ import type { Db, Frame, Performance, Song } from '../../types'
 import { hms, jstDate, watchUrl } from '../../data'
 import { Link } from '../../router'
 import TerminalMessage from './TerminalMessage'
+import { SearchIcon } from '../../components/icons'
 import RankCards, { type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import './dia.css'
@@ -345,7 +346,12 @@ function Streams({
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: 360 }}>
-          <span style={{ position: 'absolute', left: 10, color: '#606060', fontSize: 14, pointerEvents: 'none' }}>&#128269;</span>
+          <span
+            style={{ position: 'absolute', left: 10, color: '#8a8a8a', display: 'inline-flex', pointerEvents: 'none' }}
+            aria-hidden
+          >
+            <SearchIcon />
+          </span>
           <input
             type="text"
             value={query}
@@ -541,7 +547,12 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
     <div>
       <h2 className="section-title">Sung Repertoire &mdash; {stats.length}</h2>
       <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: 360, marginBottom: 16 }}>
-        <span style={{ position: 'absolute', left: 10, color: '#606060', fontSize: 14, pointerEvents: 'none' }}>&#128269;</span>
+        <span
+            style={{ position: 'absolute', left: 10, color: '#8a8a8a', display: 'inline-flex', pointerEvents: 'none' }}
+            aria-hidden
+          >
+            <SearchIcon />
+          </span>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -657,10 +668,10 @@ function Charts({
       <RankCards items={ranking} paged />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.year}</h3>
-      <RankCards items={years} paged />
+      <RankCards items={years} paged columns={3} rows={10} />
 
       <h3 style={{ margin: '24px 0 8px' }}>{titles.artist}</h3>
-      <RankCards items={artists} paged />
+      <RankCards items={artists} paged columns={3} rows={10} />
     </>
   )
 }

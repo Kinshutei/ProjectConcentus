@@ -1,0 +1,126 @@
+{
+  "tab": {
+    "streams": "LiveStreaming Info",
+    "songs": "Uta-Mita DB",
+    "about": "About",
+    "changelog": "업데이트 기록"
+  },
+  "loading": "로딩 중...",
+  "error": "데이터를 불러오지 못했습니다: {{error}}",
+  "lang": {
+    "ja": "日本語",
+    "en": "English",
+    "ko": "한국어",
+    "zhTW": "繁體中文"
+  },
+  "streams": {
+    "empty": "등록된 방송이 없습니다.",
+    "searchPlaceholder": "곡명 또는 원곡 아티스트로 검색...",
+    "searchHits": "{{count}}개의 방송이 검색됨",
+    "searchNoResults": "「{{query}}」를 포함한 방송을 찾을 수 없습니다.",
+    "expandAll": "▼ OPEN",
+    "collapseAll": "▲ CLOSE",
+    "colSong": "곡명",
+    "colKey": "키",
+    "colNote": "비고",
+    "colArtist": "원곡 아티스트",
+    "colUrl": "URL",
+    "colCollab": "콜라보 상대",
+    "openYouTube": "▶ YouTube에서 열기",
+    "noThumbnail": "썸네일 없음",
+    "firstBadge": "초",
+    "openLink": "▶ 열기"
+  },
+  "songs": {
+    "empty": "등록된 곡이 없습니다.",
+    "colSong": "곡명",
+    "colArtist": "원곡 아티스트",
+    "colLyrics": "작사",
+    "colCompose": "작곡",
+    "colArrange": "편곡",
+    "colRelease": "발매일",
+    "colCount": "노래 횟수",
+    "rankingTitle": "노래 횟수 랭킹 (상위 20곡)",
+    "reset": "리셋",
+    "releaseDate": "발매일",
+    "showMore": "더 보기（+50）　나머지 {{count}}곡",
+    "yearTitle": "발매 연도 분포",
+    "artistTitle": "원곡 아티스트 분포",
+    "totalCount": "※총 곡 수: {{count}}곡"
+  },
+  "about": {
+    "siteTitle": "이 사이트에 대하여",
+    "siteDesc1": "이 사이트는 RK Music 소속 VSinger 深影（Mikage）의 커버곡 및 방송 정보를 정리한 팬메이드 데이터베이스 사이트입니다.",
+    "siteDesc2": "공식 사이트가 아니므로 게재된 정보에 오류가 포함될 수 있습니다. RK Music 및 深影에게 직접 문의하지 마시기 바랍니다. 문의 사항은 <link>白百合と金鷲亭(@WL_GE_inn)</link>으로 연락해 주세요.",
+    "siteNote": "※ 게재 정보는 자원봉사자(단 1명)가 수동으로 업데이트합니다.",
+    "purposeTitle": "이 사이트의 목적",
+    "purposeDesc": "이 사이트는 개인이 운영하는 정보 발신 사이트입니다. 더 많은 분들에게 深影의 활동을 알리고, 그녀의 의욕 향상에 조금이라도 기여하고자 개설하였습니다.",
+    "howTitle": "탭 사용법",
+    "howStreamsTitle": "🎙 LiveStreaming Info",
+    "howStreamsDesc": "방송별 셋리스트 목록입니다. 방송 날짜·방송 제목으로 그룹화되어 있으며, 각 방송을 클릭하면 곡 목록이 펼쳐집니다. YouTube 링크에서 해당 방송으로 바로 이동할 수 있으며, 곡 제목 오른쪽 링크에서는 해당 곡이 시작되는 부분으로 이동할 수 있습니다!",
+    "howSongsTitle": "🎵 Uta-Mita DB",
+    "howSongsDesc": "곡별 집계 데이터입니다. 열 헤더를 클릭하면 해당 열로 정렬할 수 있습니다. 하단 그래프에서 노래 횟수 랭킹, 발매 연도 분포, 원곡 아티스트 분포를 확인할 수 있습니다.",
+    "dataTitle": "데이터에 대하여",
+    "dataFormat": "데이터 형식",
+    "dataFormatVal": "CSV (GitHub 리포지토리에서 관리)",
+    "dataUpdate": "업데이트 시점",
+    "dataUpdateVal": "방송 종료 후 수동 업데이트",
+    "dataCoverage": "수록 범위",
+    "dataCoverageVal": "深影의 노래 방송·커버 영상",
+    "dataCollab": "콜라보 방송",
+    "dataCollabVal": "콜라보 상대방의 이름도 기록합니다",
+    "linksTitle": "링크",
+    "linkYt": "▶ 深影 YouTube 채널",
+    "linkX": "𝕏 深影 X（Twitter）",
+    "disclaimerTitle": "면책 조항",
+    "disclaimerText": "이 사이트는 개인이 운영하며 RK Music 및 深影과 무관합니다. 게재 정보의 정확성을 위해 노력하고 있으나 오류가 포함될 수 있습니다. RK Music 또는 深影으로부터 정보 삭제 요청이 있을 경우 즉시 대응하겠습니다."
+  },
+  "changelog": {
+    "title": "업데이트 기록",
+    "entries": [
+      {
+        "date": "2026-04-03",
+        "items": [
+          "모바일 개선. LiveStreaming Info의 전체 열기/닫기 버튼을 ▼ OPEN / ▲ CLOSE로 변경하여 스마트폰에서의 레이아웃 깨짐을 해소.",
+          "모바일 개선. Uta-Mita DB 곡 목록을 카드 형식으로 변경. 곡명·아티스트·노래 횟수를 한 줄로 확인할 수 있으며, 탭하면 작사/작곡/편곡 상세 정보를 펼칠 수 있습니다.",
+          "모바일 개선. 카드 표시는 노래 횟수 15회 이상을 먼저 표시하고, 이후 「더 보기」 버튼으로 50곡씩 추가 표시.",
+          "모바일 개선. 터치 조작으로 인한 그래프의 의도치 않은 확대·이동을 비활성화.",
+          "모바일 개선. 푸터 띠의 크기와 글자 크기를 조정."
+        ]
+      },
+      {
+        "date": "2026-03-23",
+        "items": [
+          "다국어 지원 추가. 일본어・영어・한국어・번체 중국어（대만）4개 언어로 전환 가능해졌습니다. PC 버전은 좌측 상단 고정 드롭다운, 스마트폰 버전은 탭 선택 오른쪽에 언어 선택기를 배치했습니다.",
+          "곡명・원곡 아티스트명의 번역에 대응. 번역이 없는 경우 영어 표기, 영어도 없는 경우 일본어 표기로 표시됩니다（CSV 칼럼 추가 작업은 순차적으로 진행 예정）.",
+          "About・업데이트 기록 문장을 4개 언어로 번역. 브라우저 언어 설정을 초기값으로 자동 감지하며, 선택한 언어는 브라우저에 저장됩니다."
+        ]
+      },
+      {
+        "date": "2026-03-21",
+        "items": [
+          "모바일 개선. LiveStreaming Info・Uta-Mita DB・업데이트 기록 탭 전환을 드롭다운 형식으로 변경.",
+          "모바일 개선. Uta-Mita DB의 곡 목록을 최대 15곡까지 표시하고 이후는 스크롤 방식으로 변경."
+        ]
+      },
+      {
+        "date": "2026-03-20",
+        "items": [
+          "LiveStreaming Info 탭 › 검색 폼 개선. 곡명 또는 원곡 아티스트로 검색하도록 변경. ※ 기존에는 곡명만 반응.",
+          "Uta-Mita DB 가독성 개선. 곡 목록에 스크롤 방식 적용. 노래 횟수 랭킹에서 곡명 잘림 수정. 발매 연도 분포를 트리맵에서 막대 차트로 변경."
+        ]
+      },
+      {
+        "date": "2026-03-19",
+        "items": [
+          "DB 구조 변경. 곡 마스터 데이터와 방송 마스터 데이터를 분리하여 DB 관리 환경 개선.",
+          "UI 및 원곡 아티스트 정보 정리. 이 작업으로 일부 곡의 아티스트 표기가 달라질 수 있습니다. 추후 수정 예정이오니 양해 부탁드립니다."
+        ]
+      },
+      {
+        "date": "2026-03-13",
+        "items": ["사이트 오픈"]
+      }
+    ]
+  }
+}

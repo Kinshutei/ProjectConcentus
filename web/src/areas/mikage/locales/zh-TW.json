@@ -1,0 +1,126 @@
+{
+  "tab": {
+    "streams": "LiveStreaming Info",
+    "songs": "Uta-Mita DB",
+    "about": "About",
+    "changelog": "更新記錄"
+  },
+  "loading": "載入中...",
+  "error": "資料載入失敗：{{error}}",
+  "lang": {
+    "ja": "日本語",
+    "en": "English",
+    "ko": "한국어",
+    "zhTW": "繁體中文"
+  },
+  "streams": {
+    "empty": "尚無直播記錄。",
+    "searchPlaceholder": "以曲名或原曲藝術家搜尋...",
+    "searchHits": "找到 {{count}} 場直播",
+    "searchNoResults": "找不到包含「{{query}}」的直播。",
+    "expandAll": "▼ OPEN",
+    "collapseAll": "▲ CLOSE",
+    "colSong": "曲名",
+    "colKey": "移調",
+    "colNote": "備註",
+    "colArtist": "原曲藝術家",
+    "colUrl": "URL",
+    "colCollab": "合唱嘉賓",
+    "openYouTube": "▶ 在 YouTube 開啟",
+    "noThumbnail": "無縮圖",
+    "firstBadge": "初",
+    "openLink": "▶ 開啟"
+  },
+  "songs": {
+    "empty": "尚無曲目記錄。",
+    "colSong": "曲名",
+    "colArtist": "原曲藝術家",
+    "colLyrics": "作詞",
+    "colCompose": "作曲",
+    "colArrange": "編曲",
+    "colRelease": "發行日",
+    "colCount": "演唱次數",
+    "rankingTitle": "演唱次數排名（前 20 首）",
+    "reset": "重置",
+    "releaseDate": "發行日",
+    "showMore": "顯示更多（+50）　剩餘 {{count}} 首",
+    "yearTitle": "發行年份分布",
+    "artistTitle": "原曲藝術家分布",
+    "totalCount": "※總曲數：{{count}} 首"
+  },
+  "about": {
+    "siteTitle": "關於本站",
+    "siteDesc1": "本站是以 RK Music 旗下 VSinger 深影（Mikage）的翻唱作品及直播資訊為主題的粉絲製作資料庫。",
+    "siteDesc2": "本站並非官方網站，資訊可能包含錯誤。請勿直接聯繫 RK Music 及深影。如有疑問，請聯繫<link>白百合と金鷲亭(@WL_GE_inn)</link>。",
+    "siteNote": "※ 資訊由志工（僅 1 人）手動更新。",
+    "purposeTitle": "本站的建立目的",
+    "purposeDesc": "本站為個人運營的資訊分享網站，希望能讓更多人認識深影的活動，並為她提升創作動力盡一份心力。",
+    "howTitle": "頁籤使用說明",
+    "howStreamsTitle": "🎙 LiveStreaming Info",
+    "howStreamsDesc": "依次呈現各直播的歌單。依日期及直播名稱分組，點擊各直播可展開曲目列表。可透過 YouTube 連結直接跳轉至該直播，曲名右側的連結則可跳至該曲開始演唱的位置！",
+    "howSongsTitle": "🎵 Uta-Mita DB",
+    "howSongsDesc": "依曲目整合的統計數據。點擊欄位標題可依該欄排序。下方圖表可確認演唱次數排名、發行年份分布及原曲藝術家分布。",
+    "dataTitle": "關於資料",
+    "dataFormat": "資料格式",
+    "dataFormatVal": "CSV（以 GitHub 倉庫管理）",
+    "dataUpdate": "更新時間",
+    "dataUpdateVal": "每次直播結束後手動更新",
+    "dataCoverage": "收錄範圍",
+    "dataCoverageVal": "深影的歌唱直播及翻唱影片",
+    "dataCollab": "合唱直播",
+    "dataCollabVal": "也會記錄合唱嘉賓的名稱",
+    "linksTitle": "連結",
+    "linkYt": "▶ 深影 YouTube 頻道",
+    "linkX": "𝕏 深影 X（Twitter）",
+    "disclaimerTitle": "免責聲明",
+    "disclaimerText": "本站為個人運營，與 RK Music 及深影無關。雖盡力確保資訊正確，仍可能包含錯誤。若 RK Music 或深影提出下架要求，本站將立即因應。"
+  },
+  "changelog": {
+    "title": "更新記錄",
+    "entries": [
+      {
+        "date": "2026-04-03",
+        "items": [
+          "手機版改善。將 LiveStreaming Info 的全展開/全收起按鈕改為 ▼ OPEN / ▲ CLOSE，解決手機上的版面問題。",
+          "手機版改善。Uta-Mita DB 曲目列表改為卡片形式。曲名、歌手、演唱次數可在一行內確認，點擊即可展開作詞/作曲/編曲詳細資訊。",
+          "手機版改善。卡片預設顯示演唱 15 次以上的曲目，點擊「顯示更多」可每次追加 50 首。",
+          "手機版改善。停用觸控操作導致圖表意外縮放或移動的功能。",
+          "手機版改善。調整頁尾帶狀區域的高度與字體大小。"
+        ]
+      },
+      {
+        "date": "2026-03-23",
+        "items": [
+          "新增多語言支援。現可切換日語、英語、韓語、繁體中文（台灣）共4種語言。PC 版語言選擇器固定於左上角，手機版則置於頁籤選單右側。",
+          "曲名及原曲藝術家名稱支援翻譯顯示。若無對應翻譯則以英語替代，英語亦無時以日語顯示（CSV 欄位新增作業將陸續進行）。",
+          "About 及更新記錄頁面已翻譯為4種語言。首次訪問時自動偵測瀏覽器語言設定，選擇的語言將儲存於瀏覽器中。"
+        ]
+      },
+      {
+        "date": "2026-03-21",
+        "items": [
+          "手機版改善。將 LiveStreaming Info、Uta-Mita DB、更新記錄頁籤的切換改為下拉選單形式。",
+          "手機版改善。Uta-Mita DB 的曲目列表最多顯示 15 首，其餘以捲動方式呈現。"
+        ]
+      },
+      {
+        "date": "2026-03-20",
+        "items": [
+          "LiveStreaming Info 頁籤 › 搜尋欄位改善。改為可依曲名或原曲藝術家搜尋。※ 原本僅能匹配曲名。",
+          "改善 Uta-Mita DB 的閱覽體驗。曲目表格新增捲動功能。修正演唱次數排名中曲名被截斷的問題。發行年份分布從樹狀圖改為長條圖。"
+        ]
+      },
+      {
+        "date": "2026-03-19",
+        "items": [
+          "資料庫結構調整。將曲目主資料與直播場次主資料分離，改善 DB 管理環境。",
+          "整理 UI 及原曲藝術家等資訊。此次作業後，部分曲目的藝術家顯示方式可能有所不同。後續將持續調整，敬請見諒。"
+        ]
+      },
+      {
+        "date": "2026-03-13",
+        "items": ["網站上線"]
+      }
+    ]
+  }
+}

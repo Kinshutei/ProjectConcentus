@@ -1,0 +1,126 @@
+{
+  "tab": {
+    "streams": "LiveStreaming Info",
+    "songs": "Uta-Mita DB",
+    "about": "About",
+    "changelog": "Changelog"
+  },
+  "loading": "Loading...",
+  "error": "Failed to load data: {{error}}",
+  "lang": {
+    "ja": "日本語",
+    "en": "English",
+    "ko": "한국어",
+    "zhTW": "繁體中文"
+  },
+  "streams": {
+    "empty": "No streams registered yet.",
+    "searchPlaceholder": "Search by song title or original artist...",
+    "searchHits": "{{count}} stream(s) found",
+    "searchNoResults": "No streams found containing \"{{query}}\".",
+    "expandAll": "▼ OPEN",
+    "collapseAll": "▲ CLOSE",
+    "colSong": "Song Title",
+    "colKey": "Key",
+    "colNote": "Note",
+    "colArtist": "Original Artist",
+    "colUrl": "URL",
+    "colCollab": "Collaborator",
+    "openYouTube": "▶ Open on YouTube",
+    "noThumbnail": "No thumbnail",
+    "firstBadge": "1st",
+    "openLink": "▶ Open"
+  },
+  "songs": {
+    "empty": "No songs registered yet.",
+    "colSong": "Song Title",
+    "colArtist": "Original Artist",
+    "colLyrics": "Lyrics",
+    "colCompose": "Composer",
+    "colArrange": "Arranger",
+    "colRelease": "Release Date",
+    "colCount": "Times Sung",
+    "rankingTitle": "Top 20 Most Sung Songs",
+    "reset": "Reset",
+    "releaseDate": "Release",
+    "showMore": "Show more (+50)　{{count}} remaining",
+    "yearTitle": "Release Year Distribution",
+    "artistTitle": "Original Artist Distribution",
+    "totalCount": "※Total songs: {{count}}"
+  },
+  "about": {
+    "siteTitle": "About This Site",
+    "siteDesc1": "This is a fan-made database site covering the song covers and streaming information of RK Music VSinger Mikage.",
+    "siteDesc2": "This is not an official site, and the information may contain errors. Please do not contact RK Music or Mikage directly. For inquiries, please contact <link>Shirayuri to Kinwashi-tei (@WL_GE_inn)</link>.",
+    "siteNote": "※ Information is manually updated by a volunteer (just one person).",
+    "purposeTitle": "Purpose of This Site",
+    "purposeDesc": "This site is a personally operated information site, created with the hope of introducing Mikage's activities to more people and contributing to her motivation.",
+    "howTitle": "How to Use the Tabs",
+    "howStreamsTitle": "🎙 LiveStreaming Info",
+    "howStreamsDesc": "A setlist for each stream session. Sessions are grouped by date and name. Click a session to expand its song list. The YouTube link takes you directly to the stream, and the link next to each song title jumps to around where that song starts!",
+    "howSongsTitle": "🎵 Uta-Mita DB",
+    "howSongsDesc": "Aggregated data by song. Click column headers to sort. The graphs below show the singing count ranking, release year distribution, and original artist distribution.",
+    "dataTitle": "About the Data",
+    "dataFormat": "Format",
+    "dataFormatVal": "CSV (managed in GitHub repository)",
+    "dataUpdate": "Update timing",
+    "dataUpdateVal": "Manually updated after each stream",
+    "dataCoverage": "Coverage",
+    "dataCoverageVal": "Mikage's singing streams and cover videos",
+    "dataCollab": "Collab streams",
+    "dataCollabVal": "Collaborator names are also recorded",
+    "linksTitle": "Links",
+    "linkYt": "▶ Mikage YouTube Channel",
+    "linkX": "𝕏 Mikage X (Twitter)",
+    "disclaimerTitle": "Disclaimer",
+    "disclaimerText": "This site is personally operated and is unrelated to RK Music or Mikage. While we strive to ensure accuracy, errors may be present. If RK Music or Mikage requests removal of any information, we will respond promptly."
+  },
+  "changelog": {
+    "title": "Changelog",
+    "entries": [
+      {
+        "date": "2026-04-03",
+        "items": [
+          "Mobile improvements. Changed the expand/collapse buttons in LiveStreaming Info to ▼ OPEN / ▲ CLOSE to prevent layout issues on mobile.",
+          "Mobile improvements. Uta-Mita DB song list now displays in card format. Song title, artist, and sing count are shown in one line; tap to expand lyrics/composer/arranger details.",
+          "Mobile improvements. Cards initially show songs sung 15+ times; tap 'Show more' to load 50 additional songs at a time.",
+          "Mobile improvements. Disabled unintentional zoom and pan on graphs triggered by touch gestures.",
+          "Mobile improvements. Adjusted footer bar height and font size for a tighter fit."
+        ]
+      },
+      {
+        "date": "2026-03-23",
+        "items": [
+          "Multilingual support added. You can now switch between Japanese, English, Korean, and Traditional Chinese (Taiwan). A language selector is placed in the fixed top-left corner on desktop, and next to the tab selector on mobile.",
+          "Song titles and original artist names now support translation. If no translation is available, English is used as a fallback; if English is also unavailable, Japanese is shown. (CSV column additions will follow.)",
+          "About and Changelog pages translated into all 4 languages. The browser's language setting is detected automatically on first visit, and your selection is saved in the browser."
+        ]
+      },
+      {
+        "date": "2026-03-21",
+        "items": [
+          "Mobile improvements. Changed tab switching for LiveStreaming Info, Uta-Mita DB, and Changelog to dropdown format.",
+          "Mobile improvements. Song list in Uta-Mita DB now shows up to 15 songs, with scroll for the rest."
+        ]
+      },
+      {
+        "date": "2026-03-20",
+        "items": [
+          "LiveStreaming Info tab › Improved search. Now searches by song title or original artist. ※ Previously only matched song titles.",
+          "Improved Uta-Mita DB readability. Added scroll to song table. Fixed truncated song names in the singing count ranking. Changed release year distribution from treemap to bar chart."
+        ]
+      },
+      {
+        "date": "2026-03-19",
+        "items": [
+          "Database restructure. Separated song master data from stream session master data to improve DB management.",
+          "Reorganized UI and original artist information. This may affect how some artists are displayed. We'll address any issues later — thank you for your patience."
+        ]
+      },
+      {
+        "date": "2026-03-13",
+        "items": ["Site launched"]
+      }
+    ]
+  }
+}

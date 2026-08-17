@@ -1,427 +1,693 @@
-/* 深影の領域。現行サイトの配色（生成り＋青緑）をそのまま踏襲する。 */
-.mikage {
-  --mk-bg: #f2ede4;
-  --mk-panel: #f7f3ec;
-  --mk-line: #d8cfc4;
-  --mk-text: #2a2a2a;
-  --mk-muted: #6d6d6d;
-  --mk-accent: #3a7a7b;
-  --mk-accent-soft: #acd0d1;
-  --mk-gold: #d4a843;
-
-  min-height: 100vh;
-  background: var(--mk-bg);
-  color: var(--mk-text);
+/* 深影の領域。現行サイト（Mikage_HishatainoHeya）の App.css を取り込み、
+   他の領域へ漏れないよう .mikage-root 配下へスコープしただけのもの。
+   見た目を一致させるため、宣言の内容は一切変更していない。 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+.mikage-root *, .mikage-root *::before, .mikage-root *::after {
+  box-sizing: border-box;
 }
-
-.mk-head {
-  border-bottom: 1px solid var(--mk-line);
-  background: var(--mk-panel);
-}
-
-.mk-head-inner,
-.mk-tabs-inner,
-.mk-main,
-.mk-foot {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-.mk-head-inner {
-  padding-top: 26px;
-  padding-bottom: 22px;
-}
-
-.mk-crumb {
+.mikage-root {
   margin: 0;
-  font-size: 12px;
-  color: var(--mk-muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 16px;
+  color: #2a2a2a;
+  -webkit-font-smoothing: antialiased;
 }
-
-.mk-crumb a:hover {
-  color: var(--mk-accent);
+.mikage-root ::-webkit-scrollbar {
+  width: 6px; height: 6px;
 }
-
-.mk-head h1 {
-  margin: 6px 0 0;
-  font-size: 26px;
+.mikage-root ::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+}
+.mikage-root ::-webkit-scrollbar-thumb {
+  background: #acd0d1; border-radius: 3px;
+}
+.mikage-root ::-webkit-scrollbar-thumb:hover {
+  background: #8ab8b9;
+}
+.mikage-root .sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: calc(100vh - 54px);
+  width: 66px;
+  background: #acd0d1;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 150;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mikage-root .sidebar.sidebar-open {
+  width: 360px;
+}
+.mikage-root .sidebar-toggle {
+  width: 66px;
+  height: 56px;
+  flex-shrink: 0;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid #ffffff;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0;
+  color: #ffffff;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  transition: opacity 0.15s;
+}
+.mikage-root .sidebar-toggle:hover {
+  opacity: 0.6;
+}
+.mikage-root .sidebar.sidebar-open .sidebar-toggle {
+  border-bottom-color: #ffffff;
+}
+.mikage-root .sidebar.sidebar-open::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 66px;
+  width: 1px;
+  height: 100%;
+  background: #ffffff;
+  pointer-events: none;
+}
+.mikage-root .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s 0.1s;
+  white-space: nowrap;
+}
+.mikage-root .sidebar.sidebar-open .sidebar-nav {
+  opacity: 1;
+  pointer-events: auto;
+}
+.mikage-root .sidebar-nav-btn {
+  position: relative;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  text-align: left;
+  padding: 13px 28px 13px 100px;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: color 1s, padding-left 0.15s, border-color 0.15s;
+  text-transform: uppercase;
+}
+.mikage-root .sidebar-nav-text {
+  position: relative;
+  display: inline-block;
+}
+.mikage-root .sidebar-nav-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ffffff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s;
+}
+.mikage-root .sidebar-nav-btn:hover {
+  color: #ffffff;
+  padding-left: 110px;
+  transition: color 0.2s, padding-left 0.15s, border-color 0.15s;
+}
+.mikage-root .sidebar-nav-btn:hover .sidebar-nav-text::after {
+  transform: scaleX(1);
+  transition: transform 0.2s;
+}
+.mikage-root .sidebar-nav-btn.active {
+  color: #3a6a6b;
+  border-left-color: #3a6a6b;
+  padding-left: 98px;
+}
+.mikage-root .main-wrapper {
+  margin-left: 66px;
+  margin-bottom: 54px;
+  min-height: calc(100vh - 54px);
+}
+.mikage-root .content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px 28px 66px;
+}
+.mikage-root .lang-selector-topright {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 300;
+}
+.mikage-root .lang-selector {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.mikage-root .lang-selector select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(172, 208, 209, 0.65);
+  border: 1px solid #8ab8b9;
+  border-radius: 4px;
+  padding: 5px 24px 5px 10px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 0.8rem;
+  color: #1a1a1a;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.15s;
+}
+.mikage-root .lang-selector select:hover, .mikage-root .lang-selector select:focus {
+  border-color: #3a6a6b;
+}
+.mikage-root .lang-selector::after {
+  content: '▼';
+  position: absolute;
+  right: 7px;
+  font-size: 0.6rem;
+  color: #3a6a6b;
+  pointer-events: none;
+}
+.mikage-root .btn-secondary {
+  background: rgba(172, 208, 209, 0.3);
+  border: 1px solid #acd0d1;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #2a2a2a;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   letter-spacing: 0.02em;
 }
-
-.mk-sub {
-  margin: 6px 0 0;
-  font-size: 13px;
-  color: var(--mk-muted);
+.mikage-root .btn-secondary:hover {
+  background: rgba(172, 208, 209, 0.6);
+  color: #1a1a1a;
+  border-color: #8ab8b9;
 }
-
-.mk-tabs {
-  border-bottom: 1px solid var(--mk-line);
-  background: var(--mk-panel);
-  position: sticky;
-  top: 0;
-  z-index: 5;
+.mikage-root .expander {
+  border: 1px solid #d8cfc4;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  background: #f5f0e8;
 }
-
-.mk-tabs-inner {
-  display: flex;
-  gap: 4px;
+.mikage-root .expander:hover {
+  border-color: #acd0d1;
 }
-
-.mk-tabs button {
+.mikage-root .expander-header {
+  width: 100%;
+  text-align: left;
+  background: #f5f0e8;
   border: none;
-  background: none;
-  padding: 12px 18px;
-  font: inherit;
-  font-size: 14px;
-  color: var(--mk-muted);
-  cursor: pointer;
-}
-
-.mk-tabs button.on {
-  color: var(--mk-accent);
-  box-shadow: inset 0 -2px 0 var(--mk-accent);
-  font-weight: 600;
-}
-
-.mk-main {
-  padding-top: 26px;
-  padding-bottom: 60px;
-}
-
-.mk-h2 {
+  padding: 10px 14px;
+  font-family: inherit;
   font-size: 15px;
-  margin: 30px 0 12px;
-  color: var(--mk-accent);
-  letter-spacing: 0.04em;
-}
-
-.mk-h2:first-child {
-  margin-top: 0;
-}
-
-/* ツールバー */
-.mk-toolbar {
+  font-weight: 400;
+  color: #2a2a2a;
+  cursor: pointer;
+  transition: background 0.15s;
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
+}
+.mikage-root .expander-header:hover {
+  background: #ede7db;
+}
+.mikage-root .expander-body {
+  padding: 14px 16px;
+  background: #f5f0e8;
+  border-top: 1px solid #d8cfc4;
+}
+.mikage-root .setlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  text-align: left;
+}
+.mikage-root .setlist-table th {
+  padding: 5px 10px;
+  border-bottom: 1px solid #cce0e0;
+  color: #5a8a8b;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+.mikage-root .setlist-table th:nth-child(1) {
+  width: 36px; text-align: left;
+}
+.mikage-root .setlist-table th:nth-child(2) {
+  width: 220px;
+}
+.mikage-root .setlist-table th:nth-child(3) {
+  width: 180px;
+}
+.mikage-root .setlist-table th:nth-child(4) {
+  width: 60px;
+}
+.mikage-root .setlist-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #e0eded;
+  color: #2a2a2a;
+  white-space: nowrap;
+}
+.mikage-root .setlist-table td:nth-child(1) {
+  color: #8aacac; text-align: left; width: 36px;
+}
+.mikage-root .setlist-table td:nth-child(2) {
+  width: 220px; overflow: hidden; text-overflow: ellipsis; max-width: 220px;
+}
+.mikage-root .setlist-table td:nth-child(3) {
+  width: 180px; overflow: hidden; text-overflow: ellipsis; max-width: 180px; color: #5a7a7a;
+}
+.mikage-root .setlist-table td:nth-child(4) {
+  width: 60px;
+}
+.mikage-root .setlist-table tr:last-child td {
+  border-bottom: none;
+}
+.mikage-root .setlist-table tr:hover td {
+  background: rgba(172, 208, 209, 0.15);
+}
+.mikage-root .setlist-table a {
+  color: #3a7a7b; text-decoration: none;
+}
+.mikage-root .setlist-table a:hover {
+  color: #1a5a5b; text-decoration: underline;
+}
+.mikage-root .setlist-card-list {
+  display: none;
+}
+.mikage-root .songs-table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(25 * 38px + 42px);
+  border: 1px solid #cce0e0;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.5);
+}
+.mikage-root .songs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.mikage-root .songs-table thead {
+  position: sticky; top: 0; z-index: 1;
+}
+.mikage-root .songs-table th {
+  text-align: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #cce0e0;
+  background: rgba(172, 208, 209, 0.35);
+  color: #2a2a2a;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+.mikage-root .songs-table th:hover {
+  background: rgba(172, 208, 209, 0.55);
+}
+.mikage-root .songs-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e0eded;
+  color: #2a2a2a;
+  white-space: nowrap;
+}
+.mikage-root .songs-table th:nth-child(1), .mikage-root .songs-table td:nth-child(1) {
+  min-width: 190px;
+}
+.mikage-root .songs-table th:nth-child(2), .mikage-root .songs-table td:nth-child(2) {
+  min-width: 170px;
+}
+.mikage-root .songs-table th:nth-child(3), .mikage-root .songs-table td:nth-child(3) {
+  min-width: 150px;
+}
+.mikage-root .songs-table th:nth-child(4), .mikage-root .songs-table td:nth-child(4) {
+  min-width: 150px;
+}
+.mikage-root .songs-table th:nth-child(5), .mikage-root .songs-table td:nth-child(5) {
+  min-width: 110px;
+}
+.mikage-root .songs-table th:nth-child(6), .mikage-root .songs-table td:nth-child(6) {
+  min-width:  90px;
+}
+.mikage-root .songs-table th:nth-child(7), .mikage-root .songs-table td:nth-child(7) {
+  min-width:  80px;
+}
+.mikage-root .songs-table tr:hover td {
+  background: rgba(172, 208, 209, 0.1);
+}
+.mikage-root h3 {
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5a8a8b;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+.mikage-root a {
+  color: #3a7a7b;
+}
+.mikage-root a:hover {
+  color: #1a5a5b;
+}
+.mikage-root .footer-full {
+  display: inline;
+}
+.mikage-root .footer-short {
+  display: none;
+}
+.mikage-root .footer-icons {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.mikage-root .footer-icon-link {
+  color: rgb(112, 112, 112);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.mikage-root .footer-icon-link:hover {
+  color: #acd0d1;
+}
+.mikage-root .footer-icon-link svg {
+  width: 18px; height: 18px; fill: currentColor;
+}
+.mikage-root .songs-card-list {
+  display: none;
+}
+@media (max-width: 600px) {
+.mikage-root .expander-body > div {
+  grid-template-columns: 1fr !important;
+}
+.mikage-root .setlist-table-wrap {
+  display: none;
+}
+.mikage-root .setlist-card-list {
+  display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 0;
+}
+.mikage-root .setlist-card {
+  background: rgba(172, 208, 209, 0.08);
+    border: 1px solid #d8cfc4;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+.mikage-root .setlist-card--hit {
+  background: rgba(172, 208, 209, 0.18);
+    border-color: #8ab8b9;
+}
+.mikage-root .setlist-card-row1 {
+  display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+}
+.mikage-root .setlist-card-no {
+  flex-shrink: 0;
+    color: #8aacac;
+    font-size: 11px;
+    min-width: 18px;
+}
+.mikage-root .setlist-card-title {
+  flex: 1;
+    color: #2a2a2a;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.mikage-root .setlist-card-first-badge {
+  display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #d4a843;
+    border: 1px solid #d4a843;
+    border-radius: 3px;
+    padding: 1px 4px;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.mikage-root .setlist-card-artist {
+  font-size: 12px;
+    color: #5a7a7a;
+    font-weight: 400;
+}
+.mikage-root .setlist-card-link {
+  flex-shrink: 0;
+    color: #3a7a7b;
+    font-size: 14px;
+    text-decoration: none;
+    padding-left: 4px;
+}
+.mikage-root .setlist-card-row2 {
+  display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #5a7a7a;
+}
+.mikage-root .setlist-card-meta-label {
+  color: #aaa;
+    margin-right: 3px;
+}
+.mikage-root .main-wrapper.sidebar-open {
+  margin-left: 44px;
+}
+.mikage-root .content {
+  padding: 16px;
+}
+.mikage-root .songs-table-wrap {
+  display: none;
+}
+.mikage-root .songs-card-list {
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;
+}
+.mikage-root .songs-card {
+  background: rgba(255,255,255,0.5);
+    border: 1px solid #e0eded;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+.mikage-root .songs-card-top {
+  display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.mikage-root .songs-card-title-row {
+  flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mikage-root .songs-card-title {
+  font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+.mikage-root .songs-card-artist {
+  font-size: 12px;
+    color: #888;
+}
+.mikage-root .songs-card-count {
+  font-size: 15px;
+    font-weight: 700;
+    color: #3a7a7b;
+    white-space: nowrap;
+}
+.mikage-root .songs-card-sub {
+  font-size: 12px;
+    color: #888;
+}
+.mikage-root .songs-card-detail {
+  display: none;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #888;
+    border-top: 1px solid #e0eded;
+    padding-top: 6px;
+}
+.mikage-root .songs-card.open .songs-card-detail {
+  display: block;
+}
+.mikage-root .songs-card-detail-row {
+  display: flex; gap: 6px; margin-bottom: 2px;
+}
+.mikage-root .songs-card-detail-label {
+  color: #aaa; min-width: 32px;
+}
+.mikage-root .songs-card-more-btn {
+  width: 100%;
+    padding: 10px;
+    background: rgba(172,208,209,0.2);
+    border: 1px solid #cce0e0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #3a7a7b;
+    cursor: pointer;
+    text-align: center;
+}
+}
+@media (max-width: 640px) {
+.mikage-root .footer-full {
+  display: none;
+}
+.mikage-root .footer-short {
+  display: inline-block;
+    width: 66.6%;
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.4;
+}
+.mikage-root .footer-icons {
+  display: none;
+}
+.mikage-root footer {
+  height: 36px !important;
+}
+.mikage-root .main-wrapper {
+  margin-bottom: 36px;
+    min-height: calc(100vh - 36px);
+}
+.mikage-root .sidebar {
+  height: calc(100vh - 36px);
+}
 }
 
-.mk-search {
+/* 統合DB側で追加した要素のみ、元CSSの配色に合わせて定義する */
+.mikage-root {
+  min-height: 100vh;
+}
+.mikage-root .mk-search {
   position: relative;
   display: inline-flex;
   align-items: center;
   width: 100%;
   max-width: 360px;
 }
-
-.mk-search--wide {
-  max-width: 420px;
-  margin-bottom: 12px;
-}
-
-.mk-search span[aria-hidden] {
+.mikage-root .mk-search span[aria-hidden] {
   position: absolute;
-  left: 11px;
-  font-size: 13px;
-  color: var(--mk-muted);
+  left: 10px;
+  color: #606060;
+  font-size: 14px;
   pointer-events: none;
 }
-
-.mk-search input {
+.mikage-root .mk-search input {
   width: 100%;
-  padding: 7px 34px;
-  border: 1px solid var(--mk-line);
+  padding: 7px 36px 7px 32px;
+  border: 1px solid #d8cfc4;
   border-radius: 20px;
-  background: #fff;
-  color: var(--mk-text);
-  font: inherit;
-  font-size: 14px;
+  font-family: inherit;
+  font-size: 15px;
   outline: none;
+  background: #f5f0e8;
+  color: #2a2a2a;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-
-.mk-search input:focus {
-  border-color: var(--mk-accent-soft);
-  box-shadow: 0 0 0 2px rgba(138, 184, 185, 0.3);
+.mikage-root .mk-search input.searching {
+  border-color: #8ab8b9;
+  box-shadow: 0 0 0 2px rgba(138, 184, 185, 0.35);
 }
-
-.mk-search-clear {
+.mikage-root .mk-search-clear {
   position: absolute;
   right: 10px;
-  border: none;
   background: none;
-  color: var(--mk-muted);
+  border: none;
   cursor: pointer;
-  font-size: 13px;
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1;
   padding: 0;
 }
-
-.mk-btn {
-  border: 1px solid var(--mk-line);
-  background: #fff;
-  border-radius: 16px;
-  padding: 5px 14px;
-  font: inherit;
-  font-size: 13px;
-  color: var(--mk-muted);
-  cursor: pointer;
-}
-
-.mk-btn:hover {
-  border-color: var(--mk-accent-soft);
-  color: var(--mk-accent);
-}
-
-.mk-hits,
-.mk-empty {
-  font-size: 13px;
-  color: var(--mk-muted);
-}
-
-/* 枠のアコーディオン */
-.mk-expanders {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.mk-exp {
-  border: 1px solid var(--mk-line);
-  border-radius: 6px;
-  background: var(--mk-panel);
-  overflow: hidden;
-}
-
-.mk-exp-head {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  width: 100%;
-  border: none;
-  background: none;
-  padding: 11px 14px;
-  font: inherit;
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  color: inherit;
-  flex-wrap: wrap;
-}
-
-.mk-exp-head:hover {
-  background: #efe9e0;
-}
-
-.mk-exp-mark {
-  color: var(--mk-accent);
-  font-size: 12px;
-}
-
-.mk-exp-date {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--mk-muted);
-}
-
-.mk-exp-title {
-  flex: 1;
-  min-width: 200px;
-}
-
-.mk-exp-tags {
-  display: inline-flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.mk-tag {
-  display: inline-block;
-  border: 1px solid var(--mk-accent-soft);
-  color: var(--mk-accent);
-  border-radius: 9px;
-  padding: 0 7px;
-  font-size: 11px;
-  line-height: 17px;
-  white-space: nowrap;
-}
-
-.mk-exp-body {
-  display: grid;
-  grid-template-columns: 190px 1fr;
-  gap: 16px;
-  padding: 4px 14px 16px;
-  border-top: 1px solid var(--mk-line);
-}
-
-.mk-exp-thumb img {
-  width: 100%;
-  border-radius: 5px;
-}
-
-.mk-exp-link {
-  display: inline-block;
-  margin-top: 5px;
-  font-size: 12px;
-  color: var(--mk-accent);
-}
-
-.mk-exp-link:hover {
-  text-decoration: underline;
-}
-
-/* テーブル */
-.mk-table-wrap {
-  overflow-x: auto;
-}
-
-.mk-setlist,
-.mk-songs-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.mk-setlist th,
-.mk-songs-table th {
-  text-align: left;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--mk-muted);
-  border-bottom: 1px solid var(--mk-line);
-  padding: 6px 8px;
-  white-space: nowrap;
-}
-
-.mk-setlist td,
-.mk-songs-table td {
-  border-bottom: 1px solid rgba(216, 207, 196, 0.55);
-  padding: 6px 8px;
-  vertical-align: top;
-}
-
-.mk-setlist tr.hit {
-  background: rgba(172, 208, 209, 0.18);
-}
-
-.mk-hit-text {
-  color: var(--mk-accent);
-  font-weight: 600;
-}
-
-.mk-no {
-  font-family: var(--mono);
-  color: var(--mk-muted);
-  white-space: nowrap;
-}
-
-.mk-cell-note,
-.mk-cell-artist {
-  color: var(--mk-muted);
-  font-size: 12px;
-}
-
-.mk-cell-tags {
-  white-space: nowrap;
-}
-
-.mk-first {
+.mikage-root .mk-first {
   display: inline-block;
   margin-right: 6px;
   font-size: 10px;
   font-weight: 700;
-  color: var(--mk-gold);
-  border: 1px solid var(--mk-gold);
+  color: #d4a843;
+  border: 1px solid #d4a843;
   border-radius: 3px;
-  padding: 0 4px;
+  padding: 1px 4px;
   letter-spacing: 0.05em;
+  line-height: 1.4;
 }
-
-.mk-sortable {
-  cursor: pointer;
-  user-select: none;
+.mikage-root .mk-tag {
+  display: inline-block;
+  border: 1px solid #acd0d1;
+  color: #3a7a7b;
+  border-radius: 9px;
+  padding: 0 7px;
+  margin-right: 3px;
+  font-size: 11px;
+  line-height: 17px;
+  white-space: nowrap;
 }
-
-.mk-sort-mark {
-  margin-left: 4px;
-  color: var(--mk-accent-soft);
-}
-
-/* 上位20の棒 */
-.mk-bars {
+.mikage-root .mk-bars {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-
-.mk-bars li {
+.mikage-root .mk-bars li {
   display: grid;
-  grid-template-columns: minmax(120px, 220px) 1fr 38px;
+  grid-template-columns: minmax(120px, 240px) 1fr 40px;
   align-items: center;
   gap: 10px;
   padding: 3px 0;
-  font-size: 13px;
+  font-size: 15px;
 }
-
-.mk-bar-label {
+.mikage-root .mk-bar-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.mk-bar-track {
+.mikage-root .mk-bar-track {
   background: rgba(172, 208, 209, 0.25);
   border-radius: 3px;
-  height: 12px;
+  height: 13px;
 }
-
-.mk-bar-fill {
+.mikage-root .mk-bar-fill {
   display: block;
   height: 100%;
   border-radius: 3px;
-  background: var(--mk-accent-soft);
+  background: #acd0d1;
 }
-
-.mk-bar-count {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--mk-muted);
+.mikage-root .mk-bar-count {
+  font-size: 13px;
+  color: #5a8a8b;
   text-align: right;
 }
-
-/* About */
-.mk-about p {
-  max-width: 60ch;
-  font-size: 14px;
-}
-
-.mk-links {
-  padding-left: 1.2em;
-  font-size: 14px;
-}
-
-.mk-links a {
-  color: var(--mk-accent);
-}
-
-.mk-links a:hover {
-  text-decoration: underline;
-}
-
-/* フッター */
-.mk-foot {
-  border-top: 1px solid var(--mk-line);
-  padding-top: 20px;
-  padding-bottom: 40px;
-  font-size: 12px;
-  color: var(--mk-muted);
-}
-
-@media (max-width: 720px) {
-  .mk-exp-body {
-    grid-template-columns: 1fr;
-  }
+.mikage-root .sidebar-nav a.sidebar-nav-btn {
+  display: block;
+  text-decoration: none;
 }

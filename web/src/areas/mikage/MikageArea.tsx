@@ -1,143 +1,166 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Db, Frame, Performance, Song } from '../../types'
-import { hms, jstDate, thumbUrl, watchUrl } from '../../data'
+import { hms, jstDate, watchUrl } from '../../data'
 import { Link } from '../../router'
+import { LANGS, storedLang, translator } from './i18n'
 import './mikage.css'
 
-type Tab = 'streams' | 'songs' | 'about'
+type Tab = 'streams' | 'songs' | 'about' | 'changelog'
+type T = ReturnType<typeof translator>
 
-/** 枠1件ぶんの歌唱を、表示に必要な形へ組み立てたもの */
-export type Row = {
+const BG = `${import.meta.env.BASE_URL}mikage/background_0.png`
+
+/** 1歌唱ぶんを表示用に組み立てたもの */
+type Row = {
   no: number
   song: Song | undefined
   perf: Performance
   isFirst: boolean
 }
 
-type Props = {
+export default function MikageArea({
+  db,
+  frames,
+  perfs,
+}: {
   db: Db
   frames: Frame[]
   perfs: Performance[]
-}
-
-export default function MikageArea({ db, frames, perfs }: Props) {
+}) {
   const [tab, setTab] = useState<Tab>('streams')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [lang, setLang] = useState(storedLang)
+  const t = useMemo(() => translator(lang), [lang])
 
-  // 初披露の判定。枠の開始時刻→枠内の秒 の順に並べ、song_id の初出を拾う
-  const firstAppearance = useMemo(() => {
+  // 初披露は枠の開始時刻→枠内の秒 の順で song_id の初出を拾う
+  const rowsByFrame = useMemo(() => {
     const at = new Map(frames.map((f) => [f.frame_id, f.started_at]))
-    const seen = new Map<string, string>()
-    const ordered = [...perfs].sort(
+    const first = new Map<string, string>()
+    for (const p of [...perfs].sort(
       (a, b) =>
         (at.get(a.frame_id) ?? '').localeCompare(at.get(b.frame_id) ?? '') ||
         a.start_sec - b.start_sec,
-    )
-    for (const p of ordered) {
-      if (p.song_id && !seen.has(p.song_id)) seen.set(p.song_id, `${p.frame_id}|${p.start_sec}`)
+    )) {
+      if (p.song_id && !first.has(p.song_id)) first.set(p.song_id, `${p.frame_id}|${p.start_sec}`)
     }
-    return seen
-  }, [frames, perfs])
-
-  const byFrame = useMemo(() => {
     const map = new Map<string, Row[]>()
     for (const f of frames) {
-      const rows = perfs
-        .filter((p) => p.frame_id === f.frame_id)
-        .sort((a, b) => a.start_sec - b.start_sec)
-        .map((p, i) => ({
-          no: i + 1,
-          song: db.songById.get(p.song_id),
-          perf: p,
-          isFirst: firstAppearance.get(p.song_id) === `${p.frame_id}|${p.start_sec}`,
-        }))
-      map.set(f.frame_id, rows)
+      map.set(
+        f.frame_id,
+        perfs
+          .filter((p) => p.frame_id === f.frame_id)
+          .sort((a, b) => a.start_sec - b.start_sec)
+          .map((p, i) => ({
+            no: i + 1,
+            song: db.songById.get(p.song_id),
+            perf: p,
+            isFirst: first.get(p.song_id) === `${p.frame_id}|${p.start_sec}`,
+          })),
+      )
     }
     return map
-  }, [frames, perfs, db, firstAppearance])
+  }, [frames, perfs, db])
+
+  const nav = (key: Tab) => {
+    setTab(key)
+    setSidebarOpen(false)
+  }
 
   return (
-    <div className="mikage">
-      <header className="mk-head">
-        <div className="mk-head-inner">
-          <p className="mk-crumb">
-            <Link to="/">uta-waku archive</Link>
-          </p>
-          <h1>深影の非公式歌枠DB</h1>
-          <p className="mk-sub">
-            枠 {frames.length} ・ 歌唱 {perfs.length} ・ 楽曲{' '}
-            {new Set(perfs.map((p) => p.song_id)).size}
-          </p>
+    <div className="mikage-root" style={{ backgroundImage: `url(${BG})`, backgroundRepeat: 'repeat' }}>
+      <div className="lang-selector-topright">
+        <div className="lang-selector">
+          <select
+            value={lang}
+            onChange={(e) => {
+              setLang(e.target.value)
+              localStorage.setItem('lang', e.target.value)
+            }}
+            aria-label="Language"
+          >
+            {LANGS.map((l) => (
+              <option key={l.value} value={l.value}>
+                {l.label}
+              </option>
+            ))}
+          </select>
         </div>
-      </header>
+      </div>
 
-      <nav className="mk-tabs">
-        <div className="mk-tabs-inner">
-          {(
-            [
-              ['streams', '歌枠'],
-              ['songs', '楽曲'],
-              ['about', 'このサイトについて'],
-            ] as [Tab, string][]
-          ).map(([key, label]) => (
+      <aside className={`sidebar${sidebarOpen ? ' sidebar-open' : ''}`}>
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen((o) => !o)}
+          aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+        >
+          <span>ME</span>
+          <span>NU</span>
+        </button>
+        <nav className="sidebar-nav">
+          {(['streams', 'songs', 'about', 'changelog'] as Tab[]).map((key) => (
             <button
               key={key}
-              className={tab === key ? 'on' : ''}
-              onClick={() => setTab(key)}
+              className={`sidebar-nav-btn${tab === key ? ' active' : ''}`}
+              onClick={() => nav(key)}
             >
-              {label}
+              <span className="sidebar-nav-text">{t(`tab.${key}`)}</span>
             </button>
           ))}
+          <Link to="/" className="sidebar-nav-btn">
+            <span className="sidebar-nav-text">archive</span>
+          </Link>
+        </nav>
+      </aside>
+
+      <div className={`main-wrapper${sidebarOpen ? ' sidebar-open' : ''}`}>
+        <div className="content">
+          {tab === 'streams' && <Streams db={db} frames={frames} rowsByFrame={rowsByFrame} t={t} />}
+          {tab === 'songs' && <Songs db={db} perfs={perfs} t={t} />}
+          {tab === 'about' && <About t={t} />}
+          {tab === 'changelog' && <Changelog t={t} />}
         </div>
-      </nav>
-
-      <main className="mk-main">
-        {tab === 'streams' && <Streams db={db} frames={frames} byFrame={byFrame} />}
-        {tab === 'songs' && <Songs db={db} perfs={perfs} />}
-        {tab === 'about' && <About />}
-      </main>
-
-      <footer className="mk-foot">
-        <p>
-          当サイトは非公式のファンメイドです。深影さんおよびRK Musicとは関係ありません。
-        </p>
-      </footer>
+        <Footer />
+      </div>
     </div>
   )
 }
 
-/* ─────────────────────────────── 歌枠タブ */
+/* ─────────────────────────────────────────── 歌枠 */
 
 function Streams({
   db,
   frames,
-  byFrame,
+  rowsByFrame,
+  t,
 }: {
   db: Db
   frames: Frame[]
-  byFrame: Map<string, Row[]>
+  rowsByFrame: Map<string, Row[]>
+  t: T
 }) {
   const [query, setQuery] = useState('')
-  const [allOpen, setAllOpen] = useState<boolean | null>(null)
+  const [defaultOpen, setDefaultOpen] = useState(false)
   const [mountKey, setMountKey] = useState(0)
 
-  const q = query.trim().toLowerCase()
-  const searching = q.length > 0
+  const trimmed = query.trim()
+  const searching = trimmed.length > 0
+  const q = trimmed.toLowerCase()
 
   const shown = searching
-    ? frames.filter((f) =>
-        (byFrame.get(f.frame_id) ?? []).some((r) => matches(r, q)),
-      )
+    ? frames.filter((f) => (rowsByFrame.get(f.frame_id) ?? []).some((r) => hits(r, q)))
     : frames
 
   return (
-    <div className="mk-streams">
-      <div className="mk-toolbar">
+    <div style={{ paddingTop: 35 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
         <div className="mk-search">
           <span aria-hidden>🔍</span>
           <input
+            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="曲名・アーティストで検索"
+            placeholder={t('streams.searchPlaceholder')}
+            className={searching ? 'searching' : ''}
           />
           {searching && (
             <button className="mk-search-clear" onClick={() => setQuery('')} title="クリア">
@@ -146,45 +169,50 @@ function Streams({
           )}
         </div>
         {searching ? (
-          <span className="mk-hits">{shown.length}件の枠がヒット</span>
+          <span style={{ fontSize: 13, color: '#606060' }}>
+            {t('streams.searchHits', { count: shown.length })}
+          </span>
         ) : (
           <>
             <button
-              className="mk-btn"
+              className="btn-secondary"
               onClick={() => {
-                setAllOpen(true)
+                setDefaultOpen(true)
                 setMountKey((k) => k + 1)
               }}
             >
-              すべて開く
+              {t('streams.expandAll')}
             </button>
             <button
-              className="mk-btn"
+              className="btn-secondary"
               onClick={() => {
-                setAllOpen(false)
+                setDefaultOpen(false)
                 setMountKey((k) => k + 1)
               }}
             >
-              すべて閉じる
+              {t('streams.collapseAll')}
             </button>
           </>
         )}
       </div>
 
       {searching && shown.length === 0 && (
-        <p className="mk-empty">「{query.trim()}」に一致する枠はありませんでした。</p>
+        <p style={{ color: '#606060', fontSize: 14 }}>
+          {t('streams.searchNoResults', { query: trimmed })}
+        </p>
       )}
 
-      <div className="mk-expanders">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {shown.map((f) => (
-          <FrameExpander
+          <Expander
             key={`${f.frame_id}_${mountKey}`}
             db={db}
             frame={f}
-            rows={(byFrame.get(f.frame_id) ?? []).filter((r) => !searching || matches(r, q))}
+            rows={(rowsByFrame.get(f.frame_id) ?? []).filter((r) => !searching || hits(r, q))}
             forceOpen={searching}
-            defaultOpen={allOpen ?? false}
+            defaultOpen={defaultOpen}
             query={q}
+            t={t}
           />
         ))}
       </div>
@@ -192,20 +220,17 @@ function Streams({
   )
 }
 
-function matches(r: Row, q: string) {
-  if (!r.song) return false
-  return (
-    r.song.title.toLowerCase().includes(q) || r.song.artist.toLowerCase().includes(q)
-  )
-}
+const hits = (r: Row, q: string) =>
+  !!r.song && (r.song.title.toLowerCase().includes(q) || r.song.artist.toLowerCase().includes(q))
 
-function FrameExpander({
+function Expander({
   db,
   frame,
   rows,
   forceOpen,
   defaultOpen,
   query,
+  t,
 }: {
   db: Db
   frame: Frame
@@ -213,110 +238,154 @@ function FrameExpander({
   forceOpen: boolean
   defaultOpen: boolean
   query: string
+  t: T
 }) {
   const [open, setOpen] = useState(defaultOpen)
   const isOpen = forceOpen || open
   const showCollab = rows.some((r) => r.perf.collab.length > 0)
+  const thumb = `https://img.youtube.com/vi/${frame.video_id}/mqdefault.jpg`
 
   return (
-    <div className="mk-exp">
-      <button className="mk-exp-head" onClick={() => setOpen((v) => !v)} aria-expanded={isOpen}>
-        <span className="mk-exp-mark">{isOpen ? '⚜' : '▶'}</span>
-        <span className="mk-exp-date">{jstDate(frame.started_at)}</span>
-        <span className="mk-exp-title">{frame.title}</span>
-        {frame.tags.length > 0 && (
-          <span className="mk-exp-tags">
-            {frame.tags.map((id) => (
-              <span key={id} className="mk-tag">
-                {db.tagById.get(id)?.label ?? id}
-              </span>
-            ))}
-          </span>
-        )}
+    <div className="expander">
+      <button className="expander-header" onClick={() => setOpen((v) => !v)} aria-expanded={isOpen}>
+        <span style={{ marginRight: 8 }}>{isOpen ? '⚜' : '▶'}</span>
+        <span>
+          {jstDate(frame.started_at)}　{frame.title}
+        </span>
       </button>
 
-      {isOpen && (
-        <div className="mk-exp-body">
-          <div className="mk-exp-thumb">
-            <a href={watchUrl(frame.video_id)} target="_blank" rel="noopener noreferrer">
-              <img src={thumbUrl(frame.video_id)} alt="" loading="lazy" />
-            </a>
-            <a
-              className="mk-exp-link"
-              href={watchUrl(frame.video_id)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              YouTubeで開く
-            </a>
-          </div>
+      <div style={{ maxHeight: isOpen ? 1000 : 0, overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
+        <div className="expander-body">
+          <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 16 }}>
+            <div>
+              <div
+                style={{
+                  width: '100%',
+                  paddingTop: '56.25%',
+                  borderRadius: 6,
+                  backgroundImage: `url(${thumb})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <a
+                href={watchUrl(frame.video_id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 12, display: 'block', marginTop: 4 }}
+              >
+                {t('streams.openYouTube')}
+              </a>
+            </div>
 
-          <div className="mk-table-wrap">
-            <table className="mk-setlist">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>曲名</th>
-                  <th>タグ</th>
-                  <th>補足</th>
-                  <th>アーティスト</th>
-                  {showCollab && <th>コラボ</th>}
-                  <th>再生</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => {
-                  const hitTitle = !!query && !!r.song?.title.toLowerCase().includes(query)
-                  const hitArtist = !!query && !!r.song?.artist.toLowerCase().includes(query)
-                  return (
-                    <tr key={`${r.perf.start_sec}`} className={hitTitle || hitArtist ? 'hit' : ''}>
-                      <td className="mk-no">{r.no}</td>
-                      <td className={hitTitle ? 'mk-hit-text' : ''}>
-                        {r.isFirst && <span className="mk-first">初</span>}
-                        {r.song?.title ?? '（未登録）'}
-                      </td>
-                      <td className="mk-cell-tags">
-                        {r.perf.tags.map((id) => (
-                          <span key={id} className="mk-tag">
-                            {db.tagById.get(id)?.label ?? id}
-                          </span>
-                        ))}
-                      </td>
-                      <td className="mk-cell-note">{r.perf.note}</td>
-                      <td className={hitArtist ? 'mk-hit-text' : 'mk-cell-artist'}>
-                        {r.song?.artist ?? ''}
-                      </td>
-                      {showCollab && <td className="mk-cell-artist">{r.perf.collab.join(' / ')}</td>}
-                      <td>
-                        <a
-                          href={watchUrl(frame.video_id, r.perf.start_sec)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {hms(r.perf.start_sec)}
-                        </a>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+            <div style={{ overflowX: 'auto' }} className="setlist-table-wrap">
+              <table className="setlist-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>{t('streams.colSong')}</th>
+                    <th>{t('streams.colNote')}</th>
+                    <th>タグ</th>
+                    <th>{t('streams.colArtist')}</th>
+                    {showCollab && <th>{t('streams.colCollab')}</th>}
+                    <th>{t('streams.colUrl')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => {
+                    const title = r.song?.title ?? ''
+                    const artist = r.song?.artist ?? ''
+                    const hitTitle = !!query && title.toLowerCase().includes(query)
+                    const hitArtist = !!query && artist.toLowerCase().includes(query)
+                    return (
+                      <tr
+                        key={r.perf.start_sec}
+                        style={hitTitle || hitArtist ? { backgroundColor: 'rgba(172,208,209,0.18)' } : undefined}
+                      >
+                        <td>{r.no}</td>
+                        <td style={hitTitle ? { fontWeight: 600, color: '#3a7a7b' } : undefined}>
+                          {r.isFirst && <span className="mk-first">{t('streams.firstBadge')}</span>}
+                          {title}
+                        </td>
+                        <td style={{ color: '#aaaaaa', fontSize: 12 }}>{r.perf.note}</td>
+                        <td style={{ fontSize: 12 }}>
+                          {r.perf.tags.map((id) => (
+                            <span key={id} className="mk-tag">
+                              {db.tagById.get(id)?.label ?? id}
+                            </span>
+                          ))}
+                        </td>
+                        <td style={{ color: hitArtist ? '#3a7a7b' : '#888888', fontWeight: hitArtist ? 600 : undefined }}>
+                          {artist}
+                        </td>
+                        {showCollab && <td style={{ color: '#888888' }}>{r.perf.collab.join(' / ')}</td>}
+                        <td>
+                          <a
+                            href={watchUrl(frame.video_id, r.perf.start_sec)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#5a7fa8' }}
+                          >
+                            {hms(r.perf.start_sec)}
+                          </a>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="setlist-card-list">
+              {rows.map((r) => (
+                <div key={r.perf.start_sec} className="setlist-card">
+                  <div className="setlist-card-row1">
+                    <span className="setlist-card-no">{r.no}</span>
+                    <span className="setlist-card-title">
+                      {r.isFirst && <span className="setlist-card-first-badge">{t('streams.firstBadge')}</span>}
+                      {r.song?.title ?? ''}
+                      {r.song?.artist && <span className="setlist-card-artist"> / {r.song.artist}</span>}
+                    </span>
+                    <a
+                      href={watchUrl(frame.video_id, r.perf.start_sec)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="setlist-card-link"
+                    >
+                      ▶
+                    </a>
+                  </div>
+                  {(r.perf.note || r.perf.tags.length > 0) && (
+                    <div className="setlist-card-row2">
+                      {r.perf.note && (
+                        <span>
+                          <span className="setlist-card-meta-label">{t('streams.colNote')}</span>
+                          {r.perf.note}
+                        </span>
+                      )}
+                      {r.perf.tags.map((id) => (
+                        <span key={id}>{db.tagById.get(id)?.label ?? id}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
-/* ─────────────────────────────── 楽曲タブ */
+/* ─────────────────────────────────────────── 楽曲 */
 
 type Stat = { song: Song; count: number }
 type SortKey = 'title' | 'artist' | 'released' | 'count'
 
-function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
+function Songs({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
   const [sortKey, setSortKey] = useState<SortKey>('count')
   const [desc, setDesc] = useState(true)
-  const [query, setQuery] = useState('')
 
   const stats = useMemo(() => {
     const counts = new Map<string, number>()
@@ -329,29 +398,19 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
     return list
   }, [perfs, db])
 
-  const q = query.trim().toLowerCase()
-  const rows = useMemo(() => {
-    const filtered = q
-      ? stats.filter(
-          (s) =>
-            s.song.title.toLowerCase().includes(q) || s.song.artist.toLowerCase().includes(q),
-        )
-      : stats
+  const sorted = useMemo(() => {
     const dir = desc ? -1 : 1
-    return [...filtered].sort((a, b) => {
+    return [...stats].sort((a, b) => {
       if (sortKey === 'count') return (a.count - b.count) * dir
-      const av = String(a.song[sortKey] ?? '')
-      const bv = String(b.song[sortKey] ?? '')
-      return av.localeCompare(bv, 'ja') * dir
+      return String(a.song[sortKey] ?? '').localeCompare(String(b.song[sortKey] ?? ''), 'ja') * dir
     })
-  }, [stats, q, sortKey, desc])
+  }, [stats, sortKey, desc])
 
   const top = [...stats].sort((a, b) => b.count - a.count).slice(0, 20)
   const max = top[0]?.count ?? 1
 
-  const head = (key: SortKey, label: string) => (
+  const th = (key: SortKey, label: string) => (
     <th
-      className="mk-sortable"
       onClick={() => {
         if (sortKey === key) setDesc((d) => !d)
         else {
@@ -359,15 +418,18 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
           setDesc(key === 'count')
         }
       }}
+      style={{ cursor: 'pointer' }}
     >
       {label}
-      <span className="mk-sort-mark">{sortKey === key ? (desc ? '▼' : '▲') : '⇅'}</span>
+      <span style={{ marginLeft: 4, color: sortKey === key ? '#3a7a7b' : '#acd0d1' }}>
+        {sortKey === key ? (desc ? '▼' : '▲') : '⇅'}
+      </span>
     </th>
   )
 
   return (
-    <div className="mk-songs">
-      <h2 className="mk-h2">よく歌われている曲 上位20</h2>
+    <div style={{ paddingTop: 35 }}>
+      <h3>{t('songs.rankingTitle')}</h3>
       <ul className="mk-bars">
         {top.map((s) => (
           <li key={s.song.song_id}>
@@ -380,39 +442,30 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
         ))}
       </ul>
 
-      <h2 className="mk-h2">全楽曲 {stats.length}曲</h2>
-      <div className="mk-search mk-search--wide">
-        <span aria-hidden>🔍</span>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="曲名・アーティストで絞り込み"
-        />
-      </div>
-
-      <div className="mk-table-wrap">
-        <table className="mk-songs-table">
+      <h3 style={{ marginTop: 28 }}>{t('songs.colSong')}（{stats.length}）</h3>
+      <div className="songs-table-wrap">
+        <table className="songs-table">
           <thead>
             <tr>
-              {head('title', '曲名')}
-              {head('artist', '原曲アーティスト')}
-              <th>作詞</th>
-              <th>作曲</th>
-              <th>編曲</th>
-              {head('released', 'リリース')}
-              {head('count', '歌唱回数')}
+              {th('title', t('songs.colSong'))}
+              {th('artist', t('songs.colArtist'))}
+              <th>{t('songs.colLyrics')}</th>
+              <th>{t('songs.colCompose')}</th>
+              <th>{t('songs.colArrange')}</th>
+              {th('released', t('songs.colRelease'))}
+              {th('count', t('songs.colCount'))}
             </tr>
           </thead>
           <tbody>
-            {rows.map((s) => (
+            {sorted.map((s) => (
               <tr key={s.song.song_id}>
                 <td>{s.song.title}</td>
-                <td className="mk-cell-artist">{s.song.artist}</td>
-                <td className="mk-cell-note">{s.song.lyricists.join(' / ')}</td>
-                <td className="mk-cell-note">{s.song.composers.join(' / ')}</td>
-                <td className="mk-cell-note">{s.song.arrangers.join(' / ')}</td>
-                <td className="mk-cell-note">{s.song.released}</td>
-                <td className="mk-no">{s.count}</td>
+                <td>{s.song.artist}</td>
+                <td>{s.song.lyricists.join(' / ')}</td>
+                <td>{s.song.composers.join(' / ')}</td>
+                <td>{s.song.arrangers.join(' / ')}</td>
+                <td>{s.song.released}</td>
+                <td style={{ textAlign: 'center' }}>{s.count}</td>
               </tr>
             ))}
           </tbody>
@@ -422,32 +475,103 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
   )
 }
 
-/* ─────────────────────────────── About */
+/* ─────────────────────────────────────────── About / Changelog */
 
-function About() {
+function About({ t }: { t: T }) {
   return (
-    <div className="mk-about">
-      <h2 className="mk-h2">このサイトについて</h2>
-      <p>
+    <div style={{ paddingTop: 35, maxWidth: 760 }}>
+      <h3>{t('tab.about')}</h3>
+      <p style={{ fontSize: 15, lineHeight: 1.9 }}>
         VSinger 深影さんの歌枠のセットリストを記録した、非公式のファンメイドデータベースです。
         公式のものではなく、深影さんおよびRK Musicとは関係ありません。
       </p>
-      <p>
+      <p style={{ fontSize: 15, lineHeight: 1.9 }}>
         データは <code>uta-waku archive</code> の統合データベースから読み込んでいます。
-        誤りを見つけた場合はご連絡ください。
       </p>
-      <h2 className="mk-h2">リンク</h2>
-      <ul className="mk-links">
-        <li>
-          <a
-            href="https://www.youtube.com/channel/UC2daHxnuJJBM5NWci1RRkeA"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            YouTube チャンネル
-          </a>
-        </li>
-      </ul>
     </div>
+  )
+}
+
+function Changelog({ t }: { t: T }) {
+  return (
+    <div style={{ paddingTop: 35, maxWidth: 760 }}>
+      <h3>{t('tab.changelog')}</h3>
+      <p style={{ fontSize: 15, lineHeight: 1.9 }}>
+        統合データベース <code>uta-waku archive</code> へ移行しました。
+      </p>
+    </div>
+  )
+}
+
+function Footer() {
+  useEffect(() => {}, [])
+  return (
+    <footer
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 54,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#acd0d1',
+        borderTop: '1px solid #8ab8b9',
+        fontSize: 13,
+        color: 'rgb(40, 40, 40)',
+        letterSpacing: '0.06em',
+        fontFamily: '"Noto Sans JP", sans-serif',
+        zIndex: 200,
+      }}
+    >
+      <span className="footer-full">
+        © 2026{' '}
+        <a
+          href="https://x.com/WL_GE_inn"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'rgb(40, 40, 40)', textDecoration: 'none' }}
+        >
+          金鷲亭
+        </a>
+        　|　非公式ファンサイト — 深影（Mikage / RK Music）　|　掲載情報の誤りは{' '}
+        <a
+          href="https://x.com/WL_GE_inn"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'rgb(40, 40, 40)', textDecoration: 'none' }}
+        >
+          @WL_GE_inn
+        </a>{' '}
+        までお気軽にどうぞ
+      </span>
+      <span className="footer-short">© 2026 金鷲亭　|　深影（Mikage / RK Music）非公式ファンサイト</span>
+
+      <div className="footer-icons">
+        <a
+          href="https://www.youtube.com/@Mikage_RKMusic"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="footer-icon-link"
+          aria-label="YouTube"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.55 3.5 12 3.5 12 3.5s-7.55 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.03 0 12 0 12s0 3.97.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.45 20.5 12 20.5 12 20.5s7.55 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.97 24 12 24 12s0-3.97-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z" />
+          </svg>
+        </a>
+        <a
+          href="https://x.com/Mikage_0916"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="footer-icon-link"
+          aria-label="X (Twitter)"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+          </svg>
+        </a>
+      </div>
+    </footer>
   )
 }

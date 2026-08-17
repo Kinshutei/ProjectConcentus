@@ -183,3 +183,16 @@
   letter-spacing: 0.16em;
   margin-bottom: 4px;
 }
+
+/* About の本文 */
+.about-text p {
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 2;
+  margin: 0 0 1.2em;
+}
+
+.about-text a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

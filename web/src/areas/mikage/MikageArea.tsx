@@ -6,6 +6,7 @@ import RankCards, { type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Reveal'
 import { SearchIcon } from '../../components/icons'
+import AboutText from '../../components/AboutText'
 import { LANGS, storedLang, translator } from './i18n'
 import '../../components/scroll.css'
 import './mikage.css'
@@ -692,14 +693,7 @@ function About() {
       <div className="section__inner">
         <SectionHead title="About" sub="このサイトについて" />
         <Reveal>
-          <p style={{ maxWidth: '58ch', fontSize: 14, lineHeight: 2 }}>
-            VSinger 深影さんの歌枠のセットリストを記録した、非公式のファンメイドデータベースです。
-            公式のものではなく、深影さんおよびRK Musicとは関係ありません。
-          </p>
-          <p style={{ maxWidth: '58ch', fontSize: 14, lineHeight: 2 }}>
-            データは <code>uta-waku archive</code> の統合データベースから読み込んでいます。
-            誤りを見つけた場合はご連絡ください。
-          </p>
+          <AboutText singer="深影" />
         </Reveal>
       </div>
     </section>

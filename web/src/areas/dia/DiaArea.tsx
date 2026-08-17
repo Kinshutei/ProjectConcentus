@@ -4,6 +4,7 @@ import { hms, jstDate, watchUrl } from '../../data'
 import { Link } from '../../router'
 import TerminalMessage from './TerminalMessage'
 import { SearchIcon } from '../../components/icons'
+import AboutText from '../../components/AboutText'
 import RankCards, { type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import './dia.css'
@@ -583,11 +584,7 @@ function About() {
   return (
     <div className="about-body">
       <h2 className="section-title">About</h2>
-      <p>
-        VSinger Diαさんの歌枠のセットリストを記録した、非公式のファンメイドデータベースです。
-        公式のものではなく、DiαさんおよびRK Musicとは関係ありません。
-      </p>
-      <p>データは uta-waku archive の統合データベースから読み込んでいます。</p>
+      <AboutText singer="Diα" />
     </div>
   )
 }

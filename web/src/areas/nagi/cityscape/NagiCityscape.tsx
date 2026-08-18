@@ -87,7 +87,12 @@ function Layer({
             aria-hidden="true"
             focusable="false"
           >
-            <defs>
+            {/*
+              1枚目は defs に隠さず実際に描く。defs の中は描画されない要素なので
+              transition が進まず、輪郭が stroke-dashoffset の初期値のまま
+              止まってしまう。実描画にすれば描き起こしが動き、use の複製も追従する。
+            */}
+            <g className="nagi-city__strip">
               {/* 層ごとに地面の高さをずらす。遠景ほど上に置くと奥行きが出る */}
               <g id={id} transform={`translate(0,${spec.groundOffset})`}>
                 <path
@@ -118,10 +123,10 @@ function Layer({
                   ))}
                 </g>
               </g>
-            </defs>
-            {/* 同一グラフィックを use で参照する。DOMノード数は1枚分で済む */}
-            {Array.from({ length: STRIP_COPIES }, (_, i) => (
-              <use key={i} href={`#${id}`} x={W * i} />
+            </g>
+            {/* 残りは use で参照する。DOMノード数は1枚分で済む */}
+            {Array.from({ length: STRIP_COPIES - 1 }, (_, i) => (
+              <use key={i} href={`#${id}`} x={W * (i + 1)} />
             ))}
           </svg>
         </div>

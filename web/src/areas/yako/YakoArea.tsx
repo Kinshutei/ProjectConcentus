@@ -88,7 +88,11 @@ export default function YakoArea({
     return list.sort((a, b) => b.count - a.count || a.song.title.localeCompare(b.song.title, 'ja'))
   }, [perfs, db])
 
-  const firstTotal = streams.reduce((n, s) => n + s.rows.filter((r) => r.isFirst).length, 0)
+  const artistCount = new Set(
+    perfs
+      .map((p) => db.songById.get(p.song_id)?.artist?.trim())
+      .filter((a): a is string => !!a),
+  ).size
   const streamByVideoId = new Map(streams.map((s) => [s.frame.video_id, s]))
 
   return (
@@ -126,7 +130,7 @@ export default function YakoArea({
           streamCount={streams.length}
           perfCount={perfs.length}
           repertoire={stats.length}
-          firstTotal={firstTotal}
+          artistCount={artistCount}
         />
         <Setlist streams={streams} db={db} />
         <Repertoire stats={stats} />
@@ -391,12 +395,12 @@ function Numbers({
   streamCount,
   perfCount,
   repertoire,
-  firstTotal,
+  artistCount,
 }: {
   streamCount: number
   perfCount: number
   repertoire: number
-  firstTotal: number
+  artistCount: number
 }) {
   return (
     <section className="section" id="numbers">
@@ -406,7 +410,7 @@ function Numbers({
           <NumberCell value={streamCount} label="STREAMS" unit="枠" delay={0} />
           <NumberCell value={perfCount} label="PERFORMANCES" unit="回" delay={80} />
           <NumberCell value={repertoire} label="REPERTOIRE" unit="曲" delay={160} />
-          <NumberCell value={firstTotal} label="FIRST TIME" unit="曲" delay={240} />
+          <NumberCell value={artistCount} label="ARTISTS" unit="" delay={240} />
         </div>
       </div>
     </section>

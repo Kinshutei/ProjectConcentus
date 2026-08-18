@@ -1,6 +1,6 @@
 /* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .kisaki-root 配下へ
    スコープしただけのもの。見た目を一致させるため宣言は変更していない。 */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Reggae+One&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
 .kisaki-root *, .kisaki-root *::before, .kisaki-root *::after {
   box-sizing: border-box;
 }
@@ -816,4 +816,26 @@
 .kisaki-root .sidebar-nav a.sidebar-nav-item {
   display: block;
   text-decoration: none;
+}
+
+/* ── 見出しを和風ロック寄りの書体にする ──
+   Reggae One は勘亭流に近い太い装飾書体。線が詰まるので本文には使わず、
+   見出しと題字だけに当てる。本文はゴシックのまま。 */
+.kisaki-root .sidebar-title,
+.kisaki-root .section-title,
+.kisaki-root .section__title,
+.kisaki-root .hero-about-body h2,
+.kisaki-root .section-head h3 {
+  font-family: 'Reggae One', 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+/* 装飾書体は字面が大きいので、少し詰めて行間を確保する */
+.kisaki-root .sidebar-title {
+  line-height: 1.5;
+}
+
+.kisaki-root .section__title {
+  font-size: 24px;
 }

@@ -1,6 +1,6 @@
 /* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .dia-root 配下へ
    スコープしただけのもの。見た目を一致させるため宣言は変更していない。 */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
 .dia-root *, .dia-root *::before, .dia-root *::after {
   box-sizing: border-box;
 }
@@ -901,4 +901,28 @@
 
 .dia-root .section__title {
   color: #b32e46;
+}
+
+/* ── 本文書体を明朝にする ──
+   暗背景では明朝の横画が飛びやすいので、細りにくい Shippori Mincho を使う。
+   ターミナルの等幅指定（Courier New）はそのまま残す。 */
+.dia-root {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+}
+
+.dia-root .sidebar-title,
+.dia-root .sidebar-nav-item,
+.dia-root .section-title,
+.dia-root .section__title,
+.dia-root .back-btn,
+.dia-root .hero-about-close {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+}
+
+/* 数字が並ぶところは字面が揃うようにする */
+.dia-root .rank-card__value,
+.dia-root .rank-card__no,
+.dia-root .setlist-table {
+  font-feature-settings: 'palt' 0;
+  font-variant-numeric: tabular-nums;
 }

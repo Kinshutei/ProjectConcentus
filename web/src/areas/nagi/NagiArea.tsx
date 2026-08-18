@@ -97,6 +97,9 @@ export default function NagiArea({
 
   return (
     <div className="nagi-root">
+      <div className="page-sky">
+        <StarfieldSky seed={20260819} speed={6} angle={34} />
+      </div>
       {meteorsOn && <ShootingStars />}
 
       <header className="site-header">
@@ -144,9 +147,6 @@ export default function NagiArea({
       </div>
 
       <div className="city-fixed" style={{ height: FOOTER_H }}>
-        <div className="city-sky">
-          <StarfieldSky seed={20260819} speed={6} angle={34} />
-        </div>
         <NagiCityscape
           scale={CITY_SCALE}
           seed={20260819}

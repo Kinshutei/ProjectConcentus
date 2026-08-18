@@ -930,8 +930,9 @@
 
 /* 画像で出す場合も、名前1文字ぶんの正方形に収める */
 .yako-root .hero__dbname--img {
-  width: 1em;
-  height: 0.95em;
+  /* 名前1文字ぶんの正方形に対して95% */
+  width: 0.95em;
+  height: 0.9025em;
   object-fit: contain;
   object-position: right bottom;
 }

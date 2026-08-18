@@ -8,6 +8,12 @@ const GY = GROUND_Y
 const H = (v: number, m: number): number => Math.max(20, Math.round(v * m))
 
 /**
+ * 添景用の縮尺。建物向けの H() は下限20pxがあり、街灯や電柱には効きすぎて
+ * 層の倍率が無視されてしまう。添景は下限を小さく取り、層の倍率をそのまま効かせる。
+ */
+const S = (v: number, m: number): number => Math.max(3, v * m)
+
+/**
  * 建物高さを階高の倍数へ丸める。戻り値は [丸めた高さ, 階数]。
  * 隣り合う建物の窓の高さが揃い、街並みに水平のリズムが出る。
  */
@@ -509,72 +515,80 @@ function treeShape(crownPts: Point[], w: number, c: number, trunk: number): Modu
 
 /** 広葉樹 */
 export const treeBroad: ModuleFn = (r, m) => {
-  const w = 30
-  const c = 15
-  const trunk = randInt(r, 12, 18)
-  const rad = H(randInt(r, 13, 18), m)
+  const trunk = S(randInt(r, 12, 18), m)
+  const rad = S(randInt(r, 13, 18), m)
+  const w = Math.max(8, 30 * m)
+  const c = w / 2
   return treeShape(crownBroad(r, c, trunk, rad), w, c, trunk)
 }
 
 /** 針葉樹 */
 export const treeConifer: ModuleFn = (r, m) => {
-  const w = 26
-  const c = 13
-  const trunk = randInt(r, 8, 12)
-  const rad = H(randInt(r, 9, 13), m)
+  const trunk = S(randInt(r, 8, 12), m)
+  const rad = S(randInt(r, 9, 13), m)
+  const w = Math.max(8, 26 * m)
+  const c = w / 2
   return treeShape(crownConifer(r, c, trunk, rad), w, c, trunk)
 }
 
 /** 刈込街路樹 */
 export const treeTrimmed: ModuleFn = (r, m) => {
-  const w = 26
-  const c = 13
-  const trunk = randInt(r, 14, 20)
-  const rad = H(randInt(r, 9, 12), m)
+  const trunk = S(randInt(r, 14, 20), m)
+  const rad = S(randInt(r, 9, 12), m)
+  const w = Math.max(8, 26 * m)
+  const c = w / 2
   return treeShape(crownTrimmed(c, trunk, rad), w, c, trunk)
 }
 
 /** 街灯。支柱は同一X座標を往復するため1本の線に見える */
-export const lamp: ModuleFn = (r) => {
-  const w = 16
-  const c = 8
-  const h = randInt(r, 34, 46)
+export const lamp: ModuleFn = (r, m) => {
+  const h = S(randInt(r, 34, 46), m)
+  const w = Math.max(6, 16 * m)
+  const c = w / 2
   return {
     width: w,
     profile: [[c, 0], [c, h], [c, 0]],
-    details: [{ kind: 'circle', cx: c, cy: GY - h - 4, r: 4.2, sw: 1.4, accent: true }],
+    details: [{ kind: 'circle', cx: c, cy: GY - h - 4 * m, r: Math.max(1.6, 4.2 * m), sw: 1.4, accent: true }],
     groundFloor: false,
   }
 }
 
 /** 信号機。支柱のみ輪郭に乗せ、箱と灯はディテール */
-export const signal: ModuleFn = (r) => {
-  const w = 18
-  const c = 9
-  const h = randInt(r, 36, 48)
-  const top = GY - h - 24
+export const signal: ModuleFn = (r, m) => {
+  const h = S(randInt(r, 36, 48), m)
+  const w = Math.max(7, 18 * m)
+  const c = w / 2
+  const bh = Math.max(9, 24 * m)
+  const bw = Math.max(5, 12 * m)
+  const top = GY - h - bh
   const details: Detail[] = [
-    { kind: 'rect', x: c - 6, y: top, w: 12, h: 24, rx: 4, sw: 1.4 },
+    { kind: 'rect', x: c - bw / 2, y: top, w: bw, h: bh, rx: 4 * m, sw: 1.4 },
   ]
   for (let i = 0; i < 3; i++) {
-    details.push({ kind: 'circle', cx: c, cy: top + 6 + i * 6, r: 2, sw: 1.2, accent: i === 2 })
+    details.push({
+      kind: 'circle', cx: c, cy: top + bh * (0.25 + i * 0.25),
+      r: Math.max(0.9, 2 * m), sw: 1.2, accent: i === 2,
+    })
   }
   return { width: w, profile: [[c, 0], [c, h], [c, 0]], details, groundFloor: false }
 }
 
 /** 電柱。柱は輪郭に乗せ、腕木2本もそのまま輪郭で描く。電線は生成器がまとめて張る */
-export const pole: ModuleFn = (r) => {
-  const w = 14
-  const c = 7
-  const h = randInt(r, 52, 64)
-  const arm = 5.5
+export const pole: ModuleFn = (r, m) => {
+  const h = S(randInt(r, 52, 64), m)
+  const w = Math.max(6, 14 * m)
+  const c = w / 2
+  const arm = Math.max(2.4, 5.5 * m)
+  // 腕木の位置も柱の高さに比例させる
+  const a1 = Math.max(1.5, 3 * m)
+  const a2 = Math.max(4, 9 * m)
   return {
     width: w,
     profile: [
-      [c, 0], [c, h - 9], [c - arm, h - 9], [c, h - 9],
-      [c, h - 3], [c - arm, h - 3], [c, h - 3],
-      [c, h], [c, h - 3], [c + arm, h - 3], [c, h - 3],
-      [c, h - 9], [c + arm, h - 9], [c, h - 9], [c, 0],
+      [c, 0], [c, h - a2], [c - arm, h - a2], [c, h - a2],
+      [c, h - a1], [c - arm, h - a1], [c, h - a1],
+      [c, h], [c, h - a1], [c + arm, h - a1], [c, h - a1],
+      [c, h - a2], [c + arm, h - a2], [c, h - a2], [c, 0],
     ],
     details: [],
     groundFloor: false,

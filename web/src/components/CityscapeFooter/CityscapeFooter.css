@@ -42,3 +42,10 @@
   --cty-line: var(--navy);
   --cty-accent: var(--spark);
 }
+
+/* 水凪音庫：背景は敷かず、線は領域の配色に任せる */
+.cityscape--nagi {
+  --cty-bg: transparent;
+  --cty-line: var(--navy);
+  --cty-accent: var(--spark);
+}

@@ -432,7 +432,11 @@
   font-size: 11px; color: var(--navy-mute);
 }
 .nagi-root .about {
-  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center;
+  display: grid; grid-template-columns: 1.55fr 0.6fr; gap: 48px; align-items: center;
+}
+/* 本文は共通CSSで 60ch に絞られている。ここでは囲みの幅いっぱいまで流す */
+.nagi-root .about-text p {
+  max-width: none;
 }
 .nagi-root .about__text p {
   color: var(--navy-soft);

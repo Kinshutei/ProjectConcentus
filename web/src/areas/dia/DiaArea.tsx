@@ -67,14 +67,11 @@ export default function DiaArea({
     a.style.opacity = '1'
     b.style.opacity = '0'
 
-    const onTime = (e: Event) => {
+    /** 実際に切り替える。呼び出し元は timeupdate と ended の2経路 */
+    const advance = (isA: boolean) => {
       if (movingRef.current) return
-      const isA = e.target === a
-      if ((activeRef.current === 'a') !== isA) return
       const cur = isA ? a : b
       const next = isA ? b : a
-      if (!cur.duration || isNaN(cur.duration)) return
-      if (cur.duration - cur.currentTime > FADE_BEFORE) return
 
       movingRef.current = true
       const nextIndex = (indexRef.current + 1) % VIDEOS.length
@@ -97,11 +94,39 @@ export default function DiaArea({
       }, FADE_MS)
     }
 
+    const isActive = (e: Event) => {
+      const isA = e.target === a
+      return (activeRef.current === 'a') === isA ? isA : null
+    }
+
+    /* 終了 n 秒前からフェードを始める。duration が取れるときの通常経路 */
+    const onTime = (e: Event) => {
+      const isA = isActive(e)
+      if (isA === null || movingRef.current) return
+      const cur = isA ? a : b
+      // 配信側が Range に非対応だと duration が確定せず（NaN や Infinity）、
+      // この経路は一度も成立しない。その場合は下の ended で切り替える
+      if (!cur.duration || !isFinite(cur.duration)) return
+      if (cur.duration - cur.currentTime > FADE_BEFORE) return
+      advance(isA)
+    }
+
+    /* duration が取れない環境向けの保険。フェードは掛からず即切り替わる */
+    const onEnded = (e: Event) => {
+      const isA = isActive(e)
+      if (isA === null) return
+      advance(isA)
+    }
+
     a.addEventListener('timeupdate', onTime)
     b.addEventListener('timeupdate', onTime)
+    a.addEventListener('ended', onEnded)
+    b.addEventListener('ended', onEnded)
     return () => {
       a.removeEventListener('timeupdate', onTime)
       b.removeEventListener('timeupdate', onTime)
+      a.removeEventListener('ended', onEnded)
+      b.removeEventListener('ended', onEnded)
     }
   }, [])
 

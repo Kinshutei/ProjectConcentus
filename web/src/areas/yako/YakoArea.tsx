@@ -28,6 +28,8 @@ export type AreaSite = {
   citySeed: number
   /** DB名。名前ブロックの右下に小さく組む。省略すると出さない */
   dbNameParts?: [string, string]
+  /** DB名を画像で出す場合のパスと代替文字。dbNameParts より優先する */
+  dbNameImage?: { src: string; alt: string }
 }
 
 const YAKO_SITE: AreaSite = {
@@ -206,11 +208,19 @@ function Hero({ site }: { site: AreaSite }) {
                 <span key={i}>{part}</span>
               ),
             )}
-            {site.dbNameParts && (
-              <span className="hero__dbname" aria-hidden="true">
-                <span>{site.dbNameParts[0]}</span>
-                <span>{site.dbNameParts[1]}</span>
-              </span>
+            {site.dbNameImage ? (
+              <img
+                className="hero__dbname hero__dbname--img"
+                src={site.dbNameImage.src}
+                alt={site.dbNameImage.alt}
+              />
+            ) : (
+              site.dbNameParts && (
+                <span className="hero__dbname" aria-hidden="true">
+                  <span>{site.dbNameParts[0]}</span>
+                  <span>{site.dbNameParts[1]}</span>
+                </span>
+              )
             )}
           </h1>
           <p className="hero__romaji" aria-label={romaji}>

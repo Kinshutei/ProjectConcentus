@@ -17,7 +17,10 @@ const SITE: AreaSite = {
   noteTitle: 'Unofficial - MINASE NAGI DB',
   // 街並みは夜紺と別のものが生成されるよう、シードだけ変える
   citySeed: 20260819,
-  dbNameParts: ['水凪', '音庫'],
+  dbNameImage: {
+    src: `${import.meta.env.BASE_URL}nagi/mizunagi_onko.png`,
+    alt: '水凪音庫',
+  },
 }
 
 export default function NagiArea({

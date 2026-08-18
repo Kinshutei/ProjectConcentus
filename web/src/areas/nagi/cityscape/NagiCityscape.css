@@ -1,0 +1,30 @@
+/* 水凪音庫の街並み。背景は敷かず、線は領域の配色に任せる */
+.nagi-city {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  --cty-line: var(--navy);
+  --cty-accent: var(--spark);
+  /* 遠景の線。既定では主層と同じ色を使い、濃さは層の opacity で落とす */
+  --cty-line-far: var(--navy);
+}
+
+.nagi-city__strip {
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  animation-name: nagi-city-slide;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes nagi-city-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--cty-shift)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nagi-city__strip { animation: none; }
+}

@@ -836,9 +836,7 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 60%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 60%);
 }
-.nagi-root .cityscape--nagi .cityscape__strip {
-  position: absolute; left: 0; bottom: 0;
-}
+
 @media (max-width: 900px) {
 .nagi-root .grid-3 {
   grid-template-columns: 1fr;

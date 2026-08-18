@@ -5,7 +5,7 @@ import { Link } from '../../router'
 import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Reveal'
 import AboutText from '../../components/AboutText'
 import { useSmoothScroll } from '../../components/useSmoothScroll'
-import { CityscapeFooter, VIEW_H } from '../../components/CityscapeFooter'
+import { NagiCityscape, VIEW_H } from './cityscape'
 import { ShootingStars } from '../../components/ShootingStars'
 import './nagi.css'
 
@@ -143,8 +143,7 @@ export default function NagiArea({
       </div>
 
       <div className="city-fixed" style={{ height: FOOTER_H }}>
-        <CityscapeFooter
-          className="cityscape--nagi"
+        <NagiCityscape
           scale={CITY_SCALE}
           seed={20260819}
           speed={10}

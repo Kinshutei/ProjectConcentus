@@ -914,10 +914,12 @@
   right: 0;
   bottom: 0;
   display: block;
-  font-size: 0.26em;
+  /* 2文字×2行で名前1文字ぶんの正方形になるようにする。
+     半分の字送りにし、行の高さは親と同じ比率に合わせる。 */
+  font-size: 0.5em;
+  line-height: 0.95;
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--navy-soft);
   text-align: right;
 }

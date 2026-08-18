@@ -18,6 +18,7 @@ const SITE = {
 }
 
 const NAV = [
+  { id: 'latest', label: 'LATEST' },
   { id: 'numbers', label: 'NUMBERS' },
   { id: 'setlist', label: 'SETLIST' },
   { id: 'repertoire', label: 'REPERTOIRE' },

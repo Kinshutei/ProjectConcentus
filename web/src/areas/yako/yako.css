@@ -902,3 +902,26 @@
   font-size: 11px; color: var(--navy-mute); margin-top: 4px;
 }
 }
+
+/* DB名は名前ブロックの右下へ。2文字ずつ積んで小さな四角にする。
+   名前の2段目が1文字のとき、その右隣が空くのでそこへ収まる。 */
+.yako-root .hero__name {
+  position: relative;
+}
+
+.yako-root .hero__dbname {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: block;
+  font-size: 0.26em;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: var(--navy-soft);
+  text-align: right;
+}
+
+.yako-root .hero__dbname span {
+  display: block;
+}

@@ -26,6 +26,8 @@ export type AreaSite = {
   noteTitle: string
   /** 街並みの生成シード。領域ごとに変えると別の街になる */
   citySeed: number
+  /** DB名。名前ブロックの右下に小さく組む。省略すると出さない */
+  dbNameParts?: [string, string]
 }
 
 const YAKO_SITE: AreaSite = {
@@ -203,6 +205,12 @@ function Hero({ site }: { site: AreaSite }) {
               ) : (
                 <span key={i}>{part}</span>
               ),
+            )}
+            {site.dbNameParts && (
+              <span className="hero__dbname" aria-hidden="true">
+                <span>{site.dbNameParts[0]}</span>
+                <span>{site.dbNameParts[1]}</span>
+              </span>
             )}
           </h1>
           <p className="hero__romaji" aria-label={romaji}>

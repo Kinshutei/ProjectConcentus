@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import './NagiCityscape.css'
 import {
   DEFAULT_SEED, DEFAULT_SPEED, DRAW_DELAY, DRAW_DURATION, LAYERS, LAYER_ORDER, MIN_STRIP_WIDTH,
-  MIN_STRIP_COPIES, SCROLL_GAIN, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
+  STRIP_COPIES, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
   VIEW_H, type LayerKey,
 } from './constants'
 import { generateCity } from './generator'
@@ -22,8 +22,6 @@ export interface NagiCityscapeProps {
   scale?: number
   /** フレームの表示高さ（px）。既定は VIEW_H × scale でぴったり収まる */
   height?: number
-  /** ページスクロールに連動させるか。非対応ブラウザでは自動的に無視される */
-  scrollLinked?: boolean
   /** 外部から停止させたい場合に true */
   paused?: boolean
   className?: string
@@ -63,12 +61,11 @@ function Layer({
   const W = city.width
   const id = `${gid}-${layer}`
   const stripPx = W * scale
-  const gain = SCROLL_GAIN * spec.speedFactor
   /*
-   * 等速ループで最大 1 ストリップ、スクロール連動で最大 gain ストリップ左へ動く。
-   * その位置からコンテナ幅ぶん右まで絵が続いていれば、どこまで送っても切れない。
+   * ずれる量はループの1ストリップぶんだけ。ストリップ幅がコンテナ幅以上
+   * あれば2枚で足りるが、足りない環境でも切れないよう枚数を計算しておく。
    */
-  const copies = Math.max(MIN_STRIP_COPIES, Math.ceil(1 + gain + boxWidth / stripPx))
+  const copies = Math.max(STRIP_COPIES, Math.ceil(1 + boxWidth / stripPx))
 
   return (
     <div
@@ -78,66 +75,63 @@ function Layer({
         ['--strip-w' as string]: `${stripPx}px`,
         ['--dur' as string]: `${stripPx / (speed * spec.speedFactor)}s`,
         ['--draw-delay' as string]: `${DRAW_DELAY[layer]}s`,
-        ['--gain' as string]: `${gain}`,
         animationPlayState: stopped ? 'paused' : 'running',
       }}
     >
-      <div className="nagi-city__parallax">
-        <div
-          className="nagi-city__track"
-          style={{ animationPlayState: stopped ? 'paused' : 'running' }}
-        >
-          <svg
-            className="nagi-city__svg"
-            width={W * copies * scale}
-            height={VIEW_H * scale}
-            viewBox={`0 0 ${W * copies} ${VIEW_H}`}
-            aria-hidden="true"
-            focusable="false"
+      <div
+        className="nagi-city__track"
+        style={{ animationPlayState: stopped ? 'paused' : 'running' }}
+      >
+        <svg
+          className="nagi-city__svg"
+          width={W * copies * scale}
+          height={VIEW_H * scale}
+          viewBox={`0 0 ${W * copies} ${VIEW_H}`}
+          aria-hidden="true"
+          focusable="false"
           >
-            {/*
-              1枚目は defs に隠さず実際に描く。defs の中は描画されない要素なので
-              transition が進まず、輪郭が stroke-dashoffset の初期値のまま
-              止まってしまう。実描画にすれば描き起こしが動き、use の複製も追従する。
-            */}
-            <g className="nagi-city__strip">
-              {/* 層ごとに地面の高さをずらす。遠景ほど上に置くと奥行きが出る */}
-              <g id={id} transform={`translate(0,${spec.groundOffset})`}>
+          {/*
+            1枚目は defs に隠さず実際に描く。defs の中は描画されない要素なので
+            transition が進まず、輪郭が stroke-dashoffset の初期値のまま
+            止まってしまう。実描画にすれば描き起こしが動き、use の複製も追従する。
+          */}
+          <g className="nagi-city__strip">
+            {/* 層ごとに地面の高さをずらす。遠景ほど上に置くと奥行きが出る */}
+            <g id={id} transform={`translate(0,${spec.groundOffset})`}>
+              <path
+                className="nagi-city__outline"
+                d={city.path}
+                pathLength={1000}
+                fill="none"
+                stroke="var(--cty-line)"
+                strokeWidth={spec.strokeWidth}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+              {city.wires && (
                 <path
-                  className="nagi-city__outline"
-                  d={city.path}
-                  pathLength={1000}
+                  className="nagi-city__wire"
+                  d={city.wires}
                   fill="none"
                   stroke="var(--cty-line)"
-                  strokeWidth={spec.strokeWidth}
-                  strokeLinejoin="round"
+                  strokeWidth={0.8}
                   strokeLinecap="round"
                 />
-                {city.wires && (
-                  <path
-                    className="nagi-city__wire"
-                    d={city.wires}
-                    fill="none"
-                    stroke="var(--cty-line)"
-                    strokeWidth={0.8}
-                    strokeLinecap="round"
-                  />
-                )}
-                <g className="nagi-city__details">
-                  {city.items.map((item, i) => (
-                    <g key={i} transform={`translate(${item.x},0)`}>
-                      {item.details.map((d, j) => <DetailNode key={j} d={d} />)}
-                    </g>
-                  ))}
-                </g>
+              )}
+              <g className="nagi-city__details">
+                {city.items.map((item, i) => (
+                  <g key={i} transform={`translate(${item.x},0)`}>
+                    {item.details.map((d, j) => <DetailNode key={j} d={d} />)}
+                  </g>
+                ))}
               </g>
             </g>
-            {/* 残りは use で参照する。DOMノード数は1枚分で済む */}
-            {Array.from({ length: copies - 1 }, (_, i) => (
-              <use key={i} href={`#${id}`} x={W * (i + 1)} />
-            ))}
-          </svg>
-        </div>
+          </g>
+          {/* 残りは use で参照する。DOMノード数は1枚分で済む */}
+          {Array.from({ length: copies - 1 }, (_, i) => (
+            <use key={i} href={`#${id}`} x={W * (i + 1)} />
+          ))}
+        </svg>
       </div>
     </div>
   )
@@ -149,7 +143,6 @@ export function NagiCityscape({
   districtScale = 1,
   scale = 1,
   height = Math.round(VIEW_H * scale),
-  scrollLinked = true,
   paused = false,
   className,
 }: NagiCityscapeProps) {
@@ -224,12 +217,9 @@ export function NagiCityscape({
   return (
     <div
       ref={frameRef}
-      className={[
-        'nagi-city',
-        drawn ? 'is-drawn' : '',
-        scrollLinked ? 'is-scroll-linked' : '',
-        className,
-      ].filter(Boolean).join(' ')}
+      className={['nagi-city', drawn ? 'is-drawn' : '', className]
+        .filter(Boolean)
+        .join(' ')}
       style={{ height, ['--draw-dur' as string]: `${DRAW_DURATION}s` }}
       aria-hidden="true"
     >

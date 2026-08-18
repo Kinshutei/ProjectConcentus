@@ -40,8 +40,8 @@
 
 /* --- 初回のラインドローイング --- */
 /*
- * 輪郭は単一パスなので、pathLength で長さを1000に正規化したうえで
- * 破線の描く長さを全長と同じにし、stroke-dashoffset を 1000→0 へ動かすと
+ * 輪郭は単一パス。pathLength で全長を1000に正規化し、破線の描く長さを
+ * 全長と同じにしたうえで stroke-dashoffset を 1000→0 へ動かすと、
  * 線が端から端へ引かれていく。
  * transition ではなく animation を使うのは、途中でストリップが作り直されても
  * fill: both で必ず最後まで到達させるため。
@@ -60,7 +60,7 @@
   to   { stroke-dashoffset: 0; }
 }
 
-/* 窓や電線は線が引かれ終わってから灯す */
+/* 窓や電線は線がつながってから灯す */
 .nagi-city__details,
 .nagi-city__wire {
   opacity: 0;
@@ -79,24 +79,9 @@
   to   { opacity: 1; }
 }
 
-/* --- スクロール連動（対応ブラウザのみ） --- */
-@supports (animation-timeline: scroll()) {
-  .nagi-city.is-scroll-linked .nagi-city__parallax {
-    animation: nagi-city-drift linear both;
-    animation-timeline: scroll(root block);
-    will-change: transform;
-  }
-}
-
-@keyframes nagi-city-drift {
-  from { transform: translateX(0); }
-  to   { transform: translateX(calc(var(--strip-w) * var(--gain) * -1)); }
-}
-
 /* --- モーション低減 --- */
 @media (prefers-reduced-motion: reduce) {
   .nagi-city__track,
-  .nagi-city__parallax,
   .nagi-city__outline,
   .nagi-city__details,
   .nagi-city__wire {

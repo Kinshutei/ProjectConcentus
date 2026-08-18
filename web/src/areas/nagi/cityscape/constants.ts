@@ -9,11 +9,11 @@ export const MIN_STRIP_WIDTH = 1800
 
 /**
  * コンテナ幅に対して確保するストリップ幅の倍率。
- * 複製4枚に対し、等速ループで W、スクロール連動で最大 1.11W ずれるので
- * 必要量は 2.11W + ビューポート幅。W = ビューポート幅 とすれば 3.11W で、
- * 総幅 4W に対して 0.89W の余裕が残る。
+ * ずれる量は等速ループの1ストリップぶんだけなので、ストリップ幅が
+ * ビューポート幅以上あれば複製2枚（総幅2W）で必ず足りる。
+ * 1.25 にして継ぎ目の再登場を目立ちにくくする。
  */
-export const STRIP_WIDTH_FACTOR = 1.0
+export const STRIP_WIDTH_FACTOR = 1.25
 
 /** ディテールの既定線幅 */
 export const STROKE_DETAIL = 1.3
@@ -31,16 +31,15 @@ export const FLOOR_H = 11
 export const PARAPET_H = 3
 
 /**
- * ストリップの複製の下限。実際の枚数は層ごとに、等速ループの移動量と
- * スクロール連動の移動量とコンテナ幅から計算して決める。
+ * ストリップの複製枚数。
+ * ずれる量はループの1ストリップぶんだけなので、ストリップ幅が
+ * ビューポート幅以上あれば2枚で足りる。
  */
-export const MIN_STRIP_COPIES = 2
+export const STRIP_COPIES = 2
 
 /** ラインドローイングの尺（秒） */
 export const DRAW_DURATION = 2.4
 
-/** スクロール連動の強さ（ページ全体スクロールで W の何割ぶん流すか） */
-export const SCROLL_GAIN = 0.6
 
 export type LayerKey = 'far' | 'main' | 'near'
 

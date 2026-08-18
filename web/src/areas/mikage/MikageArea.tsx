@@ -94,11 +94,16 @@ export default function MikageArea({
     >
       <header className="mk-topbar">
         <nav className="mk-jump">
-          {SECTIONS.map((sec) => (
-            <button key={sec.id} type="button" onClick={() => scrollToSection(sec.id)}>
-              {sec.label}
-            </button>
-          ))}
+          {[...SECTIONS, { id: 'about', label: 'About' }, { id: 'links', label: 'Links' }].map(
+            (sec) => (
+              <button key={sec.id} type="button" onClick={() => scrollToSection(sec.id)}>
+                {sec.label}
+              </button>
+            ),
+          )}
+          <Link to="/" className="mk-jump__home">
+            HOME
+          </Link>
         </nav>
         <div className="lang-selector">
           <select

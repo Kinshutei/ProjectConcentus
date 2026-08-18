@@ -967,3 +967,20 @@
   --rc-hl: rgba(172, 208, 209, 0.28);
   --rc-hl-line: #8ab8b9;
 }
+
+/* ヘッダーのHOMEはページ内移動ではなく別階層への遷移なので、少し離して置く */
+.mikage-scroll .mk-jump__home {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #5a8a8b;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 4px 12px;
+  margin-left: 8px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.mikage-scroll .mk-jump__home:hover {
+  color: #3a7a7b;
+  border-color: #acd0d1;
+}

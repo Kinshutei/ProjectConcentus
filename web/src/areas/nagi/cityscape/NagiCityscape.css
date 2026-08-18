@@ -44,9 +44,19 @@
   stroke-dashoffset: 1000;
 }
 
+/*
+ * transition ではなく animation で描き起こす。
+ * transition は途中でストリップが作り直される（コンテナ幅の確定で
+ * 生成し直す）と中断され、輪郭が途中までしか描かれないまま止まる。
+ * animation なら fill: both で必ず最後まで到達する。
+ */
 .nagi-city.is-drawn .nagi-city__outline {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset var(--draw-dur) cubic-bezier(0.22, 0.61, 0.36, 1) var(--draw-delay);
+  animation: nagi-city-draw var(--draw-dur) cubic-bezier(0.22, 0.61, 0.36, 1) var(--draw-delay) both;
+}
+
+@keyframes nagi-city-draw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
 }
 
 .nagi-city__details,
@@ -59,8 +69,12 @@
 }
 
 .nagi-city.is-drawn :is(.nagi-city__details, .nagi-city__wire) {
-  opacity: 1;
-  transition: opacity 0.6s ease-out calc(var(--draw-dur) + var(--draw-delay));
+  animation: nagi-city-fade 0.6s ease-out calc(var(--draw-dur) + var(--draw-delay)) both;
+}
+
+@keyframes nagi-city-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* --- スクロール連動（対応ブラウザのみ） --- */
@@ -80,16 +94,17 @@
 /* --- モーション低減 --- */
 @media (prefers-reduced-motion: reduce) {
   .nagi-city__track,
-  .nagi-city__parallax {
+  .nagi-city__parallax,
+  .nagi-city__outline,
+  .nagi-city__details,
+  .nagi-city__wire {
     animation: none !important;
   }
   .nagi-city__outline {
     stroke-dashoffset: 0;
-    transition: none;
   }
   .nagi-city__details,
   .nagi-city__wire {
     opacity: 1;
-    transition: none;
   }
 }

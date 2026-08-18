@@ -77,7 +77,7 @@ function buildOnce(o: BuildOptions): CityStrip {
   const plans = planLandmarks(o.seed, o.minWidth, spec.landmarks ? LANDMARK_COUNT : 0)
   let planIdx = 0
 
-  const gapOf = (g: number) => randInt(r, Math.max(2, g - 3), g + 5)
+  const gapOf = (g: number) => randInt(r, Math.max(2, g - 3), g + 5) * spec.spacing
 
   const openZone = () => {
     const cfg = DISTRICTS[current]

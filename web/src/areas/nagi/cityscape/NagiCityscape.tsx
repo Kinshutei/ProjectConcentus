@@ -147,7 +147,14 @@ export function NagiCityscape({
 }: NagiCityscapeProps) {
   const frameRef = useRef<HTMLDivElement>(null)
   const gid = useId().replace(/:/g, '')
-  const [minWidth, setMinWidth] = useState(MIN_STRIP_WIDTH)
+  // 初回からビューポートに足りる幅で生成する。あとで作り直すと
+  // 描き起こしの最中にストリップが差し替わり、途中で切れて見える
+  const [minWidth, setMinWidth] = useState(() =>
+    Math.max(
+      MIN_STRIP_WIDTH,
+      Math.ceil(((typeof window === 'undefined' ? 1200 : window.innerWidth) / scale) * STRIP_WIDTH_FACTOR),
+    ),
+  )
   const [reduceMotion, setReduceMotion] = useState(false)
   const [drawn, setDrawn] = useState(false)
 
@@ -178,6 +185,13 @@ export function NagiCityscape({
     const el = frameRef.current
     if (!el) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDrawn(true)
+      return
+    }
+    // 固定フッターは最初から画面内にあることが多い。監視の初回通知を
+    // 待つと描き起こしの開始が遅れるので、見えているなら即座に始める
+    const rect = el.getBoundingClientRect()
+    if (rect.bottom > 0 && rect.top < window.innerHeight) {
       setDrawn(true)
       return
     }

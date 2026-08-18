@@ -9,10 +9,11 @@ export const MIN_STRIP_WIDTH = 1800
 
 /**
  * コンテナ幅に対して確保するストリップ幅の倍率。
- * 複製3枚（総幅3W）に対し、等速ループで W、スクロール連動で最大 1.11W ずれる。
- * 3W ≥ 2.11W + ビューポート幅 を満たす下限が約 1.13 なので 1.25 を取る。
+ * 複製4枚に対し、等速ループで W、スクロール連動で最大 1.11W ずれるので
+ * 必要量は 2.11W + ビューポート幅。W = ビューポート幅 とすれば 3.11W で、
+ * 総幅 4W に対して 0.89W の余裕が残る。
  */
-export const STRIP_WIDTH_FACTOR = 1.25
+export const STRIP_WIDTH_FACTOR = 1.0
 
 /** ディテールの既定線幅 */
 export const STROKE_DETAIL = 1.3
@@ -29,8 +30,13 @@ export const FLOOR_H = 11
 /** パラペット（陸屋根の立ち上がり）の高さ */
 export const PARAPET_H = 3
 
-/** ストリップの複製枚数。スクロール連動を使うので 3 */
-export const STRIP_COPIES = 3
+/**
+ * ストリップの複製枚数。
+ * 3枚だと近景層（連動量1.11W）の余裕が 0.126W しかなく、スクロール末端で
+ * 右側が尽きて街が途中で切れる。4枚にしたうえでストリップ幅を縮め、
+ * 総ノード数はむしろ減らす。
+ */
+export const STRIP_COPIES = 4
 
 /** 初回描画アニメの尺（秒） */
 export const DRAW_DURATION = 2.4
@@ -54,6 +60,8 @@ export interface LayerSpec {
   buildings: boolean
   /** 地区の長さ倍率への追加倍率 */
   districtScale: number
+  /** 建物・添景の間隔倍率。大きいほど疎になる */
+  spacing: number
   /** ランドマークを置く層か */
   landmarks: boolean
 }
@@ -67,17 +75,18 @@ export const LAYERS: Record<LayerKey, LayerSpec> = {
   far: {
     speedFactor: 0.35, groundOffset: -16, heightScale: 0.62, strokeWidth: 1.0,
     opacity: 0.42, seedOffset: 1013, detailLevel: 0, buildings: true,
-    districtScale: 1.7, landmarks: true,
+    districtScale: 1.7, spacing: 1, landmarks: true,
   },
   main: {
     speedFactor: 1.0, groundOffset: 0, heightScale: 1.0, strokeWidth: 1.6,
     opacity: 1.0, seedOffset: 0, detailLevel: 2, buildings: true,
-    districtScale: 1, landmarks: false,
+    districtScale: 1, spacing: 1, landmarks: false,
   },
+  // 近景層は街路設備だけを疎に置く。等間隔に詰めると手前が騒がしくなる
   near: {
     speedFactor: 1.85, groundOffset: 12, heightScale: 0.42, strokeWidth: 1.9,
     opacity: 1.0, seedOffset: 7717, detailLevel: 1, buildings: false,
-    districtScale: 0.7, landmarks: false,
+    districtScale: 0.7, spacing: 4, landmarks: false,
   },
 }
 

@@ -31,12 +31,10 @@ export const FLOOR_H = 11
 export const PARAPET_H = 3
 
 /**
- * ストリップの複製枚数。
- * 3枚だと近景層（連動量1.11W）の余裕が 0.126W しかなく、スクロール末端で
- * 右側が尽きて街が途中で切れる。4枚にしたうえでストリップ幅を縮め、
- * 総ノード数はむしろ減らす。
+ * ストリップの複製の下限。実際の枚数は層ごとに、等速ループの移動量と
+ * スクロール連動の移動量とコンテナ幅から計算して決める。
  */
-export const STRIP_COPIES = 4
+export const MIN_STRIP_COPIES = 2
 
 /** スクロール連動の強さ（ページ全体スクロールで W の何割ぶん流すか） */
 export const SCROLL_GAIN = 0.6

@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import './NagiCityscape.css'
 import {
   DEFAULT_SEED, DEFAULT_SPEED, LAYERS, LAYER_ORDER, MIN_STRIP_WIDTH,
-  SCROLL_GAIN, STRIP_COPIES, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
+  MIN_STRIP_COPIES, SCROLL_GAIN, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
   VIEW_H, type LayerKey,
 } from './constants'
 import { generateCity } from './generator'
@@ -43,11 +43,12 @@ function DetailNode({ d }: { d: Detail }) {
 }
 
 function Layer({
-  layer, seed, minWidth, districtScale, scale, speed, stopped, gid,
+  layer, seed, minWidth, boxWidth, districtScale, scale, speed, stopped, gid,
 }: {
   layer: LayerKey
   seed: number
   minWidth: number
+  boxWidth: number
   districtScale: number
   scale: number
   speed: number
@@ -61,15 +62,22 @@ function Layer({
   )
   const W = city.width
   const id = `${gid}-${layer}`
+  const stripPx = W * scale
+  const gain = SCROLL_GAIN * spec.speedFactor
+  /*
+   * 等速ループで最大 1 ストリップ、スクロール連動で最大 gain ストリップ左へ動く。
+   * その位置からコンテナ幅ぶん右まで絵が続いていれば、どこまで送っても切れない。
+   */
+  const copies = Math.max(MIN_STRIP_COPIES, Math.ceil(1 + gain + boxWidth / stripPx))
 
   return (
     <div
       className={`nagi-city__layer nagi-city__layer--${layer}`}
       style={{
         opacity: spec.opacity,
-        ['--strip-w' as string]: `${W * scale}px`,
-        ['--dur' as string]: `${(W * scale) / (speed * spec.speedFactor)}s`,
-        ['--gain' as string]: `${SCROLL_GAIN * spec.speedFactor}`,
+        ['--strip-w' as string]: `${stripPx}px`,
+        ['--dur' as string]: `${stripPx / (speed * spec.speedFactor)}s`,
+        ['--gain' as string]: `${gain}`,
         animationPlayState: stopped ? 'paused' : 'running',
       }}
     >
@@ -80,9 +88,9 @@ function Layer({
         >
           <svg
             className="nagi-city__svg"
-            width={W * STRIP_COPIES * scale}
+            width={W * copies * scale}
             height={VIEW_H * scale}
-            viewBox={`0 0 ${W * STRIP_COPIES} ${VIEW_H}`}
+            viewBox={`0 0 ${W * copies} ${VIEW_H}`}
             aria-hidden="true"
             focusable="false"
           >
@@ -123,7 +131,7 @@ function Layer({
               </g>
             </g>
             {/* 残りは use で参照する。DOMノード数は1枚分で済む */}
-            {Array.from({ length: STRIP_COPIES - 1 }, (_, i) => (
+            {Array.from({ length: copies - 1 }, (_, i) => (
               <use key={i} href={`#${id}`} x={W * (i + 1)} />
             ))}
           </svg>
@@ -153,6 +161,7 @@ export function NagiCityscape({
       Math.ceil(((typeof window === 'undefined' ? 1200 : window.innerWidth) / scale) * STRIP_WIDTH_FACTOR),
     ),
   )
+  const [boxWidth, setBoxWidth] = useState(() => (typeof window === 'undefined' ? 1200 : window.innerWidth))
   const [reduceMotion, setReduceMotion] = useState(false)
 
   // コンテナ幅を監視し、必要幅が現在値を上回ったときのみ再生成する。
@@ -162,7 +171,9 @@ export function NagiCityscape({
     if (!el || typeof ResizeObserver === 'undefined') return
     const ro = new ResizeObserver(([entry]) => {
       // 縮小表示するぶん、必要なストリップ幅は 1/scale 倍になる
-      const need = Math.ceil((entry.contentRect.width / scale) * STRIP_WIDTH_FACTOR)
+      const w = entry.contentRect.width
+      setBoxWidth((prev) => (w > prev ? w : prev))
+      const need = Math.ceil((w / scale) * STRIP_WIDTH_FACTOR)
       setMinWidth((prev) => (need > prev ? need : prev))
     })
     ro.observe(el)
@@ -195,6 +206,7 @@ export function NagiCityscape({
           layer={layer}
           seed={seed}
           minWidth={minWidth}
+          boxWidth={boxWidth}
           districtScale={districtScale}
           scale={scale}
           speed={speed}

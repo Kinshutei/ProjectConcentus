@@ -514,46 +514,83 @@ function Setlist({ streams, db }: { streams: Stream[]; db: Db }) {
                           {jstDate(current.frame.started_at)} ・ {current.rows.length}曲
                         </div>
                         <a
-                          className="link-btn link-btn--sm"
+                          className="songs__link"
                           href={watchUrl(current.frame.video_id)}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          YouTubeで開く
+                          YouTube で開く →
                         </a>
                       </div>
                     </div>
 
-                    <ol className="songs" start={start + 1}>
-                      {shown.map((r) => (
-                        <li className="song" key={r.perf.start_sec}>
-                          <span className="song__no">{r.no}</span>
-                          <span className="song__body">
-                            <span className="song__title">
-                              {r.isFirst && <span className="badge badge--first">初歌唱</span>}
-                              {r.song?.title ?? ''}
-                            </span>
-                            <span className="song__meta">
-                              {r.song?.artist ?? ''}
-                              {r.perf.tags.map((id) => (
-                                <span key={id} className="badge badge--tag">
-                                  {db.tagById.get(id)?.label ?? id}
-                                </span>
-                              ))}
-                              {r.perf.note && <span className="song__note">{r.perf.note}</span>}
-                            </span>
-                          </span>
-                          <a
-                            className="song__time"
-                            href={watchUrl(current.frame.video_id, r.perf.start_sec)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {hms(r.perf.start_sec)}
-                          </a>
-                        </li>
-                      ))}
-                    </ol>
+                    <div className="songs-wrap">
+                      <table className="songs">
+                        <thead>
+                          <tr>
+                            <th className="songs__no">NO</th>
+                            <th>SONG</th>
+                            <th className="songs__time">TIME</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {shown.map((r) => (
+                            <tr key={r.perf.start_sec}>
+                              <td className="songs__no">{r.no}</td>
+                              <td>
+                                <div className="songs__title">
+                                  {r.song?.title ?? ''}{' '}
+                                  {r.isFirst && <span className="badge">初歌唱</span>}
+                                  {r.perf.tags.map((id) => (
+                                    <span key={id} className="badge">
+                                      {db.tagById.get(id)?.label ?? id}
+                                    </span>
+                                  ))}
+                                </div>
+                                <div className="songs__artist">
+                                  {r.song?.artist ?? ''}
+                                  {r.perf.note && ` ／ ${r.perf.note}`}
+                                </div>
+                              </td>
+                              <td className="songs__time">
+                                {/* 時間と▶をひとつのリンクにまとめ、どちらを押しても頭出しできるようにする */}
+                                <a
+                                  className="songs__play"
+                                  href={watchUrl(current.frame.video_id, r.perf.start_sec)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <span className="songs__play-time">{hms(r.perf.start_sec)}</span>
+                                  <span className="songs__play-btn" aria-hidden="true" />
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {/* 狭幅ではカード表示に切り替わる */}
+                      <div className="songs-cards">
+                        {shown.map((r) => (
+                          <div className="song-card" key={`c_${r.perf.start_sec}`}>
+                            <div className="song-card__head">
+                              <span className="song-card__no">{r.no}</span>
+                              <span className="song-card__title">{r.song?.title ?? ''}</span>
+                              {r.isFirst && <span className="badge">初歌唱</span>}
+                            </div>
+                            <div className="song-card__meta">{r.song?.artist ?? ''}</div>
+                            <a
+                              className="songs__link"
+                              href={watchUrl(current.frame.video_id, r.perf.start_sec)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {hms(r.perf.start_sec)} →
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
                     <Pager page={safePage} total={totalPages} onChange={setPage} />
                   </>

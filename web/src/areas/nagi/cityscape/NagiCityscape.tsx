@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import './NagiCityscape.css'
 import {
-  DEFAULT_SEED, DEFAULT_SPEED, LAYERS, LAYER_ORDER, MIN_STRIP_WIDTH,
+  DEFAULT_SEED, DEFAULT_SPEED, DRAW_DELAY, DRAW_DURATION, LAYERS, LAYER_ORDER, MIN_STRIP_WIDTH,
   MIN_STRIP_COPIES, SCROLL_GAIN, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
   VIEW_H, type LayerKey,
 } from './constants'
@@ -77,6 +77,7 @@ function Layer({
         opacity: spec.opacity,
         ['--strip-w' as string]: `${stripPx}px`,
         ['--dur' as string]: `${stripPx / (speed * spec.speedFactor)}s`,
+        ['--draw-delay' as string]: `${DRAW_DELAY[layer]}s`,
         ['--gain' as string]: `${gain}`,
         animationPlayState: stopped ? 'paused' : 'running',
       }}
@@ -105,6 +106,7 @@ function Layer({
                 <path
                   className="nagi-city__outline"
                   d={city.path}
+                  pathLength={1000}
                   fill="none"
                   stroke="var(--cty-line)"
                   strokeWidth={spec.strokeWidth}
@@ -163,6 +165,7 @@ export function NagiCityscape({
   )
   const [boxWidth, setBoxWidth] = useState(() => (typeof window === 'undefined' ? 1200 : window.innerWidth))
   const [reduceMotion, setReduceMotion] = useState(false)
+  const [drawn, setDrawn] = useState(false)
 
   // コンテナ幅を監視し、必要幅が現在値を上回ったときのみ再生成する。
   // 縮小時に作り直さないことで、リサイズ中に街並みが変わるのを防ぐ。
@@ -188,16 +191,46 @@ export function NagiCityscape({
     return () => mq.removeEventListener('change', apply)
   }, [])
 
+  // 初回可視時に一度だけラインドローイングを起こす
+  useEffect(() => {
+    const el = frameRef.current
+    if (!el) return
+    // 固定フッターは最初から画面内にあることが多い。監視の初回通知を
+    // 待つと開始が遅れるので、見えているなら即座に始める
+    const rect = el.getBoundingClientRect()
+    if (rect.bottom > 0 && rect.top < window.innerHeight) {
+      setDrawn(true)
+      return
+    }
+    if (typeof IntersectionObserver === 'undefined') {
+      setDrawn(true)
+      return
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setDrawn(true)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.15 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   const stopped = paused || reduceMotion
 
   return (
     <div
       ref={frameRef}
-      className={['nagi-city', scrollLinked ? 'is-scroll-linked' : '', className]
-        .filter(Boolean)
-        .join(' ')}
-      style={{ height }}
+      className={[
+        'nagi-city',
+        drawn ? 'is-drawn' : '',
+        scrollLinked ? 'is-scroll-linked' : '',
+        className,
+      ].filter(Boolean).join(' ')}
+      style={{ height, ['--draw-dur' as string]: `${DRAW_DURATION}s` }}
       aria-hidden="true"
     >
       {LAYER_ORDER.map((layer) => (

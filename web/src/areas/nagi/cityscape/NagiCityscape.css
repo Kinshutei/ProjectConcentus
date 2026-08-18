@@ -38,9 +38,45 @@
   display: block;
 }
 
-/* 街並みは最初から全部描く。描き起こしは途中が切れて見えるので入れない */
+/* --- 初回のラインドローイング --- */
+/*
+ * 輪郭は単一パスなので、pathLength で長さを1000に正規化したうえで
+ * 破線の描く長さを全長と同じにし、stroke-dashoffset を 1000→0 へ動かすと
+ * 線が端から端へ引かれていく。
+ * transition ではなく animation を使うのは、途中でストリップが作り直されても
+ * fill: both で必ず最後まで到達させるため。
+ */
+.nagi-city__outline {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+.nagi-city.is-drawn .nagi-city__outline {
+  animation: nagi-city-draw var(--draw-dur) cubic-bezier(0.22, 0.61, 0.36, 1) var(--draw-delay) both;
+}
+
+@keyframes nagi-city-draw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* 窓や電線は線が引かれ終わってから灯す */
+.nagi-city__details,
+.nagi-city__wire {
+  opacity: 0;
+}
+
 .nagi-city__wire {
   stroke-opacity: 0.55;
+}
+
+.nagi-city.is-drawn :is(.nagi-city__details, .nagi-city__wire) {
+  animation: nagi-city-fade 0.6s ease-out calc(var(--draw-dur) + var(--draw-delay)) both;
+}
+
+@keyframes nagi-city-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* --- スクロール連動（対応ブラウザのみ） --- */
@@ -60,7 +96,17 @@
 /* --- モーション低減 --- */
 @media (prefers-reduced-motion: reduce) {
   .nagi-city__track,
-  .nagi-city__parallax {
+  .nagi-city__parallax,
+  .nagi-city__outline,
+  .nagi-city__details,
+  .nagi-city__wire {
     animation: none !important;
+  }
+  .nagi-city__outline {
+    stroke-dashoffset: 0;
+  }
+  .nagi-city__details,
+  .nagi-city__wire {
+    opacity: 1;
   }
 }

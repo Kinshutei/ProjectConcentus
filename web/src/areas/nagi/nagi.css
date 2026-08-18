@@ -178,7 +178,8 @@
   margin: 10px 0 0;
   font-size: 13px;
   letter-spacing: 0.08em;
-  color: var(--navy-mute);
+  /* 夜空の地では --navy-mute だと沈むので一段明るい側を使う */
+  color: var(--navy-soft);
 }
 .nagi-root .reveal {
   opacity: 0;

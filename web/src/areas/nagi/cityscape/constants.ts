@@ -38,9 +38,6 @@ export const PARAPET_H = 3
  */
 export const STRIP_COPIES = 4
 
-/** 初回描画アニメの尺（秒） */
-export const DRAW_DURATION = 2.4
-
 /** スクロール連動の強さ（ページ全体スクロールで W の何割ぶん流すか） */
 export const SCROLL_GAIN = 0.6
 
@@ -93,5 +90,3 @@ export const LAYERS: Record<LayerKey, LayerSpec> = {
 /** 手前から奥へ描くと近景が遠景を隠すので、この順で重ねる */
 export const LAYER_ORDER: LayerKey[] = ['far', 'main', 'near']
 
-/** 描画アニメの層別遅延（秒） */
-export const DRAW_DELAY: Record<LayerKey, number> = { far: 0, main: 0.25, near: 0.5 }

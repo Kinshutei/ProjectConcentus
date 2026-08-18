@@ -19,8 +19,17 @@ export const TWINKLE_MAX = 40
 /** 星座の最小間隔（px） */
 export const CONSTELLATION_GAP = 520
 
-/** 星座の表示サイズ範囲（px） */
-export const CONSTELLATION_SIZE: [number, number] = [130, 210]
+/** 星座の表示サイズ範囲（px）。scale 0.5〜1.25 が掛かるので実寸110〜425px */
+export const CONSTELLATION_SIZE: [number, number] = [220, 340]
+
+/** 同時に流すスロットの本数 */
+export const SLOT_COUNT = 5
+
+/** スロットが画面外で待機する余白（px） */
+export const SLOT_MARGIN = 220
+
+/** 可視帯に対して縦位置を散らす割合（0〜1） */
+export const SLOT_SPREAD = 0.55
 
 /** 既定のスクロール速度（px/秒） */
 export const SKY_SPEED = 6

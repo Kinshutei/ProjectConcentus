@@ -1,15 +1,14 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './NagiCityscape.css'
 import {
-  DEFAULT_SEED, DEFAULT_SPEED, DRAW_DELAY, DRAW_DURATION, LAYERS, LAYER_ORDER, MIN_STRIP_WIDTH,
-  STRIP_COPIES, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
-  VIEW_H, type LayerKey,
+  CHUNK_MARGIN, DEFAULT_SPEED, DRAW_DELAY, DRAW_DURATION,
+  LAYERS, LAYER_ORDER, STROKE_DETAIL, VIEW_H, type LayerKey,
 } from './constants'
-import { generateCity } from './generator'
-import type { Detail } from './types'
+import { createCityState, generateChunk } from './generator'
+import type { Detail, PlacedItem } from './types'
 
 export interface NagiCityscapeProps {
-  /** 街並みを決めるシード。同じ値なら常に同じ街になる */
+  /** 街並みを決めるシード。省略すると読み込みごとに変わる */
   seed?: number
   /** 主層のスクロール速度（px/秒）。遠景・近景は層ごとの倍率が掛かる */
   speed?: number
@@ -27,6 +26,18 @@ export interface NagiCityscapeProps {
   className?: string
 }
 
+interface Chunk {
+  key: number
+  /** 層の座標系での左端（描画単位） */
+  left: number
+  width: number
+  path: string
+  wires: string
+  items: PlacedItem[]
+  /** 初回に画面へ出た区画。ラインドローイングを掛ける */
+  initial: boolean
+}
+
 function DetailNode({ d }: { d: Detail }) {
   const stroke = d.accent ? 'var(--cty-accent)' : 'var(--cty-line)'
   const sw = d.sw ?? STROKE_DETAIL
@@ -40,67 +51,128 @@ function DetailNode({ d }: { d: Detail }) {
   }
 }
 
+/**
+ * 1層ぶんの街並み。
+ * 区画を必要なぶんだけ作り足し、流れ切った区画は捨てる。
+ * 捨てるときに座標を左へ詰め直すので、値が際限なく大きくなることはない。
+ */
 function Layer({
-  layer, seed, minWidth, boxWidth, districtScale, scale, speed, stopped, gid,
+  layer, seed, districtScale, scale, speed, stopped,
 }: {
   layer: LayerKey
   seed: number
-  minWidth: number
-  boxWidth: number
   districtScale: number
   scale: number
   speed: number
   stopped: boolean
-  gid: string
 }) {
   const spec = LAYERS[layer]
-  const city = useMemo(
-    () => generateCity({ seed: seed + spec.seedOffset, minWidth, districtScale, layer }),
-    [seed, spec.seedOffset, minWidth, districtScale, layer],
-  )
-  const W = city.width
-  const id = `${gid}-${layer}`
-  const stripPx = W * scale
-  /*
-   * ずれる量はループの1ストリップぶんだけ。ストリップ幅がコンテナ幅以上
-   * あれば2枚で足りるが、足りない環境でも切れないよう枚数を計算しておく。
-   */
-  const copies = Math.max(STRIP_COPIES, Math.ceil(1 + boxWidth / stripPx))
+  const hostRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const chunksRef = useRef<Chunk[]>([])
+  const stateRef = useRef(createCityState(seed, layer, districtScale))
+  const offsetRef = useRef(0)
+  const nextKeyRef = useRef(0)
+  const [, setVersion] = useState(0)
+
+  useEffect(() => {
+    const host = hostRef.current
+    const track = trackRef.current
+    if (!host || !track) return
+
+    // シードや層が変わったら作り直す
+    stateRef.current = createCityState(seed, layer, districtScale)
+    chunksRef.current = []
+    offsetRef.current = 0
+
+    let raf = 0
+    let last = 0
+    const pxPerSec = speed * spec.speedFactor
+
+    const right = () => {
+      const list = chunksRef.current
+      return list.length ? list[list.length - 1].left + list[list.length - 1].width : 0
+    }
+
+    /**
+     * 区画ひとつは画面幅＋余白。
+     * 右端が画面の右外に届いていなければ次の区画を作り、
+     * 画面の左外へ出た区画は捨てる。どちらも視界の外で起きる。
+     */
+    const fill = (): boolean => {
+      const span = host.clientWidth / scale + CHUNK_MARGIN
+      let changed = false
+
+      while (right() < offsetRef.current / scale + span) {
+        const left = right()
+        // ラインドローイングは最初の1枚だけ。以降は画面外で作るので掛けない
+        const first = chunksRef.current.length === 0
+        const chunk = generateChunk(stateRef.current, span)
+        chunksRef.current.push({ key: nextKeyRef.current++, left, ...chunk, initial: first })
+        changed = true
+      }
+
+      // 捨てるたびに座標を詰め直すので、判定のたびに現在値を取り直す
+      while (chunksRef.current.length > 1) {
+        const head = chunksRef.current[0]
+        if (head.left + head.width >= offsetRef.current / scale) break
+        chunksRef.current.shift()
+        for (const c of chunksRef.current) c.left -= head.width
+        offsetRef.current -= head.width * scale
+        changed = true
+      }
+      return changed
+    }
+
+    fill()
+    setVersion((v) => v + 1)
+    track.style.transform = `translate3d(${-offsetRef.current}px,0,0)`
+
+    const step = (t: number) => {
+      raf = requestAnimationFrame(step)
+      if (!last) last = t
+      const dt = Math.min(0.1, (t - last) / 1000)
+      last = t
+      if (!stopped) offsetRef.current += pxPerSec * dt
+      track.style.transform = `translate3d(${-offsetRef.current}px,0,0)`
+      if (fill()) setVersion((v) => v + 1)
+    }
+    raf = requestAnimationFrame(step)
+
+    const ro = typeof ResizeObserver === 'undefined'
+      ? null
+      : new ResizeObserver(() => { if (fill()) setVersion((v) => v + 1) })
+    ro?.observe(host)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      ro?.disconnect()
+    }
+  }, [layer, scale, speed, spec.speedFactor, stopped, seed, districtScale])
 
   return (
     <div
+      ref={hostRef}
       className={`nagi-city__layer nagi-city__layer--${layer}`}
-      style={{
-        opacity: spec.opacity,
-        ['--strip-w' as string]: `${stripPx}px`,
-        ['--dur' as string]: `${stripPx / (speed * spec.speedFactor)}s`,
-        ['--draw-delay' as string]: `${DRAW_DELAY[layer]}s`,
-        animationPlayState: stopped ? 'paused' : 'running',
-      }}
+      style={{ opacity: spec.opacity }}
     >
-      <div
-        className="nagi-city__track"
-        style={{ animationPlayState: stopped ? 'paused' : 'running' }}
-      >
-        <svg
-          className="nagi-city__svg"
-          width={W * copies * scale}
-          height={VIEW_H * scale}
-          viewBox={`0 0 ${W * copies} ${VIEW_H}`}
-          aria-hidden="true"
-          focusable="false"
+      <div ref={trackRef} className="nagi-city__track">
+        {chunksRef.current.map((c) => (
+          <svg
+            key={c.key}
+            className={`nagi-city__chunk${c.initial ? ' is-first' : ''}`}
+            width={c.width * scale}
+            height={VIEW_H * scale}
+            viewBox={`0 0 ${c.width} ${VIEW_H}`}
+            style={{ left: c.left * scale, ['--draw-delay' as string]: `${DRAW_DELAY[layer]}s` }}
+            aria-hidden="true"
+            focusable="false"
           >
-          {/*
-            1枚目は defs に隠さず実際に描く。defs の中は描画されない要素なので
-            transition が進まず、輪郭が stroke-dashoffset の初期値のまま
-            止まってしまう。実描画にすれば描き起こしが動き、use の複製も追従する。
-          */}
-          <g className="nagi-city__strip">
             {/* 層ごとに地面の高さをずらす。遠景ほど上に置くと奥行きが出る */}
-            <g id={id} transform={`translate(0,${spec.groundOffset})`}>
+            <g transform={`translate(0,${spec.groundOffset})`}>
               <path
                 className="nagi-city__outline"
-                d={city.path}
+                d={c.path}
                 pathLength={1000}
                 fill="none"
                 stroke="var(--cty-line)"
@@ -108,10 +180,10 @@ function Layer({
                 strokeLinejoin="round"
                 strokeLinecap="round"
               />
-              {city.wires && (
+              {c.wires && (
                 <path
                   className="nagi-city__wire"
-                  d={city.wires}
+                  d={c.wires}
                   fill="none"
                   stroke="var(--cty-line)"
                   strokeWidth={0.8}
@@ -119,26 +191,32 @@ function Layer({
                 />
               )}
               <g className="nagi-city__details">
-                {city.items.map((item, i) => (
+                {c.items.map((item, i) => (
                   <g key={i} transform={`translate(${item.x},0)`}>
                     {item.details.map((d, j) => <DetailNode key={j} d={d} />)}
                   </g>
                 ))}
               </g>
             </g>
-          </g>
-          {/* 残りは use で参照する。DOMノード数は1枚分で済む */}
-          {Array.from({ length: copies - 1 }, (_, i) => (
-            <use key={i} href={`#${id}`} x={W * (i + 1)} />
-          ))}
-        </svg>
+          </svg>
+        ))}
       </div>
     </div>
   )
 }
 
+/** URL に ?seed=数値 があればそれを使う。無ければ読み込みごとに変える */
+function resolveSeed(given?: number): number {
+  if (given !== undefined) return given
+  if (typeof window !== 'undefined') {
+    const q = new URLSearchParams(window.location.search).get('seed')
+    if (q && /^\d+$/.test(q)) return Number(q)
+  }
+  return Math.floor(Math.random() * 0xffffffff) >>> 0
+}
+
 export function NagiCityscape({
-  seed = DEFAULT_SEED,
+  seed,
   speed = DEFAULT_SPEED,
   districtScale = 1,
   scale = 1,
@@ -146,35 +224,8 @@ export function NagiCityscape({
   paused = false,
   className,
 }: NagiCityscapeProps) {
-  const frameRef = useRef<HTMLDivElement>(null)
-  const gid = useId().replace(/:/g, '')
-  // 初回からビューポートに足りる幅で生成する。あとで作り直すと
-  // 描き起こしの最中にストリップが差し替わり、途中で切れて見える
-  const [minWidth, setMinWidth] = useState(() =>
-    Math.max(
-      MIN_STRIP_WIDTH,
-      Math.ceil(((typeof window === 'undefined' ? 1200 : window.innerWidth) / scale) * STRIP_WIDTH_FACTOR),
-    ),
-  )
-  const [boxWidth, setBoxWidth] = useState(() => (typeof window === 'undefined' ? 1200 : window.innerWidth))
   const [reduceMotion, setReduceMotion] = useState(false)
-  const [drawn, setDrawn] = useState(false)
-
-  // コンテナ幅を監視し、必要幅が現在値を上回ったときのみ再生成する。
-  // 縮小時に作り直さないことで、リサイズ中に街並みが変わるのを防ぐ。
-  useEffect(() => {
-    const el = frameRef.current
-    if (!el || typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(([entry]) => {
-      // 縮小表示するぶん、必要なストリップ幅は 1/scale 倍になる
-      const w = entry.contentRect.width
-      setBoxWidth((prev) => (w > prev ? w : prev))
-      const need = Math.ceil((w / scale) * STRIP_WIDTH_FACTOR)
-      setMinWidth((prev) => (need > prev ? need : prev))
-    })
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [scale])
+  const resolvedSeed = useMemo(() => resolveSeed(seed), [seed])
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -184,42 +235,11 @@ export function NagiCityscape({
     return () => mq.removeEventListener('change', apply)
   }, [])
 
-  // 初回可視時に一度だけラインドローイングを起こす
-  useEffect(() => {
-    const el = frameRef.current
-    if (!el) return
-    // 固定フッターは最初から画面内にあることが多い。監視の初回通知を
-    // 待つと開始が遅れるので、見えているなら即座に始める
-    const rect = el.getBoundingClientRect()
-    if (rect.bottom > 0 && rect.top < window.innerHeight) {
-      setDrawn(true)
-      return
-    }
-    if (typeof IntersectionObserver === 'undefined') {
-      setDrawn(true)
-      return
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setDrawn(true)
-          io.disconnect()
-        }
-      },
-      { threshold: 0.15 },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-
   const stopped = paused || reduceMotion
 
   return (
     <div
-      ref={frameRef}
-      className={['nagi-city', drawn ? 'is-drawn' : '', className]
-        .filter(Boolean)
-        .join(' ')}
+      className={['nagi-city', className].filter(Boolean).join(' ')}
       style={{ height, ['--draw-dur' as string]: `${DRAW_DURATION}s` }}
       aria-hidden="true"
     >
@@ -227,14 +247,11 @@ export function NagiCityscape({
         <Layer
           key={layer}
           layer={layer}
-          seed={seed}
-          minWidth={minWidth}
-          boxWidth={boxWidth}
+          seed={resolvedSeed}
           districtScale={districtScale}
           scale={scale}
           speed={speed}
           stopped={stopped}
-          gid={gid}
         />
       ))}
     </div>

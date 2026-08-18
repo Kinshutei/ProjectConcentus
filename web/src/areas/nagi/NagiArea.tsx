@@ -147,12 +147,7 @@ export default function NagiArea({
       </div>
 
       <div className="city-fixed" style={{ height: FOOTER_H }}>
-        <NagiCityscape
-          scale={CITY_SCALE}
-          seed={20260819}
-          speed={10}
-          districtScale={0.8}
-        />
+        <NagiCityscape scale={CITY_SCALE} speed={10} districtScale={0.8} />
       </div>
     </div>
   )

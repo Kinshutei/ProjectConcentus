@@ -4,17 +4,6 @@ export const GROUND_Y = 190
 /** viewBox の高さ */
 export const VIEW_H = 214
 
-/** ストリップの最小幅 */
-export const MIN_STRIP_WIDTH = 1800
-
-/**
- * コンテナ幅に対して確保するストリップ幅の倍率。
- * ずれる量は等速ループの1ストリップぶんだけなので、ストリップ幅が
- * ビューポート幅以上あれば複製2枚（総幅2W）で必ず足りる。
- * 1.25 にして継ぎ目の再登場を目立ちにくくする。
- */
-export const STRIP_WIDTH_FACTOR = 1.25
-
 /** ディテールの既定線幅 */
 export const STROKE_DETAIL = 1.3
 
@@ -31,11 +20,11 @@ export const FLOOR_H = 11
 export const PARAPET_H = 3
 
 /**
- * ストリップの複製枚数。
- * ずれる量はループの1ストリップぶんだけなので、ストリップ幅が
- * ビューポート幅以上あれば2枚で足りる。
+ * 区画ひとつの幅は「画面幅＋この余白」（描画単位）。
+ * 画面の右外に必ず次の区画があり、区画が画面の左外へ出てから捨てるので、
+ * 生成も破棄も視界に入らない。
  */
-export const STRIP_COPIES = 2
+export const CHUNK_MARGIN = 600
 
 /** ラインドローイングの尺（秒） */
 export const DRAW_DURATION = 2.4

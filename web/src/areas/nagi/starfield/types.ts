@@ -1,3 +1,5 @@
+export type Season = 'spring' | 'summer' | 'autumn' | 'winter' | 'circumpolar'
+
 export interface ConstellationStar {
   /** 星座の外接矩形内での正規化座標（0〜1、y は下向き） */
   x: number
@@ -15,6 +17,21 @@ export interface Constellation {
   lines: [number, number][]
   /** 星座ごとの見かけの大きさ倍率 */
   scale: number
+  /** 省略時は通年扱い */
+  season?: Season
+  /** 同時に出したくない星座をまとめる識別子 */
+  group?: string
+}
+
+/** 流れているスロット1本ぶんの状態 */
+export interface SlotState {
+  /** 同じキーを避けるための連番 */
+  key: number
+  constellation: Constellation
+  /** 回転枠に対する縦位置の比率 */
+  topRatio: number
+  /** 表示サイズ（px） */
+  size: number
 }
 
 export interface PlacedStar {
@@ -24,19 +41,6 @@ export interface PlacedStar {
   o: number
   /** またたき。undefined なら静止 */
   tw?: { dur: number; delay: number }
-}
-
-export interface PlacedConstellation {
-  id: string
-  name: string
-  /** ストリップ内での外接矩形 */
-  x: number
-  y: number
-  w: number
-  h: number
-  stars: PlacedStar[]
-  /** 星座線の d 属性（単一パス） */
-  path: string
 }
 
 /** 半径と不透明度が同じ星をまとめた1本のパス */
@@ -53,5 +57,4 @@ export interface SkyStrip {
   stars: PlacedStar[]
   /** それ以外の星。半径と不透明度で束ねてパス化する */
   dust: StarDust[]
-  constellations: PlacedConstellation[]
 }

@@ -809,15 +809,14 @@ export function shopFixtures(r: Rng, w: number, awningRate: number, signRate: nu
 
 export interface Pole { x: number; top: number }
 
-/** 電柱間をカテナリー近似（2次ベジエ）で結ぶ。ループ端の接続も行う */
-export function buildWirePath(poles: Pole[], stripW: number): string {
+/** 電柱間をカテナリー近似（2次ベジエ）で結ぶ */
+export function buildWirePath(poles: Pole[]): string {
   if (poles.length < 2) return ''
-  const seq: Pole[] = [...poles, { x: poles[0].x + stripW, top: poles[0].top }]
   const parts: string[] = []
 
-  for (let i = 0; i < seq.length - 1; i++) {
-    const a = seq[i]
-    const b = seq[i + 1]
+  for (let i = 0; i < poles.length - 1; i++) {
+    const a = poles[i]
+    const b = poles[i + 1]
     const span = b.x - a.x
     if (span > 220) continue // 離れすぎた区間には張らない
     const sag = span * 0.07 + 1.5

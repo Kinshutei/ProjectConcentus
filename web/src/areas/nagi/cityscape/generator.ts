@@ -6,83 +6,93 @@ import {
 } from './modules'
 import { createRng, pickWeighted, randInt } from './rng'
 import type {
-  CityStrip, Detail, DistrictId, ModuleFn, ModuleShape, PlacedItem, Rng, ZoneSpan,
+  CityChunk, Detail, DistrictId, ModuleFn, ModuleShape, PlacedItem, Rng,
 } from './types'
 
 const GY = GROUND_Y
 const TAU = Math.PI * 2
 const round1 = (v: number) => Math.round(v * 10) / 10
 
-/** 1ストリップに置くランドマークの本数 */
-export const LANDMARK_COUNT = 2
+/** 高さ包絡線の周期（描画単位）。ループしないので絶対座標の関数で足りる */
+const ENVELOPE_PERIOD = 2600
+
+/** ランドマークを置く間隔の目安（描画単位） */
+const LANDMARK_INTERVAL = 2400
 
 const LANDMARK_POOL = [landmarkTower, landmarkSpine, landmarkTwinTower]
 
 /** ランドマークを置ける地区。この地区に入るまで待つ */
 const LANDMARK_DISTRICTS = new Set<DistrictId>(['cbd', 'office'])
 
-interface LandmarkPlan {
-  /** この x を越えたら配置を試みる */
-  at: number
-  /** この x を越えたら地区を問わず強制配置 */
-  limit: number
-  make: (r: Rng) => ModuleShape
+/**
+ * 生成の途中状態。区画をまたいで引き継ぐ。
+ * これを持ち回ることで、地区の遷移・電線・ランドマークの間隔が
+ * 継ぎ目で途切れずにつながる。
+ */
+export interface CityState {
+  rng: Rng
+  layer: LayerKey
+  districtScale: number
+  phase1: number
+  phase2: number
+  /** 生成済みの総幅（描画単位）。包絡線の位相に使う */
+  absX: number
+  district: DistrictId
+  /** 現在の地区の残り幅 */
+  remaining: number
+  prev: ModuleFn | null
+  /** 直近のランドマークからの距離 */
+  sinceLandmark: number
+  /** 前の区画の最後の電柱。次の区画では負のxとして持ち込む */
+  lastPole: Pole | null
+  /** ランドマークの抽選プール。空になったら詰め直す */
+  pool: ((r: Rng) => ModuleShape)[]
+}
+
+export function createCityState(
+  seed: number, layer: LayerKey, districtScale = 1,
+): CityState {
+  const spec = LAYERS[layer]
+  return {
+    rng: createRng(seed + spec.seedOffset),
+    layer,
+    districtScale: districtScale * spec.districtScale,
+    phase1: ((seed % 997) / 997) * TAU,
+    phase2: ((seed % 613) / 613) * TAU,
+    absX: 0,
+    district: START_DISTRICT,
+    remaining: 0,
+    prev: null,
+    sinceLandmark: LANDMARK_INTERVAL * 0.5,
+    lastPole: null,
+    pool: [...LANDMARK_POOL],
+  }
 }
 
 /**
- * ランドマークの抽選は本体とは別の乱数列で行う。
- * 2パス生成の1パス目が終わるまで確定しない W に依存させると、
- * 両パスで並びがずれるため、両パスで同一の minWidth を基準にする。
+ * 区画をひとつ生成する。
+ * 幅は minWidth を超えた最初の建物の切れ目までで、返り値の width が実寸。
+ * 座標は区画内の相対値なので、数値が大きくならず、捨てるのも足すのも軽い。
  */
-function planLandmarks(seed: number, minWidth: number, count: number): LandmarkPlan[] {
-  const r = createRng(seed ^ 0x9e3779b9)
-  const usable = minWidth * 0.72 // 10%〜82% の範囲に収める
-  const slot = usable / count
-  const pool = [...LANDMARK_POOL]
-  const plans: LandmarkPlan[] = []
-
-  for (let i = 0; i < count; i++) {
-    const at = minWidth * 0.1 + slot * i + r() * slot * 0.45
-    const idx = Math.floor(r() * pool.length)
-    const make = pool.splice(idx, 1)[0] ?? LANDMARK_POOL[0]
-    plans.push({ at, limit: at + slot * 0.5, make })
-  }
-  return plans
-}
-
-interface BuildOptions {
-  seed: number
-  minWidth: number
-  districtScale: number
-  layer: LayerKey
-  /** 0 のとき包絡線を適用しない（1パス目） */
-  envelopeWidth: number
-  phase1: number
-  phase2: number
-}
-
-function buildOnce(o: BuildOptions): CityStrip {
-  const spec = LAYERS[o.layer]
-  const r = createRng(o.seed)
+export function generateChunk(st: CityState, minWidth: number): CityChunk {
+  const spec = LAYERS[st.layer]
+  const r = st.rng
   const items: PlacedItem[] = []
-  const zones: ZoneSpan[] = []
   const poles: Pole[] = []
   let x = 0
   let d = `M0 ${GY}`
   let buildingCount = 0
-  let prev: ModuleFn | null = null
-  let current: DistrictId = START_DISTRICT
-  let remaining = 0
 
-  const plans = planLandmarks(o.seed, o.minWidth, spec.landmarks ? LANDMARK_COUNT : 0)
-  let planIdx = 0
+  // 前の区画から電線を引き継ぐ。負のxに置いて張り渡す
+  if (st.lastPole) poles.push(st.lastPole)
 
   const gapOf = (g: number) => randInt(r, Math.max(2, g - 3), g + 5) * spec.spacing
 
   const openZone = () => {
-    const cfg = DISTRICTS[current]
-    remaining = Math.round(randInt(r, cfg.widthRange[0], cfg.widthRange[1]) * o.districtScale)
-    zones.push({ id: current, x, width: remaining })
+    const cfg = DISTRICTS[st.district]
+    st.remaining = Math.round(
+      randInt(r, cfg.widthRange[0], cfg.widthRange[1]) * st.districtScale,
+    )
     return cfg
   }
 
@@ -97,47 +107,50 @@ function buildOnce(o: BuildOptions): CityStrip {
       const all = extra.length ? [...m.details, ...extra] : m.details
       if (all.length) items.push({ x: at, details: all })
     }
-    if (m.pole && POLE_DISTRICTS.has(current)) {
+    if (m.pole && POLE_DISTRICTS.has(st.district)) {
       poles.push({ x: at + m.width / 2, top: m.pole.top })
     }
   }
 
-  let cfg = openZone()
-  x += gapOf(cfg.gap)
-  d += `L${x} ${GY}`
+  let cfg = st.remaining > 0 ? DISTRICTS[st.district] : openZone()
 
-  while (x < o.minWidth) {
-    if (remaining <= 0) {
-      current = pickWeighted(r, TRANSITIONS[current])
+  while (x < minWidth) {
+    if (st.remaining <= 0) {
+      st.district = pickWeighted(r, TRANSITIONS[st.district])
       cfg = openZone()
-      prev = null
+      st.prev = null
     }
 
     const startX = x
 
     // ランドマーク。高さ倍率を受けないので包絡線も層の縮小も掛けない
-    const plan = plans[planIdx]
-    if (plan && x >= plan.at && (LANDMARK_DISTRICTS.has(current) || x >= plan.limit)) {
+    if (
+      spec.landmarks &&
+      st.sinceLandmark > LANDMARK_INTERVAL &&
+      (LANDMARK_DISTRICTS.has(st.district) || st.sinceLandmark > LANDMARK_INTERVAL * 1.6)
+    ) {
+      if (st.pool.length === 0) st.pool = [...LANDMARK_POOL]
+      const idx = Math.floor(r() * st.pool.length)
+      const make = st.pool.splice(idx, 1)[0]
       x += 8
       d += `L${round1(x)} ${GY}`
-      const m = plan.make(r)
+      const m = make(r)
       emit(m, x, [], spec.detailLevel === 2)
       x += m.width + 10
       d += `L${round1(x)} ${GY}`
-      planIdx++
+      st.sinceLandmark = 0
       buildingCount++
-      remaining -= x - startX
+      st.remaining -= x - startX
       continue
     }
 
-    // 高さ包絡線。周期を W の整数分周にすることでループ端の位相が一致する
-    const envelope = o.envelopeWidth
-      ? Math.min(1.18, Math.max(0.80,
-          1
-          + 0.10 * Math.sin((TAU * 3 * x) / o.envelopeWidth + o.phase1)
-          + 0.05 * Math.sin((TAU * 7 * x) / o.envelopeWidth + o.phase2)
-          + cfg.heightBias))
-      : 1
+    // 高さ包絡線。ループしないので絶対座標をそのまま使う
+    const ax = st.absX + x
+    const envelope = Math.min(1.18, Math.max(0.80,
+      1
+      + 0.10 * Math.sin((TAU * ax) / ENVELOPE_PERIOD + st.phase1)
+      + 0.05 * Math.sin((TAU * ax) / (ENVELOPE_PERIOD / 2.33) + st.phase2)
+      + cfg.heightBias))
     const hMul = envelope * spec.heightScale
 
     // 近景層は建物を置かない。画面下端で切れる建物は不自然になるため
@@ -149,8 +162,8 @@ function buildOnce(o: BuildOptions): CityStrip {
       const table = r() < cfg.urbanRatio ? cfg.high : cfg.low
       fn = pickWeighted(r, table)
       // 同一モジュールの連続を70%の確率で引き直す
-      if (fn === prev && r() < 0.7) fn = pickWeighted(r, table)
-      prev = fn
+      if (fn === st.prev && r() < 0.7) fn = pickWeighted(r, table)
+      st.prev = fn
       buildingCount++
     }
 
@@ -170,44 +183,21 @@ function buildOnce(o: BuildOptions): CityStrip {
 
     x += m.width + gapOf(cfg.gap)
     d += `L${round1(x)} ${GY}`
-    remaining -= x - startX
+    st.remaining -= x - startX
+    st.sinceLandmark += x - startX
   }
 
   const width = Math.round(x)
+  st.absX += width
+  // 次の区画へ引き継ぐ電柱は、その区画から見て負のxになる
+  const tail = poles.length ? poles[poles.length - 1] : null
+  st.lastPole = tail && tail.x >= 0 ? { x: tail.x - width, top: tail.top } : null
+
   return {
     width,
     path: d,
-    wires: spec.detailLevel === 0 ? '' : buildWirePath(poles, width),
+    wires: spec.detailLevel === 0 ? '' : buildWirePath(poles),
     items,
-    zones,
     buildingCount,
   }
-}
-
-export interface GenerateOptions {
-  seed: number
-  minWidth: number
-  districtScale?: number
-  layer: LayerKey
-}
-
-/**
- * 2パス生成。
- * 1パス目で幅を確定し、2パス目で包絡線を適用する。
- * 包絡線の適用は乱数を消費しないため、両パスで建物の並びは一致する。
- */
-export function generateCity(o: GenerateOptions): CityStrip {
-  const districtScale = (o.districtScale ?? 1) * LAYERS[o.layer].districtScale
-  const phase1 = ((o.seed % 997) / 997) * TAU
-  const phase2 = ((o.seed % 613) / 613) * TAU
-
-  const pass1 = buildOnce({
-    seed: o.seed, minWidth: o.minWidth, districtScale, layer: o.layer,
-    envelopeWidth: 0, phase1: 0, phase2: 0,
-  })
-
-  return buildOnce({
-    seed: o.seed, minWidth: o.minWidth, districtScale, layer: o.layer,
-    envelopeWidth: pass1.width, phase1, phase2,
-  })
 }

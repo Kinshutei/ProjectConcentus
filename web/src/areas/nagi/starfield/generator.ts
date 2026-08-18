@@ -1,10 +1,6 @@
 import { createRng } from '../cityscape/rng'
-import { CONSTELLATIONS } from './constellations'
-import {
-  CONSTELLATION_GAP, CONSTELLATION_SIZE, MILKY_WAY,
-  STAR_AREA_PER_STAR, TWINKLE_MAG, TWINKLE_MAX,
-} from './constants'
-import type { PlacedConstellation, PlacedStar, SkyStrip, StarDust } from './types'
+import { MILKY_WAY, STAR_AREA_PER_STAR, TWINKLE_MAG, TWINKLE_MAX } from './constants'
+import type { PlacedStar, SkyStrip, StarDust } from './types'
 
 /** 等級から半径を求める */
 function magRadius(mag: number): number {
@@ -74,40 +70,5 @@ export function generateSky({ seed, width, height }: GenerateSkyOptions): SkyStr
     }
   }
 
-  // ── 星座 ──
-  const constellations: PlacedConstellation[] = []
-  const pool = [...CONSTELLATIONS]
-  let cx = CONSTELLATION_GAP * 0.5
-
-  while (cx < width - CONSTELLATION_GAP * 0.8 && pool.length > 0) {
-    const idx = Math.floor(rng() * pool.length)
-    const c = pool.splice(idx, 1)[0]
-
-    const [minS, maxS] = CONSTELLATION_SIZE
-    const size = (minS + rng() * (maxS - minS)) * c.scale
-    const x = cx + rng() * CONSTELLATION_GAP * 0.3
-    const y = height * 0.12 + rng() * height * 0.58
-
-    const pts = c.stars.map((s) => ({
-      px: x + s.x * size,
-      py: y + s.y * size,
-      mag: s.mag,
-    }))
-
-    constellations.push({
-      id: c.id,
-      name: c.name,
-      x, y, w: size, h: size,
-      stars: pts.map((p) => ({ x: p.px, y: p.py, r: magRadius(p.mag) * 1.25, o: 1 })),
-      path: c.lines
-        .map(([a, b]) =>
-          `M${pts[a].px.toFixed(1)} ${pts[a].py.toFixed(1)} L${pts[b].px.toFixed(1)} ${pts[b].py.toFixed(1)}`,
-        )
-        .join(' '),
-    })
-
-    cx += CONSTELLATION_GAP + rng() * CONSTELLATION_GAP * 0.4
-  }
-
-  return { width, height, stars, dust: [...buckets.values()], constellations }
+  return { width, height, stars, dust: [...buckets.values()] }
 }

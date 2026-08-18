@@ -15,27 +15,18 @@
   inset: 0;
 }
 
-.nagi-city__parallax,
 .nagi-city__track {
   position: absolute;
   inset: 0;
-}
-
-.nagi-city__track {
   will-change: transform;
-  animation: nagi-city-loop var(--dur) linear infinite;
 }
 
-@keyframes nagi-city-loop {
-  from { transform: translateX(0); }
-  to   { transform: translateX(calc(var(--strip-w) * -1)); }
-}
-
-.nagi-city__svg {
+.nagi-city__chunk {
   position: absolute;
-  left: 0;
   bottom: 0;
   display: block;
+  /* 区画をまたぐ電線を切らない */
+  overflow: visible;
 }
 
 /* --- 初回のラインドローイング --- */
@@ -43,15 +34,12 @@
  * 輪郭は単一パス。pathLength で全長を1000に正規化し、破線の描く長さを
  * 全長と同じにしたうえで stroke-dashoffset を 1000→0 へ動かすと、
  * 線が端から端へ引かれていく。
- * transition ではなく animation を使うのは、途中でストリップが作り直されても
- * fill: both で必ず最後まで到達させるため。
+ * 掛けるのは初回に画面へ出た区画だけ。以降の区画は画面外で作られるので
+ * 描き起こしは付けない。
  */
-.nagi-city__outline {
+.nagi-city__chunk.is-first .nagi-city__outline {
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
-}
-
-.nagi-city.is-drawn .nagi-city__outline {
   animation: nagi-city-draw var(--draw-dur) cubic-bezier(0.22, 0.61, 0.36, 1) var(--draw-delay) both;
 }
 
@@ -61,17 +49,13 @@
 }
 
 /* 窓や電線は線がつながってから灯す */
-.nagi-city__details,
-.nagi-city__wire {
+.nagi-city__chunk.is-first :is(.nagi-city__details, .nagi-city__wire) {
   opacity: 0;
+  animation: nagi-city-fade 0.6s ease-out calc(var(--draw-dur) + var(--draw-delay)) both;
 }
 
 .nagi-city__wire {
   stroke-opacity: 0.55;
-}
-
-.nagi-city.is-drawn :is(.nagi-city__details, .nagi-city__wire) {
-  animation: nagi-city-fade 0.6s ease-out calc(var(--draw-dur) + var(--draw-delay)) both;
 }
 
 @keyframes nagi-city-fade {
@@ -81,17 +65,9 @@
 
 /* --- モーション低減 --- */
 @media (prefers-reduced-motion: reduce) {
-  .nagi-city__track,
-  .nagi-city__outline,
-  .nagi-city__details,
-  .nagi-city__wire {
+  .nagi-city__chunk.is-first :is(.nagi-city__outline, .nagi-city__details, .nagi-city__wire) {
     animation: none !important;
-  }
-  .nagi-city__outline {
-    stroke-dashoffset: 0;
-  }
-  .nagi-city__details,
-  .nagi-city__wire {
+    stroke-dasharray: none;
     opacity: 1;
   }
 }

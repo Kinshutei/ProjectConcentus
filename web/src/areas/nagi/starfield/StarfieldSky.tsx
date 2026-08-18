@@ -1,17 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import './StarfieldSky.css'
-import {
-  SKY_ANGLE, SKY_MIN_WIDTH, SKY_SEED, SKY_SPEED, SKY_WIDTH_FACTOR,
-  UPRIGHT_CONSTELLATIONS,
-} from './constants'
+import { SKY_ANGLE, SKY_MIN_WIDTH, SKY_SEED, SKY_SPEED, SKY_WIDTH_FACTOR } from './constants'
 import { generateSky } from './generator'
 
 export interface StarfieldSkyProps {
   seed?: number
   speed?: number
   angle?: number
-  /** 星座名を表示するか */
-  showNames?: boolean
   className?: string
 }
 
@@ -24,7 +19,6 @@ export function StarfieldSky({
   seed = SKY_SEED,
   speed = SKY_SPEED,
   angle = SKY_ANGLE,
-  showNames = false,
   className = '',
 }: StarfieldSkyProps) {
   const hostRef = useRef<HTMLDivElement>(null)
@@ -111,40 +105,6 @@ export function StarfieldSky({
                   />
                 ))}
               </g>
-
-              {strip.constellations.map((c) => {
-                const ccx = c.x + c.w / 2
-                const ccy = c.y + c.h / 2
-                // 画面中央（回転フレーム内 Wr/2）に達する周期上の位置
-                let peak = ((Wr / 2 - ccx) / Ws) % 1
-                if (peak < 0) peak += 1
-
-                return (
-                  <g
-                    key={`${i}-${c.id}`}
-                    className="sky__constellation"
-                    transform={
-                      UPRIGHT_CONSTELLATIONS
-                        ? `rotate(${angle} ${ccx.toFixed(1)} ${ccy.toFixed(1)})`
-                        : undefined
-                    }
-                    style={{
-                      ['--peak' as string]: peak.toFixed(4),
-                      animationDelay: 'calc(var(--dur) * (var(--peak) - 0.5))',
-                    } as CSSProperties}
-                  >
-                    <path className="sky__lines" d={c.path} />
-                    {c.stars.map((s, k) => (
-                      <circle key={k} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(2)} />
-                    ))}
-                    {showNames && (
-                      <text className="sky__name" x={c.x.toFixed(1)} y={(c.y - 8).toFixed(1)}>
-                        {c.name}
-                      </text>
-                    )}
-                  </g>
-                )
-              })}
             </svg>
           ))}
         </div>

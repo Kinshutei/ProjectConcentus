@@ -70,19 +70,13 @@ export interface PlacedItem {
   details: Detail[]
 }
 
-export interface ZoneSpan {
-  id: DistrictId
-  x: number
-  width: number
-}
-
-export interface CityStrip {
+/** 生成された区画ひとつぶん。座標は区画内の相対値 */
+export interface CityChunk {
   width: number
   /** 街の輪郭。単一パス */
   path: string
   /** 電線。空文字なら描画しない */
   wires: string
   items: PlacedItem[]
-  zones: ZoneSpan[]
   buildingCount: number
 }

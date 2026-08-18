@@ -81,6 +81,11 @@ CONTENTS = {
     "wouca": ("unofficial_uwoter_no_oheya", "wouca_contents.json"),
 }
 
+# チャンネルの投稿一覧。上のCONTENTSとは形が違い、動画の配列になっている
+VIDEO_LISTS = {
+    "yako": ("natsuyo_no_kasenjiki", "yako_contents.json"),
+}
+
 # 重複採番の未使用側5件と空行2件。歌唱データからの参照は無いので単純に落とす
 DROP_SONG_IDS = {
     "S0972",  # 1/2        … S0492 と重複
@@ -477,6 +482,19 @@ def main() -> None:
                 sid, " / ".join("%s %d" % (k, len(v)) for k, v in data.items())))
         elif not path.exists():
             path.write_text(empty_contents + "\n", encoding="utf-8")
+
+    # チャンネルの投稿一覧
+    for singer in SINGERS:
+        sid = singer["singer_id"]
+        path = out / "videos" / f"{sid}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if sid in VIDEO_LISTS:
+            repo, name = VIDEO_LISTS[sid]
+            rows = fetch(repo, name, cache=cache, offline=args.offline)
+            dump(path, rows)
+            say(f"videos/{sid}.json  {len(rows)}件")
+        elif not path.exists():
+            dump(path, [])
 
     # 雑談（FreeTalk）。既存5DBは曲しか持っていないので中身は空で作る。
     # TSGen が話題も抽出するため、以後は管理ツールから入力していく。

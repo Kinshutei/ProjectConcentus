@@ -1,0 +1,66 @@
+.stars-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/*
+ * 走って見えるのは周期の先頭2.2%だけ。1周期15〜34秒に対して0.3〜0.7秒で走り抜ける。
+ * 残りは透明のまま待機し、星ごとに周期と遅延が違うため不規則に流れる。
+ */
+.star {
+  position: absolute;
+  opacity: 0;
+  animation-name: star-flash;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  overflow: visible;
+}
+
+.star__trail {
+  stroke-dasharray: var(--star-len);
+  stroke-dashoffset: var(--star-len);
+  animation-name: star-draw;
+  animation-duration: inherit;
+  animation-delay: inherit;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.star__head {
+  animation-name: star-head;
+  animation-duration: inherit;
+  animation-delay: inherit;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+/* 軌跡を先端から順に描き出す */
+@keyframes star-draw {
+  0% { stroke-dashoffset: var(--star-len); }
+  1.6% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* ◯は線と同じ時間で同じ距離を進むので、常に線の先端に乗る */
+@keyframes star-head {
+  0% { transform: translateX(0); }
+  1.6% { transform: translateX(calc(var(--star-len) * 1px)); }
+  100% { transform: translateX(calc(var(--star-len) * 1px)); }
+}
+
+/* 走り切ったところで消える */
+@keyframes star-flash {
+  0% { opacity: 0; }
+  0.15% { opacity: 1; }
+  1.6% { opacity: 1; }
+  2.2% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stars-layer { display: none; }
+}

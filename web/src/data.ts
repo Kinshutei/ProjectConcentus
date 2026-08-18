@@ -1,4 +1,14 @@
-import type { Contents, Db, Frame, Performance, Singer, Song, Talk, Tag } from './types'
+import type {
+  ChannelVideo,
+  Contents,
+  Db,
+  Frame,
+  Performance,
+  Singer,
+  Song,
+  Talk,
+  Tag,
+} from './types'
 
 const BASE = `${import.meta.env.BASE_URL}data`
 
@@ -31,6 +41,10 @@ export const loadPerformances = (singerId: string) =>
   load<Performance>(`performances/${singerId}.json`)
 
 export const loadTalks = (singerId: string) => load<Talk>(`talks/${singerId}.json`)
+
+/** チャンネルの投稿一覧。持っていないシンガーもあるので空で返す */
+export const loadVideos = (singerId: string) =>
+  load<ChannelVideo>(`videos/${singerId}.json`).catch(() => [] as ChannelVideo[])
 
 const EMPTY_CONTENTS: Contents = { pickup: [], original: [], short: [], livestreaming: [] }
 

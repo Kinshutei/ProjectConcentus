@@ -1,0 +1,44 @@
+.cityscape {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: var(--cty-bg);
+}
+
+.cityscape__strip {
+  display: block;
+  animation-name: cityscape-slide;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes cityscape-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--cty-shift)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cityscape__strip { animation: none; }
+}
+
+/* 淡水色 × チャコール（既定） */
+.cityscape {
+  --cty-bg: #E4EEF7;
+  --cty-line: #39414E;
+  --cty-accent: #0E8B84;
+}
+
+/* 濃紺 × 氷青 */
+.cityscape--dark {
+  --cty-bg: #0B1220;
+  --cty-line: #CFE2F2;
+  --cty-accent: #12E0D4;
+}
+
+/* 夜紺DB：白背景 × 夜紺の線 × 火花の朱 */
+.cityscape--yako {
+  --cty-bg: transparent;
+  --cty-line: var(--navy);
+  --cty-accent: var(--spark);
+}

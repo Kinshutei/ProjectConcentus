@@ -66,6 +66,16 @@ export type Contents = {
   livestreaming: ContentVideo[]
 }
 
+/** チャンネルの投稿一覧の1件 */
+export type ChannelVideo = {
+  video_id: string
+  title: string
+  /** ISO8601（UTC） */
+  published_at: string
+  duration_sec: number
+  type: string
+}
+
 export type Tag = {
   tag_id: string
   label: string

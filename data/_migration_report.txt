@@ -5,11 +5,12 @@ songs.json      1196曲 → 1189曲（除外 7件）
   正規化キーの衝突: なし
   既存の実時刻を 360枠 で引き継ぎました
 contents/wouca.json  pickup 6 / original 4 / short 6 / livestreaming 6
+videos/yako.json  12件
 
 singers.json    6名
-frames.json     361枠
-performances/   5211歌唱
-  mikage   3001行
+frames.json     362枠
+performances/   5243歌唱
+  mikage   3033行
   dia       516行
   wouca    1174行
   kisaki    440行
@@ -39,7 +40,7 @@ video_id の重複: なし
 
 要対応
   参照切れ song_id            0件
-  started_at が暫定値（0時）  1枠
+  started_at が暫定値（0時）  2枠
   day_order の判断が要る日    11日
     mikage 2025-08-08: 2枠
     mikage 2025-08-30: 2枠

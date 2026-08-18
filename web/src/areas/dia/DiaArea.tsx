@@ -548,34 +548,11 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
 
   return (
     <div>
-      <h2 className="section-title">Sung Repertoire &mdash; {stats.length}</h2>
-      <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: 360, marginBottom: 16 }}>
-        <span
-            style={{ position: 'absolute', left: 10, color: '#8a8a8a', display: 'inline-flex', pointerEvents: 'none' }}
-            aria-hidden
-          >
-            <SearchIcon />
-          </span>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="曲名・アーティストで絞り込み"
-          style={{
-            width: '100%',
-            padding: '7px 36px 7px 32px',
-            borderRadius: 20,
-            fontFamily: 'inherit',
-            fontSize: 15,
-            outline: 'none',
-            background: '#1c1c1c',
-            color: '#e8e8e8',
-            border: q ? '1px solid #b32e46' : '1px solid #2e2e2e',
-          }}
-        />
-      </div>
-
+      <h2 className="section-title">Sung Repertoire</h2>
+      <p className="rep-sub">{stats.length}曲</p>
       <Charts
         stats={filtered}
+        search={{ query, setQuery }}
         titles={{ ranking: '歌唱回数', year: 'リリース年の分布', artist: 'アーティスト別' }}
       />
     </div>
@@ -595,9 +572,11 @@ function About() {
 function Charts({
   stats,
   titles,
+  search,
 }: {
   stats: { song: Song; count: number }[]
   titles: { ranking: string; year: string; artist: string }
+  search: { query: string; setQuery: (v: string) => void }
 }) {
   const [sort, setSort] = useState<SongSort>('count-desc')
   const [year, setYear] = useState<string | null>(null)
@@ -663,6 +642,33 @@ function Charts({
         <h3 style={{ margin: 0 }}>{titles.ranking}</h3>
         <SortToggle value={sort} onChange={setSort} />
         <YearPicker years={pickableYears} value={year} onChange={setYear} />
+        <div
+          className="section-head__search"
+          style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: 360 }}
+        >
+          <span
+            style={{ position: 'absolute', left: 10, color: '#8a8a8a', display: 'inline-flex', pointerEvents: 'none' }}
+            aria-hidden
+          >
+            <SearchIcon />
+          </span>
+          <input
+            value={search.query}
+            onChange={(e) => search.setQuery(e.target.value)}
+            placeholder="曲名・アーティストで絞り込み"
+            style={{
+              width: '100%',
+              padding: '7px 36px 7px 32px',
+              borderRadius: 20,
+              fontFamily: 'inherit',
+              fontSize: 15,
+              outline: 'none',
+              background: '#1c1c1c',
+              color: '#e8e8e8',
+              border: search.query.trim() ? '1px solid #b32e46' : '1px solid #2e2e2e',
+            }}
+          />
+        </div>
       </div>
       <RankCards items={ranking} paged columns={2} rows={5} />
 

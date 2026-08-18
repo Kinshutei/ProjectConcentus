@@ -891,3 +891,11 @@
   --rc-hl: rgba(179, 46, 70, 0.18);
   --rc-hl-line: #b32e46;
 }
+
+/* Repertoire の見出し直下に出す曲数 */
+.dia-root .rep-sub {
+  margin: 4px 0 16px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+}

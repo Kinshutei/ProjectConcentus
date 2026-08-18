@@ -10,9 +10,6 @@ export const MIN_STRIP_WIDTH = 1800
 /** コンテナ幅に対して確保するストリップ幅の倍率 */
 export const STRIP_WIDTH_FACTOR = 1.5
 
-/** 輪郭パスの線幅（主層） */
-export const STROKE_OUTLINE = 1.6
-
 /** ディテールの既定線幅 */
 export const STROKE_DETAIL = 1.3
 
@@ -22,73 +19,66 @@ export const DEFAULT_SPEED = 10
 /** 既定のシード */
 export const DEFAULT_SEED = 20260819
 
-/** 階高と屋上パラペットの高さ。階数で高さを量子化するのに使う */
-export const FLOOR_H = 9
-export const PARAPET_H = 6
+/** 階高（建物高さをこの倍数に量子化する） */
+export const FLOOR_H = 11
+
+/** パラペット（陸屋根の立ち上がり）の高さ */
+export const PARAPET_H = 3
+
+/** ストリップの複製枚数。スクロール連動を使うので 3 */
+export const STRIP_COPIES = 3
+
+/** 初回描画アニメの尺（秒） */
+export const DRAW_DURATION = 2.4
+
+/** スクロール連動の強さ（ページ全体スクロールで W の何割ぶん流すか） */
+export const SCROLL_GAIN = 0.6
 
 export type LayerKey = 'far' | 'main' | 'near'
 
 export interface LayerSpec {
-  /** 地面Yのずれ。負で奥（画面上方）へ */
-  groundOffset: number
-  /** 建物高さの倍率 */
-  heightScale: number
-  /** スクロール速度の倍率 */
   speedFactor: number
-  /** 線の濃さ */
+  /** 地面Yのずれ。負で奥（画面上方） */
+  groundOffset: number
+  heightScale: number
+  strokeWidth: number
   opacity: number
-  /** 輪郭の線幅 */
-  stroke: number
-  /** 0 のときディテールを描かない */
-  detailLevel: 0 | 1
+  seedOffset: number
+  /** 0=輪郭のみ / 1=街路設備のみ / 2=全ディテール */
+  detailLevel: 0 | 1 | 2
+  /** 建物を置くか。false なら街路設備のみ */
+  buildings: boolean
   /** 地区の長さ倍率への追加倍率 */
   districtScale: number
   /** ランドマークを置く層か */
   landmarks: boolean
-  /** 線色に使う CSS 変数 */
-  lineToken: string
 }
 
 /**
- * 3層構成。遠景ほど遅く淡く、小さく描いて奥行きを出す。
- * 遠景の地面Yは GROUND_Y - 16 = 174。最も高い landmarkSpine で 170 まで
- * 伸びるので、viewBox 上端に 4px 残る。
+ * 3層構成。遠景の地面Yは GROUND_Y - 16 = 174。
+ * 遠景層は不透明度 0.42 で減衰させる（専用の線色トークンは取らない）。
+ * 近景層は建物を置かない。画面下端で切れる建物は不自然になるため。
  */
 export const LAYERS: Record<LayerKey, LayerSpec> = {
   far: {
-    groundOffset: -16,
-    heightScale: 0.74,
-    speedFactor: 0.35,
-    opacity: 0.42,
-    stroke: 1.1,
-    detailLevel: 0,
-    districtScale: 1.7,
-    landmarks: true,
-    lineToken: 'var(--cty-line-far, var(--cty-line))',
+    speedFactor: 0.35, groundOffset: -16, heightScale: 0.62, strokeWidth: 1.0,
+    opacity: 0.42, seedOffset: 1013, detailLevel: 0, buildings: true,
+    districtScale: 1.7, landmarks: true,
   },
   main: {
-    groundOffset: 0,
-    heightScale: 1,
-    speedFactor: 1,
-    opacity: 1,
-    stroke: STROKE_OUTLINE,
-    detailLevel: 1,
-    districtScale: 1,
-    landmarks: false,
-    lineToken: 'var(--cty-line)',
+    speedFactor: 1.0, groundOffset: 0, heightScale: 1.0, strokeWidth: 1.6,
+    opacity: 1.0, seedOffset: 0, detailLevel: 2, buildings: true,
+    districtScale: 1, landmarks: false,
   },
   near: {
-    groundOffset: 12,
-    heightScale: 0.5,
-    speedFactor: 1.75,
-    opacity: 0.95,
-    stroke: 1.9,
-    detailLevel: 0,
-    districtScale: 0.7,
-    landmarks: false,
-    lineToken: 'var(--cty-line)',
+    speedFactor: 1.85, groundOffset: 12, heightScale: 0.42, strokeWidth: 1.9,
+    opacity: 1.0, seedOffset: 7717, detailLevel: 1, buildings: false,
+    districtScale: 0.7, landmarks: false,
   },
 }
 
 /** 手前から奥へ描くと近景が遠景を隠すので、この順で重ねる */
 export const LAYER_ORDER: LayerKey[] = ['far', 'main', 'near']
+
+/** 描画アニメの層別遅延（秒） */
+export const DRAW_DELAY: Record<LayerKey, number> = { far: 0, main: 0.25, near: 0.5 }

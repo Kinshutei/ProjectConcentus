@@ -26,6 +26,10 @@ export interface ModuleShape {
   profileMode?: ProfileMode
   /** 真のとき高さ包絡線と層の高さ倍率を受けない */
   absoluteHeight?: boolean
+  /** 偽のとき1階の表情を重ねない（添景・鉄塔・ランドマーク） */
+  groundFloor?: boolean
+  /** 電柱のとき、柱の高さを持つ。生成器が電線を張るのに使う */
+  pole?: { top: number }
 }
 
 export type ModuleFn = (r: Rng, hMul: number) => ModuleShape
@@ -34,6 +38,9 @@ export type Weighted<T> = readonly [T, number]
 
 export type DistrictId =
   | 'cbd' | 'office' | 'shopping' | 'residential' | 'park' | 'industrial'
+
+/** 1階の表情 */
+export type GroundFloor = 'glass' | 'entrance' | 'shutter' | 'none'
 
 export interface DistrictConfig {
   label: string
@@ -47,6 +54,12 @@ export interface DistrictConfig {
   widthRange: readonly [number, number]
   /** 高さ包絡線への加算バイアス */
   heightBias: number
+  /** 1階の表情 */
+  groundFloor: GroundFloor
+  /** 庇の出現率（商店街のみ使う） */
+  awningRate?: number
+  /** 袖看板の出現率（商店街のみ使う） */
+  signRate?: number
   low: readonly Weighted<ModuleFn>[]
   high: readonly Weighted<ModuleFn>[]
   fixtures: readonly Weighted<ModuleFn>[]
@@ -65,7 +78,10 @@ export interface ZoneSpan {
 
 export interface CityStrip {
   width: number
+  /** 街の輪郭。単一パス */
   path: string
+  /** 電線。空文字なら描画しない */
+  wires: string
   items: PlacedItem[]
   zones: ZoneSpan[]
   buildingCount: number

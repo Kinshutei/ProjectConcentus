@@ -1,9 +1,12 @@
 import { GROUND_Y, LAYERS, type LayerKey } from './constants'
-import { DISTRICTS, START_DISTRICT, TRANSITIONS } from './districts'
-import { landmarkSpine, landmarkTower, landmarkTwinTower } from './modules'
+import { DISTRICTS, POLE_DISTRICTS, START_DISTRICT, TRANSITIONS } from './districts'
+import {
+  buildWirePath, groundFloorDetails, landmarkSpine, landmarkTower,
+  landmarkTwinTower, shopFixtures, type Pole,
+} from './modules'
 import { createRng, pickWeighted, randInt } from './rng'
 import type {
-  CityStrip, DistrictId, ModuleFn, ModuleShape, PlacedItem, Rng, ZoneSpan,
+  CityStrip, Detail, DistrictId, ModuleFn, ModuleShape, PlacedItem, Rng, ZoneSpan,
 } from './types'
 
 const GY = GROUND_Y
@@ -63,6 +66,7 @@ function buildOnce(o: BuildOptions): CityStrip {
   const r = createRng(o.seed)
   const items: PlacedItem[] = []
   const zones: ZoneSpan[] = []
+  const poles: Pole[] = []
   let x = 0
   let d = `M0 ${GY}`
   let buildingCount = 0
@@ -83,12 +87,19 @@ function buildOnce(o: BuildOptions): CityStrip {
   }
 
   /** 輪郭を書き出す。full は地面からの全周を持つので生成器は補わない */
-  const emit = (m: ModuleShape, at: number) => {
+  const emit = (m: ModuleShape, at: number, extra: Detail[] = [], keepDetails = true) => {
     for (const [px, py] of m.profile) {
       d += `L${round1(at + px)} ${round1(GY - py)}`
     }
     if (m.profileMode !== 'full') d += `L${round1(at + m.width)} ${GY}`
-    if (spec.detailLevel > 0 && m.details.length) items.push({ x: at, details: m.details })
+
+    if (keepDetails) {
+      const all = extra.length ? [...m.details, ...extra] : m.details
+      if (all.length) items.push({ x: at, details: all })
+    }
+    if (m.pole && POLE_DISTRICTS.has(current)) {
+      poles.push({ x: at + m.width / 2, top: m.pole.top })
+    }
   }
 
   let cfg = openZone()
@@ -110,7 +121,7 @@ function buildOnce(o: BuildOptions): CityStrip {
       x += 8
       d += `L${round1(x)} ${GY}`
       const m = plan.make(r)
-      emit(m, x)
+      emit(m, x, [], spec.detailLevel === 2)
       x += m.width + 10
       d += `L${round1(x)} ${GY}`
       planIdx++
@@ -129,8 +140,10 @@ function buildOnce(o: BuildOptions): CityStrip {
       : 1
     const hMul = envelope * spec.heightScale
 
+    // 近景層は建物を置かない。画面下端で切れる建物は不自然になるため
+    const isFixture = !spec.buildings || r() < cfg.fixtureRate
     let fn: ModuleFn
-    if (r() < cfg.fixtureRate) {
+    if (isFixture) {
       fn = pickWeighted(r, cfg.fixtures)
     } else {
       const table = r() < cfg.urbanRatio ? cfg.high : cfg.low
@@ -142,14 +155,33 @@ function buildOnce(o: BuildOptions): CityStrip {
     }
 
     const m = fn(r, hMul)
-    emit(m, x)
+
+    // 1階の表情。建物にだけ重ねる
+    const extra: Detail[] = []
+    if (!isFixture && m.groundFloor !== false && cfg.groundFloor !== 'none') {
+      extra.push(...groundFloorDetails(r, cfg.groundFloor, m.width))
+      if (cfg.awningRate !== undefined) {
+        extra.push(...shopFixtures(r, m.width, cfg.awningRate, cfg.signRate ?? 0))
+      }
+    }
+
+    const keep = spec.detailLevel === 2 || (spec.detailLevel === 1 && isFixture)
+    emit(m, x, extra, keep)
 
     x += m.width + gapOf(cfg.gap)
     d += `L${round1(x)} ${GY}`
     remaining -= x - startX
   }
 
-  return { width: Math.round(x), path: d, items, zones, buildingCount }
+  const width = Math.round(x)
+  return {
+    width,
+    path: d,
+    wires: spec.detailLevel === 0 ? '' : buildWirePath(poles, width),
+    items,
+    zones,
+    buildingCount,
+  }
 }
 
 export interface GenerateOptions {

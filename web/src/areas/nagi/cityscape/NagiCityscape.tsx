@@ -1,11 +1,11 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import './NagiCityscape.css'
 import {
-  DEFAULT_SEED, DEFAULT_SPEED, LAYERS, LAYER_ORDER, MIN_STRIP_WIDTH,
-  STRIP_WIDTH_FACTOR, STROKE_DETAIL, VIEW_H, type LayerKey,
+  DEFAULT_SEED, DEFAULT_SPEED, DRAW_DELAY, DRAW_DURATION, LAYERS, LAYER_ORDER,
+  MIN_STRIP_WIDTH, SCROLL_GAIN, STRIP_COPIES, STRIP_WIDTH_FACTOR, STROKE_DETAIL,
+  VIEW_H, type LayerKey,
 } from './constants'
 import { generateCity } from './generator'
-import { nextSeed } from './rng'
 import type { Detail } from './types'
 
 export interface NagiCityscapeProps {
@@ -22,6 +22,8 @@ export interface NagiCityscapeProps {
   scale?: number
   /** フレームの表示高さ（px）。既定は VIEW_H × scale でぴったり収まる */
   height?: number
+  /** ページスクロールに連動させるか。非対応ブラウザでは自動的に無視される */
+  scrollLinked?: boolean
   /** 外部から停止させたい場合に true */
   paused?: boolean
   className?: string
@@ -54,51 +56,77 @@ function Layer({
 }) {
   const spec = LAYERS[layer]
   const city = useMemo(
-    () => generateCity({ seed, minWidth, districtScale, layer }),
-    [seed, minWidth, districtScale, layer],
+    () => generateCity({ seed: seed + spec.seedOffset, minWidth, districtScale, layer }),
+    [seed, spec.seedOffset, minWidth, districtScale, layer],
   )
   const W = city.width
   const id = `${gid}-${layer}`
 
   return (
-    <svg
-      className={`nagi-city__strip nagi-city__strip--${layer}`}
-      width={W * 2 * scale}
-      height={VIEW_H * scale}
-      viewBox={`0 0 ${W * 2} ${VIEW_H}`}
-      aria-hidden="true"
-      focusable="false"
+    <div
+      className={`nagi-city__layer nagi-city__layer--${layer}`}
       style={{
-        // 実際に動く距離は W×scale なので、speed（px/秒）の意味を保つため倍率を掛ける
-        animationDuration: `${W * scale / (speed * spec.speedFactor)}s`,
+        opacity: spec.opacity,
+        ['--strip-w' as string]: `${W * scale}px`,
+        ['--dur' as string]: `${(W * scale) / (speed * spec.speedFactor)}s`,
+        ['--draw-delay' as string]: `${DRAW_DELAY[layer]}s`,
+        ['--gain' as string]: `${SCROLL_GAIN * spec.speedFactor}`,
         animationPlayState: stopped ? 'paused' : 'running',
-        ['--cty-shift' as string]: `${-W * scale}px`,
       }}
     >
-      <defs>
-        {/* 層ごとに地面の高さをずらす。遠景ほど上に置くと奥行きが出る */}
-        <g id={id} transform={`translate(0,${spec.groundOffset})`}>
-          <path
-            d={city.path}
-            fill="none"
-            stroke={spec.lineToken}
-            strokeWidth={spec.stroke}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-          {city.items.map((item, i) => (
-            <g key={i} transform={`translate(${item.x},0)`}>
-              {item.details.map((d, j) => <DetailNode key={j} d={d} />)}
-            </g>
-          ))}
-        </g>
-      </defs>
-      {/* 同一グラフィックを use で2枚参照する。DOMノード数は1枚分で済む */}
-      <g opacity={spec.opacity}>
-        <use href={`#${id}`} />
-        <use href={`#${id}`} x={W} />
-      </g>
-    </svg>
+      <div className="nagi-city__parallax">
+        <div
+          className="nagi-city__track"
+          style={{ animationPlayState: stopped ? 'paused' : 'running' }}
+        >
+          <svg
+            className="nagi-city__svg"
+            width={W * STRIP_COPIES * scale}
+            height={VIEW_H * scale}
+            viewBox={`0 0 ${W * STRIP_COPIES} ${VIEW_H}`}
+            aria-hidden="true"
+            focusable="false"
+          >
+            <defs>
+              {/* 層ごとに地面の高さをずらす。遠景ほど上に置くと奥行きが出る */}
+              <g id={id} transform={`translate(0,${spec.groundOffset})`}>
+                <path
+                  className="nagi-city__outline"
+                  d={city.path}
+                  pathLength={1000}
+                  fill="none"
+                  stroke="var(--cty-line)"
+                  strokeWidth={spec.strokeWidth}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                {city.wires && (
+                  <path
+                    className="nagi-city__wire"
+                    d={city.wires}
+                    fill="none"
+                    stroke="var(--cty-line)"
+                    strokeWidth={0.8}
+                    strokeLinecap="round"
+                  />
+                )}
+                <g className="nagi-city__details">
+                  {city.items.map((item, i) => (
+                    <g key={i} transform={`translate(${item.x},0)`}>
+                      {item.details.map((d, j) => <DetailNode key={j} d={d} />)}
+                    </g>
+                  ))}
+                </g>
+              </g>
+            </defs>
+            {/* 同一グラフィックを use で参照する。DOMノード数は1枚分で済む */}
+            {Array.from({ length: STRIP_COPIES }, (_, i) => (
+              <use key={i} href={`#${id}`} x={W * i} />
+            ))}
+          </svg>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -108,6 +136,7 @@ export function NagiCityscape({
   districtScale = 1,
   scale = 1,
   height = Math.round(VIEW_H * scale),
+  scrollLinked = true,
   paused = false,
   className,
 }: NagiCityscapeProps) {
@@ -115,6 +144,7 @@ export function NagiCityscape({
   const gid = useId().replace(/:/g, '')
   const [minWidth, setMinWidth] = useState(MIN_STRIP_WIDTH)
   const [reduceMotion, setReduceMotion] = useState(false)
+  const [drawn, setDrawn] = useState(false)
 
   // コンテナ幅を監視し、必要幅が現在値を上回ったときのみ再生成する。
   // 縮小時に作り直さないことで、リサイズ中に街並みが変わるのを防ぐ。
@@ -138,26 +168,50 @@ export function NagiCityscape({
     return () => mq.removeEventListener('change', apply)
   }, [])
 
+  // 初回可視時に一度だけ描画アニメを起こす
+  useEffect(() => {
+    const el = frameRef.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDrawn(true)
+      return
+    }
+    if (typeof IntersectionObserver === 'undefined') {
+      setDrawn(true)
+      return
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setDrawn(true)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.15 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   const stopped = paused || reduceMotion
 
-  // 層ごとに別の街を生成する。同じシードから決定的に導出するので再現性は保たれる
-  const seeds = useMemo(() => {
-    const out = {} as Record<LayerKey, number>
-    let s = seed
-    for (const k of LAYER_ORDER) {
-      out[k] = s
-      s = nextSeed(s)
-    }
-    return out
-  }, [seed])
-
   return (
-    <div ref={frameRef} className={['nagi-city', className].filter(Boolean).join(' ')} style={{ height }}>
+    <div
+      ref={frameRef}
+      className={[
+        'nagi-city',
+        drawn ? 'is-drawn' : '',
+        scrollLinked ? 'is-scroll-linked' : '',
+        className,
+      ].filter(Boolean).join(' ')}
+      style={{ height, ['--draw-dur' as string]: `${DRAW_DURATION}s` }}
+      aria-hidden="true"
+    >
       {LAYER_ORDER.map((layer) => (
         <Layer
           key={layer}
           layer={layer}
-          seed={seeds[layer]}
+          seed={seed}
           minWidth={minWidth}
           districtScale={districtScale}
           scale={scale}

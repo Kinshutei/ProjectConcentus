@@ -1,30 +1,95 @@
-/* 水凪音庫の街並み。背景は敷かず、線は領域の配色に任せる */
+/* 水凪音庫の街並み。夜景トークンで組む */
 .nagi-city {
   position: relative;
   overflow: hidden;
   width: 100%;
-  --cty-line: var(--navy);
-  --cty-accent: var(--spark);
-  /* 遠景の線。既定では主層と同じ色を使い、濃さは層の opacity で落とす */
-  --cty-line-far: var(--navy);
+  contain: paint;
+  line-height: 0;
+  --night-bg: #101a2b;
+  --cty-line: #9fc6e4;
+  --cty-accent: #ffd98a;
 }
 
-.nagi-city__strip {
-  display: block;
+.nagi-city__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.nagi-city__parallax,
+.nagi-city__track {
+  position: absolute;
+  inset: 0;
+}
+
+.nagi-city__track {
+  will-change: transform;
+  animation: nagi-city-loop var(--dur) linear infinite;
+}
+
+@keyframes nagi-city-loop {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(var(--strip-w) * -1)); }
+}
+
+.nagi-city__svg {
   position: absolute;
   left: 0;
   bottom: 0;
-  animation-name: nagi-city-slide;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
+  display: block;
 }
 
-@keyframes nagi-city-slide {
+/* --- 初回描画アニメ --- */
+.nagi-city__outline {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+.nagi-city.is-drawn .nagi-city__outline {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--draw-dur) cubic-bezier(0.22, 0.61, 0.36, 1) var(--draw-delay);
+}
+
+.nagi-city__details,
+.nagi-city__wire {
+  opacity: 0;
+}
+
+.nagi-city__wire {
+  stroke-opacity: 0.55;
+}
+
+.nagi-city.is-drawn :is(.nagi-city__details, .nagi-city__wire) {
+  opacity: 1;
+  transition: opacity 0.6s ease-out calc(var(--draw-dur) + var(--draw-delay));
+}
+
+/* --- スクロール連動（対応ブラウザのみ） --- */
+@supports (animation-timeline: scroll()) {
+  .nagi-city.is-scroll-linked .nagi-city__parallax {
+    animation: nagi-city-drift linear both;
+    animation-timeline: scroll(root block);
+    will-change: transform;
+  }
+}
+
+@keyframes nagi-city-drift {
   from { transform: translateX(0); }
-  to   { transform: translateX(var(--cty-shift)); }
+  to   { transform: translateX(calc(var(--strip-w) * var(--gain) * -1)); }
 }
 
+/* --- モーション低減 --- */
 @media (prefers-reduced-motion: reduce) {
-  .nagi-city__strip { animation: none; }
+  .nagi-city__track,
+  .nagi-city__parallax {
+    animation: none !important;
+  }
+  .nagi-city__outline {
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+  .nagi-city__details,
+  .nagi-city__wire {
+    opacity: 1;
+    transition: none;
+  }
 }

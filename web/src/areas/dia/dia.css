@@ -892,10 +892,13 @@
   --rc-hl-line: #b32e46;
 }
 
-/* Repertoire の見出し直下に出す曲数 */
-.dia-root .rep-sub {
-  margin: 4px 0 16px;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  opacity: 0.55;
+/* Repertoire の見出し。深影と同じく下線で区切る */
+.dia-root .section__head {
+  border-bottom: 1px solid #2e2e2e;
+  padding-bottom: 10px;
+  margin-bottom: 26px;
+}
+
+.dia-root .section__title {
+  color: #b32e46;
 }

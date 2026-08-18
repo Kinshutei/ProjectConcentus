@@ -8,6 +8,7 @@ import AboutText from '../../components/AboutText'
 import { useSmoothScroll } from '../../components/useSmoothScroll'
 import RankCards, { HighlightNote, markTopHalf, type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
+import '../../components/scroll.css'
 import './dia.css'
 
 const asset = (name: string) => `${import.meta.env.BASE_URL}dia/${name}`
@@ -548,8 +549,10 @@ function Songs({ db, perfs }: { db: Db; perfs: Performance[] }) {
 
   return (
     <div>
-      <h2 className="section-title">Sung Repertoire</h2>
-      <p className="rep-sub">{stats.length}曲</p>
+      <div className="section__head">
+        <h2 className="section__title">Sung Repertoire</h2>
+        <p className="section__sub">{stats.length}曲</p>
+      </div>
       <Charts
         stats={filtered}
         search={{ query, setQuery }}

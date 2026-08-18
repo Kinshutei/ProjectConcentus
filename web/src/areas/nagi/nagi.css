@@ -1,7 +1,7 @@
-/* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .yako-root 配下へ
+/* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .nagi-root 配下へ
    スコープしただけのもの。見た目を一致させるため宣言は変更していない。 */
 
-.yako-root {
+.nagi-root {
   --navy: #16203a;
   --navy-soft: #3a4767;
   --navy-mute: #6b7896;
@@ -24,14 +24,13 @@
 
   --sans: 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
 }
-.yako-root * {
+.nagi-root * {
   box-sizing: border-box;
 }
-.yako-root {
-  /* スクロールするのは html なので、ここでは効かない。
-     YakoArea 側で html に付け直している。 */
+.nagi-root {
+  scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px);
 }
-.yako-root {
+.nagi-root {
   margin: 0;
   font-family: var(--sans);
   color: var(--navy);
@@ -43,13 +42,13 @@
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
-.yako-root a {
+.nagi-root a {
   color: inherit; text-decoration: none;
 }
-.yako-root .page {
+.nagi-root .page {
   padding-bottom: var(--footer-h); position: relative; z-index: 2;
 }
-.yako-root .site-header {
+.nagi-root .site-header {
   position: fixed;
   inset: 0 0 auto 0;
   height: var(--header-h);
@@ -62,26 +61,26 @@
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.yako-root .site-header__logo {
+.nagi-root .site-header__logo {
   font-weight: 800;
   letter-spacing: 0.14em;
   font-size: 14px;
   white-space: nowrap;
 }
-.yako-root .site-header__logo em {
+.nagi-root .site-header__logo em {
   font-style: normal; color: var(--spark);
 }
-.yako-root .site-header__nav {
+.nagi-root .site-header__nav {
   margin-left: auto;
   display: flex;
   gap: 4px;
   overflow-x: auto;
   scrollbar-width: none;
 }
-.yako-root .site-header__nav::-webkit-scrollbar {
+.nagi-root .site-header__nav::-webkit-scrollbar {
   display: none;
 }
-.yako-root .site-header__nav a {
+.nagi-root .site-header__nav a {
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 700;
@@ -91,10 +90,10 @@
   white-space: nowrap;
   transition: color 0.15s, background 0.15s;
 }
-.yako-root .site-header__nav a:hover {
+.nagi-root .site-header__nav a:hover {
   color: var(--spark); background: rgba(232, 85, 47, 0.08);
 }
-.yako-root .meteor-toggle {
+.nagi-root .meteor-toggle {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -112,16 +111,16 @@
   white-space: nowrap;
   transition: color 0.18s, border-color 0.18s;
 }
-.yako-root .meteor-toggle:hover {
+.nagi-root .meteor-toggle:hover {
   color: var(--spark); border-color: var(--spark);
 }
-.yako-root .meteor-toggle:focus-visible {
+.nagi-root .meteor-toggle:focus-visible {
   outline: 2px solid var(--spark); outline-offset: 2px;
 }
-.yako-root .meteor-toggle.is-on {
+.nagi-root .meteor-toggle.is-on {
   color: var(--spark); border-color: var(--spark);
 }
-.yako-root .meteor-toggle__state {
+.nagi-root .meteor-toggle__state {
   min-width: 34px;
   padding: 2px 7px;
   border-radius: 999px;
@@ -132,31 +131,31 @@
   text-align: center;
   transition: background 0.18s, color 0.18s;
 }
-.yako-root .meteor-toggle.is-on .meteor-toggle__state {
+.nagi-root .meteor-toggle.is-on .meteor-toggle__state {
   background: var(--spark); color: #fff;
 }
 @media (prefers-reduced-motion: reduce) {
-.yako-root .meteor-toggle, .yako-root .meteor-toggle__state {
+.nagi-root .meteor-toggle, .nagi-root .meteor-toggle__state {
   transition: none;
 }
 }
-.yako-root .section {
+.nagi-root .section {
   padding: 96px 24px;
 }
-.yako-root .section__inner {
+.nagi-root .section__inner {
   max-width: var(--maxw); margin: 0 auto;
 }
-.yako-root .section__head {
+.nagi-root .section__head {
   margin-bottom: 40px;
 }
-.yako-root .section__title {
+.nagi-root .section__title {
   margin: 0;
   font-size: clamp(28px, 5vw, 44px);
   font-weight: 800;
   letter-spacing: 0.04em;
   line-height: 1.15;
 }
-.yako-root .section__title::after {
+.nagi-root .section__title::after {
   content: '';
   display: block;
   width: 44px;
@@ -165,46 +164,46 @@
   background: var(--spark);
   border-radius: 2px;
 }
-.yako-root .section__sub {
+.nagi-root .section__sub {
   margin: 10px 0 0;
   font-size: 13px;
   letter-spacing: 0.08em;
   color: var(--navy-mute);
 }
-.yako-root .reveal {
+.nagi-root .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.yako-root .reveal.is-visible {
+.nagi-root .reveal.is-visible {
   opacity: 1; transform: none;
 }
 @media (prefers-reduced-motion: reduce) {
-.yako-root {
+.nagi-root {
   scroll-behavior: auto;
 }
-.yako-root .reveal {
+.nagi-root .reveal {
   opacity: 1; transform: none; transition: none;
 }
 }
-.yako-root .card {
+.nagi-root .card {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
 }
-.yako-root .fancy-scroll {
+.nagi-root .fancy-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--navy-soft) transparent;
 }
-.yako-root .fancy-scroll::-webkit-scrollbar {
+.nagi-root .fancy-scroll::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
-.yako-root .fancy-scroll::-webkit-scrollbar-track {
+.nagi-root .fancy-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
-.yako-root .fancy-scroll::-webkit-scrollbar-thumb {
+.nagi-root .fancy-scroll::-webkit-scrollbar-thumb {
   background-color: var(--navy-soft);
   border-radius: 99px;
   
@@ -212,20 +211,20 @@
   background-clip: padding-box;
   transition: background-color 0.2s;
 }
-.yako-root .fancy-scroll::-webkit-scrollbar-thumb:hover {
+.nagi-root .fancy-scroll::-webkit-scrollbar-thumb:hover {
   background-color: var(--spark);
 }
-.yako-root .fancy-scroll::-webkit-scrollbar-corner {
+.nagi-root .fancy-scroll::-webkit-scrollbar-corner {
   background: transparent;
 }
-.yako-root .thumb {
+.nagi-root .thumb {
   aspect-ratio: 16 / 9;
   width: 100%;
   object-fit: cover;
   display: block;
   background: #eef1f6;
 }
-.yako-root .thumb--empty {
+.nagi-root .thumb--empty {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,7 +232,7 @@
   letter-spacing: 0.1em;
   color: var(--navy-mute);
 }
-.yako-root .badge {
+.nagi-root .badge {
   display: inline-block;
   padding: 1px 7px;
   font-size: 10px;
@@ -243,7 +242,7 @@
   background: var(--spark);
   color: #fff;
 }
-.yako-root .empty-note {
+.nagi-root .empty-note {
   padding: 40px 20px;
   text-align: center;
   font-size: 13px;
@@ -251,7 +250,7 @@
   border: 1px dashed var(--line);
   border-radius: 12px;
 }
-.yako-root .hero {
+.nagi-root .hero {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -259,39 +258,39 @@
   padding: var(--header-h) 24px 0;
   position: relative;
 }
-.yako-root .hero__inner {
+.nagi-root .hero__inner {
   max-width: var(--maxw); margin: 0 auto; width: 100%;
 }
-.yako-root .hero__unofficial {
+.nagi-root .hero__unofficial {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.24em;
   color: var(--spark);
 }
-.yako-root .hero__name-block {
+.nagi-root .hero__name-block {
   display: inline-block;
   font-size: clamp(78px, 20vw, 132px);
 }
-.yako-root .hero__name {
+.nagi-root .hero__name {
   margin: 12px 0 0;
   font-size: 1em;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 0.95;
 }
-.yako-root .hero__name span {
+.nagi-root .hero__name span {
   display: block;
 }
-.yako-root .hero__name em {
+.nagi-root .hero__name em {
   font-style: normal;
   color: var(--spark);
   transition: color 0.8s ease;
 }
-.yako-root .hero__name em:hover {
+.nagi-root .hero__name em:hover {
   color: var(--navy);
   transition: color 20s linear;
 }
-.yako-root .hero__romaji {
+.nagi-root .hero__romaji {
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -301,16 +300,16 @@
   letter-spacing: 0;
   color: var(--navy-soft);
 }
-.yako-root .hero__romaji-gap {
+.nagi-root .hero__romaji-gap {
   width: 0.4em;
 }
-.yako-root .hero__lead {
+.nagi-root .hero__lead {
   margin-top: 26px; max-width: 46em; color: var(--navy-soft);
 }
-.yako-root .hero__lead span {
+.nagi-root .hero__lead span {
   display: inline;
 }
-.yako-root .hero__scroll {
+.nagi-root .hero__scroll {
   margin-top: 46px;
   font-size: 11px;
   letter-spacing: 0.24em;
@@ -319,7 +318,7 @@
   align-items: center;
   gap: 10px;
 }
-.yako-root .hero__scroll::after {
+.nagi-root .hero__scroll::after {
   content: '';
   width: 60px;
   height: 1px;
@@ -332,30 +331,30 @@
   50% { transform: scaleX(1); opacity: 1; }
 
 }
-.yako-root .rail {
+.nagi-root .rail {
   display: flex;
   gap: 16px;
   overflow-x: auto;
   padding-bottom: 12px;
   scroll-snap-type: x mandatory;
 }
-.yako-root .rail > * {
+.nagi-root .rail > * {
   scroll-snap-align: start; flex: 0 0 clamp(220px, 30vw, 300px);
 }
-.yako-root .grid-3 {
+.nagi-root .grid-3 {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
 }
-.yako-root .thumb-wrap {
+.nagi-root .thumb-wrap {
   position: relative; line-height: 0;
 }
-.yako-root .play-badge {
+.nagi-root .play-badge {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.yako-root .play-badge__icon {
+.nagi-root .play-badge__icon {
   width: 54px;
   height: 54px;
   border-radius: 50%;
@@ -365,14 +364,14 @@
   justify-content: center;
   transition: background 0.2s, transform 0.2s;
 }
-.yako-root .play-badge__icon::after {
+.nagi-root .play-badge__icon::after {
   content: '';
   border-style: solid;
   border-width: 9px 0 9px 16px;
   border-color: transparent transparent transparent #fff;
   margin-left: 4px;
 }
-.yako-root .type-tag {
+.nagi-root .type-tag {
   position: absolute;
   top: 8px;
   left: 8px;
@@ -385,28 +384,28 @@
   letter-spacing: 0.1em;
   line-height: 1.6;
 }
-.yako-root .stream-card__unlisted {
+.nagi-root .stream-card__unlisted {
   color: var(--navy-mute);
 }
-.yako-root .stream-card {
+.nagi-root .stream-card {
   transition: border-color 0.2s, transform 0.2s;
 }
-.yako-root a:hover .stream-card {
+.nagi-root a:hover .stream-card {
   border-color: var(--spark); transform: translateY(-3px);
 }
-.yako-root a:hover .play-badge__icon {
+.nagi-root a:hover .play-badge__icon {
   background: var(--spark); transform: scale(1.08);
 }
-.yako-root .stream-card__body {
+.nagi-root .stream-card__body {
   padding: 14px 16px 18px;
 }
-.yako-root .stream-card__date {
+.nagi-root .stream-card__date {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--spark);
 }
-.yako-root .stream-card__title {
+.nagi-root .stream-card__title {
   margin: 6px 0 10px;
   font-size: 13px;
   font-weight: 700;
@@ -416,21 +415,21 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.yako-root .stream-card__meta {
+.nagi-root .stream-card__meta {
   font-size: 11px; color: var(--navy-mute);
 }
-.yako-root .about {
+.nagi-root .about {
   display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center;
 }
-.yako-root .about__text p {
+.nagi-root .about__text p {
   color: var(--navy-soft);
 }
-.yako-root .about__visual {
+.nagi-root .about__visual {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.yako-root .about__logo {
+.nagi-root .about__logo {
   width: min(160px, 100%);
   aspect-ratio: 1;
   object-fit: cover;
@@ -438,37 +437,37 @@
   border: 3px solid var(--navy);
   background: #fff;
 }
-.yako-root .numbers {
+.nagi-root .numbers {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
 }
-.yako-root .number__value {
+.nagi-root .number__value {
   font-size: clamp(36px, 6vw, 64px);
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
-.yako-root .number__value em {
+.nagi-root .number__value em {
   font-style: normal; font-size: 0.4em; margin-left: 4px; color: var(--navy-mute);
 }
-.yako-root .number__label {
+.nagi-root .number__label {
   margin-top: 10px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--navy-mute);
 }
-.yako-root .setlist {
+.nagi-root .setlist {
   display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: start;
 }
-.yako-root .setlist__list {
+.nagi-root .setlist__list {
   max-height: var(--setlist-panel-h);
   overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #fff;
 }
-.yako-root .setlist__item {
+.nagi-root .setlist__item {
   display: block;
   width: 100%;
   text-align: left;
@@ -482,19 +481,19 @@
   color: inherit;
   transition: background 0.15s, border-color 0.15s;
 }
-.yako-root .setlist__item:last-child {
+.nagi-root .setlist__item:last-child {
   border-bottom: none;
 }
-.yako-root .setlist__item:hover {
+.nagi-root .setlist__item:hover {
   background: #f7f9fc;
 }
-.yako-root .setlist__item.is-active {
+.nagi-root .setlist__item.is-active {
   border-left-color: var(--spark); background: rgba(232, 85, 47, 0.06);
 }
-.yako-root .setlist__item-date {
+.nagi-root .setlist__item-date {
   font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--navy-mute);
 }
-.yako-root .setlist__item-title {
+.nagi-root .setlist__item-title {
   font-size: 12px;
   font-weight: 700;
   line-height: 1.45;
@@ -504,26 +503,26 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.yako-root .setlist__detail {
+.nagi-root .setlist__detail {
   min-height: 320px;
 }
-.yako-root .setlist__detail-head {
+.nagi-root .setlist__detail-head {
   display: flex; gap: 20px; align-items: flex-start; margin-bottom: 22px;
 }
-.yako-root .setlist__detail-head .thumb {
+.nagi-root .setlist__detail-head .thumb {
   width: 240px; border-radius: 10px;
 }
-.yako-root .setlist__detail-title {
+.nagi-root .setlist__detail-title {
   margin: 0 0 8px; font-size: 17px; font-weight: 800; line-height: 1.5;
 }
-.yako-root .songs-wrap {
+.nagi-root .songs-wrap {
   height: var(--setlist-panel-h);
   overflow: hidden;
 }
-.yako-root .songs {
+.nagi-root .songs {
   width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed;
 }
-.yako-root .songs th {
+.nagi-root .songs th {
   text-align: left;
   font-size: 10px;
   letter-spacing: 0.12em;
@@ -532,28 +531,28 @@
   padding: 0 10px 8px;
   font-weight: 700;
 }
-.yako-root .songs td {
+.nagi-root .songs td {
   padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top;
 }
-.yako-root .songs tr:hover td {
+.nagi-root .songs tr:hover td {
   background: #f7f9fc;
 }
-.yako-root .songs__no {
+.nagi-root .songs__no {
   width: 52px; color: var(--navy-mute); font-variant-numeric: tabular-nums;
 }
-.yako-root .songs__title {
+.nagi-root .songs__title {
   font-weight: 700;
 }
-.yako-root .songs__artist {
+.nagi-root .songs__artist {
   color: var(--navy-mute); font-size: 12px;
 }
-.yako-root .songs__link {
+.nagi-root .songs__link {
   color: var(--spark); font-size: 12px; font-weight: 700; white-space: nowrap;
 }
-.yako-root .songs__time {
+.nagi-root .songs__time {
   width: 112px; text-align: center;
 }
-.yako-root .songs__play {
+.nagi-root .songs__play {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -564,7 +563,7 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.yako-root .songs__play-btn {
+.nagi-root .songs__play-btn {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -574,7 +573,7 @@
   justify-content: center;
   transition: background 0.18s;
 }
-.yako-root .songs__play-btn::after {
+.nagi-root .songs__play-btn::after {
   content: '';
   border-style: solid;
   border-width: 5px 0 5px 8px;
@@ -582,27 +581,27 @@
   margin-left: 2px;
   transition: border-color 0.18s;
 }
-.yako-root .songs__play:hover .songs__play-btn {
+.nagi-root .songs__play:hover .songs__play-btn {
   background: var(--spark);
 }
-.yako-root .songs__play:hover .songs__play-btn::after {
+.nagi-root .songs__play:hover .songs__play-btn::after {
   border-left-color: #fff;
 }
-.yako-root .songs__play:focus-visible {
+.nagi-root .songs__play:focus-visible {
   outline: 2px solid var(--spark); outline-offset: 3px; border-radius: 6px;
 }
 @media (prefers-reduced-motion: reduce) {
-.yako-root .songs__play-btn, .yako-root .songs__play-btn::after {
+.nagi-root .songs__play-btn, .nagi-root .songs__play-btn::after {
   transition: none;
 }
 }
-.yako-root .songs-cards {
+.nagi-root .songs-cards {
   display: none;
 }
-.yako-root .rep__bar {
+.nagi-root .rep__bar {
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;
 }
-.yako-root .rep__search {
+.nagi-root .rep__search {
   flex: 0 1 300px;
   margin-left: auto;
   
@@ -614,13 +613,13 @@
   border-radius: 999px;
   background: #fff;
 }
-.yako-root .rep__search:focus {
+.nagi-root .rep__search:focus {
   outline: 2px solid var(--spark); outline-offset: 1px;
 }
-.yako-root .tabs {
+.nagi-root .tabs {
   display: flex; gap: 6px;
 }
-.yako-root .tab-btn {
+.nagi-root .tab-btn {
   padding: 8px 16px;
   font-family: inherit;
   font-size: 12px;
@@ -633,13 +632,13 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.yako-root .tab-btn:hover {
+.nagi-root .tab-btn:hover {
   border-color: var(--spark); color: var(--spark);
 }
-.yako-root .tab-btn.is-active {
+.nagi-root .tab-btn.is-active {
   background: var(--navy); border-color: var(--navy); color: #fff;
 }
-.yako-root .rank-grid {
+.nagi-root .rank-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: min-content;
@@ -647,7 +646,7 @@
   gap: 14px 20px;
   min-height: var(--rep-panel-h);
 }
-.yako-root .rank-card {
+.nagi-root .rank-card {
   position: relative;
   display: flex;
   align-items: center;
@@ -660,10 +659,10 @@
   border-radius: 12px;
   transition: border-color 0.2s, transform 0.2s;
 }
-.yako-root .rank-card:hover {
+.nagi-root .rank-card:hover {
   border-color: var(--spark); transform: translateY(-2px);
 }
-.yako-root .rank-card__no {
+.nagi-root .rank-card__no {
   position: absolute;
   top: -9px;
   left: -9px;
@@ -681,22 +680,22 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
-.yako-root .rank-card--top .rank-card__no {
+.nagi-root .rank-card--top .rank-card__no {
   background: var(--spark);
 }
-.yako-root .rank-card__body {
+.nagi-root .rank-card__body {
   flex: 1; min-width: 0;
 }
-.yako-root .rank-card__title {
+.nagi-root .rank-card__title {
   font-size: 15px;
   font-weight: 700;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-.yako-root .rank-card__sub {
+.nagi-root .rank-card__sub {
   margin-top: 3px; font-size: 12px; color: var(--navy-mute);
 }
-.yako-root .rank-card__value {
+.nagi-root .rank-card__value {
   flex-shrink: 0;
   font-size: 26px;
   font-weight: 900;
@@ -704,20 +703,20 @@
   color: var(--spark);
   font-variant-numeric: tabular-nums;
 }
-.yako-root .rank-card__value span {
+.nagi-root .rank-card__value span {
   margin-left: 4px;
   font-size: 12px;
   font-weight: 700;
   color: var(--navy-mute);
 }
-.yako-root .pager {
+.nagi-root .pager {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
   margin-top: 22px;
 }
-.yako-root .pager__btn {
+.nagi-root .pager__btn {
   width: 34px;
   height: 34px;
   display: inline-flex;
@@ -731,33 +730,33 @@
   cursor: pointer;
   transition: color 0.18s, border-color 0.18s;
 }
-.yako-root .pager__btn:hover:not(:disabled) {
+.nagi-root .pager__btn:hover:not(:disabled) {
   color: var(--spark); border-color: var(--spark);
 }
-.yako-root .pager__btn:focus-visible {
+.nagi-root .pager__btn:focus-visible {
   outline: 2px solid var(--spark); outline-offset: 2px;
 }
-.yako-root .pager__btn:disabled {
+.nagi-root .pager__btn:disabled {
   opacity: 0.3; cursor: default;
 }
-.yako-root .pager__count {
+.nagi-root .pager__count {
   font-size: 12px;
   letter-spacing: 0.1em;
   color: var(--navy-mute);
   font-variant-numeric: tabular-nums;
 }
-.yako-root .pager__count strong {
+.nagi-root .pager__count strong {
   font-size: 15px; font-weight: 800; color: var(--navy);
 }
 @media (prefers-reduced-motion: reduce) {
-.yako-root .pager__btn {
+.nagi-root .pager__btn {
   transition: none;
 }
 }
-.yako-root .links {
+.nagi-root .links {
   display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
 }
-.yako-root .link-btn {
+.nagi-root .link-btn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -769,13 +768,13 @@
   letter-spacing: 0.1em;
   transition: all 0.18s;
 }
-.yako-root .link-btn:hover {
+.nagi-root .link-btn:hover {
   background: var(--navy); color: #fff; transform: translateY(-2px);
 }
-.yako-root #links {
+.nagi-root #links {
   padding-bottom: 24px;
 }
-.yako-root .site-note {
+.nagi-root .site-note {
   max-width: var(--maxw);
   margin: 40px auto 220px;
   padding: 0 24px;
@@ -784,13 +783,13 @@
   color: var(--navy-soft);
   text-align: center;
 }
-.yako-root .site-note strong {
+.nagi-root .site-note strong {
   color: var(--navy);
   font-size: 13px;
   letter-spacing: 0.06em;
   margin-right: 14px;
 }
-.yako-root .city-fixed {
+.nagi-root .city-fixed {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 40;
@@ -799,7 +798,7 @@
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.96));
   backdrop-filter: blur(3px);
 }
-.yako-root .city-fixed::before {
+.nagi-root .city-fixed::before {
   content: '';
   position: absolute;
   left: 0;
@@ -819,86 +818,101 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 70%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 70%);
 }
-.yako-root .cityscape--yako .cityscape__strip {
+.nagi-root .cityscape--nagi .cityscape__strip {
   position: absolute; left: 0; bottom: 0;
 }
 @media (max-width: 900px) {
-.yako-root .grid-3 {
+.nagi-root .grid-3 {
   grid-template-columns: 1fr;
 }
-.yako-root .rank-grid {
+.nagi-root .rank-grid {
   grid-template-columns: 1fr;
 }
-.yako-root .about {
+.nagi-root .about {
   grid-template-columns: 1fr; gap: 28px;
 }
-.yako-root .numbers {
+.nagi-root .numbers {
   grid-template-columns: repeat(2, 1fr);
 }
-.yako-root .setlist {
+.nagi-root .setlist {
   grid-template-columns: 1fr;
 }
-.yako-root .setlist__list {
+.nagi-root .setlist__list {
   max-height: 320px;
 }
-.yako-root .setlist__detail-head {
+.nagi-root .setlist__detail-head {
   flex-direction: column;
 }
-.yako-root .setlist__detail-head .thumb {
+.nagi-root .setlist__detail-head .thumb {
   width: 100%;
 }
 }
 @media (max-width: 640px) {
-.yako-root .section {
+.nagi-root .section {
   padding: 68px 18px;
 }
-.yako-root .site-header {
+.nagi-root .site-header {
   padding: 0 14px; gap: 8px;
 }
-.yako-root .site-header__logo {
+.nagi-root .site-header__logo {
   font-size: 12px;
 }
-.yako-root .meteor-toggle {
+.nagi-root .meteor-toggle {
   padding: 5px 6px 5px 10px; font-size: 10px; gap: 6px;
 }
-.yako-root .meteor-toggle__state {
+.nagi-root .meteor-toggle__state {
   min-width: 28px; padding: 2px 5px; font-size: 9px;
 }
-.yako-root .songs {
+.nagi-root .songs {
   display: none;
 }
-.yako-root .songs-cards {
+.nagi-root .songs-cards {
   display: block;
 }
-.yako-root .songs-wrap {
+.nagi-root .songs-wrap {
   height: auto;
 }
-.yako-root .hero__lead span {
+.nagi-root .hero__lead span {
   display: block;
 }
-.yako-root .hero__lead span.hero__lead-sep {
+.nagi-root .hero__lead span.hero__lead-sep {
   display: none;
 }
-.yako-root .rep__search {
+.nagi-root .rep__search {
   flex: 1 1 100%; margin-left: 0;
 }
-.yako-root .song-card {
+.nagi-root .song-card {
   border: 1px solid var(--line);
     border-radius: 10px;
     padding: 12px 14px;
     margin-bottom: 10px;
     background: #fff;
 }
-.yako-root .song-card__head {
+.nagi-root .song-card__head {
   display: flex; align-items: baseline; gap: 8px;
 }
-.yako-root .song-card__no {
+.nagi-root .song-card__no {
   font-size: 11px; color: var(--navy-mute); font-variant-numeric: tabular-nums;
 }
-.yako-root .song-card__title {
+.nagi-root .song-card__title {
   font-weight: 700; font-size: 13px;
 }
-.yako-root .song-card__meta {
+.nagi-root .song-card__meta {
   font-size: 11px; color: var(--navy-mute); margin-top: 4px;
 }
+}
+
+/* DB名の印は名前ブロックの右下へ。名前1文字ぶんの95%に収める */
+.nagi-root .hero__name {
+  position: relative;
+}
+
+.nagi-root .hero__dbname--img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0.95em;
+  height: 0.9025em;
+  object-fit: contain;
+  object-position: right bottom;
 }

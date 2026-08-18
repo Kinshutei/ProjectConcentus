@@ -232,3 +232,8 @@
 .hl-note__text {
   opacity: 0.6;
 }
+
+/* 見出しの行に検索フォームを同居させる。右端へ寄せて1行に収める */
+.section-head__search {
+  margin-left: auto;
+}

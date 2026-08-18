@@ -659,22 +659,21 @@ function Repertoire({ db, perfs, t }: { db: Db; perfs: Performance[]; t: T }) {
       <div className="section__inner">
         <SectionHead title="Repertoire" sub={`${stats.length}曲`} />
 
-        <div className="mk-search mk-search--wide">
-          <span className="mk-search__icon" aria-hidden>
-              <SearchIcon />
-            </span>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="曲名・アーティストで絞り込み"
-            className={q ? 'searching' : ''}
-          />
-        </div>
-
         <div className="section-head">
           <h3 style={{ margin: 0 }}>{t('songs.rankingTitle')}</h3>
           <SortToggle value={sort} onChange={setSort} />
           <YearPicker years={pickableYears} value={year} onChange={setYear} />
+          <div className="mk-search section-head__search">
+            <span className="mk-search__icon" aria-hidden>
+              <SearchIcon />
+            </span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="曲名・アーティストで絞り込み"
+              className={q ? 'searching' : ''}
+            />
+          </div>
         </div>
         <RankCards items={ranking} paged columns={2} rows={5} />
 

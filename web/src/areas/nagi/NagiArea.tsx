@@ -13,7 +13,7 @@ const ASSET = (name: string) => `${import.meta.env.BASE_URL}nagi/${name}`
 
 const SITE = {
   nameRomaji: 'MINASE NAGI',
-  leadParts: ['ファンメイドの非公式データベース', '水瀬さんの歌枠のセトリ＆楽曲情報まとめ'],
+  leadParts: ['非公式データベース', 'セトリ＆楽曲情報まとめ'],
   links: [{ label: 'YouTube', url: 'https://www.youtube.com/channel/UCAplyWK80Y6_YTkb3CCDk1Q' }],
 }
 
@@ -191,7 +191,7 @@ function Hero() {
 
         <p className="hero__lead">
           <span>{SITE.leadParts[0]}</span>
-          <span className="hero__lead-sep"> - </span>
+          <span className="hero__lead-sep">、</span>
           <span>{SITE.leadParts[1]}</span>
         </p>
         <p className="hero__scroll">SCROLL</p>

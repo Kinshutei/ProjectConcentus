@@ -258,12 +258,13 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: var(--header-h) 24px 0;
+  /* 中央寄せをやめて上へ。左右も中央に置かず左へ寄せる */
+  justify-content: flex-start;
+  padding: calc(var(--header-h) + 56px) 24px 0 56px;
   position: relative;
 }
 .nagi-root .hero__inner {
-  max-width: var(--maxw); margin: 0 auto; width: 100%;
+  max-width: var(--maxw); margin: 0; width: 100%;
 }
 .nagi-root .hero__unofficial {
   font-size: 11px;
@@ -314,6 +315,8 @@
   display: inline;
 }
 .nagi-root .hero__scroll {
+  /* 90度倒して縦に置く。棒も一緒に縦へ向く */
+  writing-mode: vertical-rl;
   margin-top: 46px;
   font-size: 11px;
   letter-spacing: 0.24em;
@@ -324,11 +327,12 @@
 }
 .nagi-root .hero__scroll::after {
   content: '';
-  width: 60px;
-  height: 1px;
+  /* 縦向きなので幅と高さを入れ替える。長さは元の倍 */
+  width: 1px;
+  height: 120px;
   background: var(--navy-mute);
-  transform-origin: left;
-  animation: scroll-hint 2.2s ease-in-out infinite;
+  transform-origin: top;
+  animation: scroll-hint-v 2.2s ease-in-out infinite;
 }
 @keyframes scroll-hint {
   0%, 100% { transform: scaleX(0.3); opacity: 0.4; }
@@ -934,4 +938,10 @@
 .nagi-root .site-note strong,
 .nagi-root .number__value {
   font-family: var(--display);
+}
+
+/* 縦向きの棒の伸び縮み */
+@keyframes scroll-hint-v {
+  0%, 100% { transform: scaleY(0.3); opacity: 0.4; }
+  50% { transform: scaleY(1); opacity: 1; }
 }

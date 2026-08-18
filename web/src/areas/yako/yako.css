@@ -28,7 +28,8 @@
   box-sizing: border-box;
 }
 .yako-root {
-  scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px);
+  /* スクロールするのは html なので、ここでは効かない。
+     YakoArea 側で html に付け直している。 */
 }
 .yako-root {
   margin: 0;

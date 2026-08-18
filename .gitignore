@@ -8,3 +8,6 @@ Concentus_管理ツール_*.html
 web/node_modules/
 web/dist/
 node_modules/
+
+# 画像の作業ファイルは配信しない
+web/public/**/*.xcf

@@ -172,7 +172,7 @@ function Hero() {
             </span>
             <img
               className="hero__dbname hero__dbname--img"
-              src={ASSET('mizunagi_onko.png')}
+              src={ASSET('mizunagi_onko_mini.png')}
               alt="水凪音庫"
             />
           </h1>

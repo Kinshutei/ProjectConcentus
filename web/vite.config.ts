@@ -1,4 +1,4 @@
-import { cpSync, existsSync, readFileSync } from 'node:fs'
+import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -30,7 +30,18 @@ function dataPlugin(): Plugin {
     },
     closeBundle() {
       cpSync(DATA_DIR, REPO_ROOT + 'web/dist/data', { recursive: true })
+      // public/ は丸ごと配信されるので、画像の作業ファイルは成果物から外す
+      dropWorkFiles(REPO_ROOT + 'web/dist')
     },
+  }
+}
+
+/** .xcf や .psd など、公開する必要のない作業ファイルを消す */
+function dropWorkFiles(dir: string) {
+  for (const name of readdirSync(dir)) {
+    const path = `${dir}/${name}`
+    if (statSync(path).isDirectory()) dropWorkFiles(path)
+    else if (/\.(xcf|psd|ai|clip)$/i.test(name)) rmSync(path)
   }
 }
 

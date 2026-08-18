@@ -909,10 +909,12 @@
 
 .nagi-root .hero__dbname--img {
   position: absolute;
+  /* 名前ブロックの右下の角に合わせる。
+     枠を正方形にしておかないと contain で縮んだぶん右側に隙間が出る。 */
   right: 0;
   bottom: 0;
   width: 0.95em;
-  height: 0.9025em;
+  height: 0.95em;
   object-fit: contain;
   object-position: right bottom;
 }

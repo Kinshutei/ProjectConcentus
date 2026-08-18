@@ -56,6 +56,33 @@ function floorWindows(
 
 const colsFor = (w: number) => Math.max(2, Math.floor((w - 8) / 9))
 
+/**
+ * 縦リボン方式の窓。柱間を縦線で表し、点灯している窓だけを矩形で置く。
+ * 1棟あたりの節点が 20〜40 から 10〜15 に落ちる。表示倍率 0.5 では窓1つが
+ * 約3pxで、消灯窓の枠線は元から読めないため見た目の損失は小さい。
+ */
+function ribbonWindows(w: number, floors: number, cols: number, lit: boolean[][]): Detail[] {
+  const cw = (w - 4) / cols
+  const top = GY - PARAPET_H - floors * FLOOR_H + 2
+  const bot = GY - FLOOR_H
+  const out: Detail[] = []
+  for (let c = 0; c <= cols; c++) {
+    out.push(line(2 + cw * c, top, 2 + cw * c, bot, 1))
+  }
+  for (let f = 1; f < floors; f++) {
+    const y = GY - PARAPET_H - (f + 1) * FLOOR_H + 3
+    for (let c = 0; c < cols; c++) {
+      if (lit[f][c]) {
+        out.push({
+          kind: 'rect', x: 2 + cw * c + 1, y, w: cw - 2, h: FLOOR_H - 5,
+          sw: 1.2, accent: true,
+        })
+      }
+    }
+  }
+  return out
+}
+
 function line(
   x1: number, y1: number, x2: number, y2: number,
   sw = 1.2, accent = false,
@@ -187,7 +214,7 @@ export const midrise: ModuleFn = (r, m) => {
   return {
     width: w,
     profile: roofProfile(r, w, h),
-    details: floorWindows(w, floors, cols, lit, 1),
+    details: ribbonWindows(w, floors, cols, lit),
   }
 }
 
@@ -200,7 +227,7 @@ export const highrise: ModuleFn = (r, m) => {
   return {
     width: w,
     profile: roofProfile(r, w, h),
-    details: floorWindows(w, floors, cols, lit, 1),
+    details: ribbonWindows(w, floors, cols, lit),
   }
 }
 
@@ -716,7 +743,9 @@ export function groundFloorDetails(r: Rng, kind: GroundFloor, w: number): Detail
 
   if (kind === 'glass') {
     d.push({ kind: 'rect', x: 2, y: top, w: w - 4, h: FLOOR_H - 3, sw: 1.1 })
-    const mullions = Math.max(1, Math.floor((w - 4) / 7))
+    // 表示倍率 0.5 では 7 単位刻みが 3.5px にしかならない。
+    // 読めない密度でノードを増やさないよう間隔を広く取る
+    const mullions = Math.max(1, Math.floor((w - 4) / 12))
     for (let i = 1; i < mullions; i++) {
       const mx = 2 + ((w - 4) / mullions) * i
       d.push({ kind: 'line', x1: mx, y1: top, x2: mx, y2: GY - 1, sw: 0.8 })

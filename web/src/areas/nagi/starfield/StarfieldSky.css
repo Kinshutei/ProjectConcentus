@@ -1,0 +1,97 @@
+.sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  contain: paint;
+  pointer-events: none;
+  --sky-star: #e8f1fb;
+  --sky-star-bright: #ffffff;
+  --sky-line: #7fb4d8;
+}
+
+.sky__rot {
+  position: absolute;
+  transform-origin: 50% 50%;
+}
+
+.sky__track {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  animation: sky-drift var(--dur) linear infinite;
+}
+
+.sky__svg {
+  position: absolute;
+  top: 0;
+  overflow: visible;
+}
+
+@keyframes sky-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--strip-w)); }
+}
+
+/* --- 星 --- */
+.sky__dust path {
+  fill: var(--sky-star);
+  stroke: none;
+}
+
+.sky__stars circle {
+  fill: var(--sky-star);
+}
+
+.sky__stars circle.is-twinkle {
+  animation: sky-twinkle var(--tw-dur) ease-in-out var(--tw-delay) infinite alternate;
+}
+
+@keyframes sky-twinkle {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+
+/* --- 星座 --- */
+.sky__constellation {
+  opacity: 0;
+  animation: sky-reveal var(--dur) linear infinite;
+}
+
+.sky__constellation circle {
+  fill: var(--sky-star-bright);
+}
+
+.sky__lines {
+  fill: none;
+  stroke: var(--sky-line);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.sky__name {
+  fill: var(--sky-line);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+@keyframes sky-reveal {
+  0%   { opacity: 0; }
+  36%  { opacity: 0; }
+  50%  { opacity: 1; }
+  64%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* --- モーション低減 --- */
+@media (prefers-reduced-motion: reduce) {
+  .sky__track,
+  .sky__stars circle.is-twinkle {
+    animation: none !important;
+  }
+  .sky__constellation {
+    opacity: 0.55;
+    animation: none !important;
+  }
+}

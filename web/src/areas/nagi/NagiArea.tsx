@@ -6,6 +6,7 @@ import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Rev
 import AboutText from '../../components/AboutText'
 import { useSmoothScroll } from '../../components/useSmoothScroll'
 import { NagiCityscape, VIEW_H } from './cityscape'
+import { StarfieldSky } from './starfield'
 import { ShootingStars } from '../../components/ShootingStars'
 import './nagi.css'
 
@@ -143,6 +144,9 @@ export default function NagiArea({
       </div>
 
       <div className="city-fixed" style={{ height: FOOTER_H }}>
+        <div className="city-sky">
+          <StarfieldSky seed={20260819} speed={6} angle={34} />
+        </div>
         <NagiCityscape
           scale={CITY_SCALE}
           seed={20260819}

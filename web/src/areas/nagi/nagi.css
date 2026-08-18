@@ -824,6 +824,8 @@
   bottom: 0;
   height: calc(100% + 150px);
   pointer-events: none;
+  /* もやは星空の上、街並みの下に置く */
+  z-index: 1;
   /* 都市の照明で下ほど明るくなった夜空 */
   background: linear-gradient(
     to bottom,
@@ -951,4 +953,18 @@
 @keyframes scroll-hint-v {
   0%, 100% { transform: scaleY(0.3); opacity: 0.4; }
   50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* 星空はフッターの最背面。もやの帯と同じ高さまで上へ広げ、星座が収まる高さを取る */
+.nagi-root .city-sky {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(100% + 150px);
+  z-index: 0;
+}
+.nagi-root .city-fixed .nagi-city {
+  position: relative;
+  z-index: 2;
 }

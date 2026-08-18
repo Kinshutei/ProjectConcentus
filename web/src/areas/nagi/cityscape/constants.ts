@@ -7,8 +7,12 @@ export const VIEW_H = 214
 /** ストリップの最小幅 */
 export const MIN_STRIP_WIDTH = 1800
 
-/** コンテナ幅に対して確保するストリップ幅の倍率 */
-export const STRIP_WIDTH_FACTOR = 1.5
+/**
+ * コンテナ幅に対して確保するストリップ幅の倍率。
+ * 複製3枚（総幅3W）に対し、等速ループで W、スクロール連動で最大 1.11W ずれる。
+ * 3W ≥ 2.11W + ビューポート幅 を満たす下限が約 1.13 なので 1.25 を取る。
+ */
+export const STRIP_WIDTH_FACTOR = 1.25
 
 /** ディテールの既定線幅 */
 export const STROKE_DETAIL = 1.3

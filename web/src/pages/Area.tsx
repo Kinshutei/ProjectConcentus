@@ -7,6 +7,7 @@ import DiaArea from '../areas/dia/DiaArea'
 import WoucaArea from '../areas/wouca/WoucaArea'
 import YakoArea from '../areas/yako/YakoArea'
 import KisakiArea from '../areas/kisaki/KisakiArea'
+import NagiArea from '../areas/nagi/NagiArea'
 
 /**
  * 各シンガーの領域。デザインは領域ごとに持つ方針なので、
@@ -61,6 +62,9 @@ export default function Area({ db, path }: { db: Db; path: string }) {
   }
   if (singerId === 'kisaki') {
     return <KisakiArea db={db} frames={frames} perfs={perfs} />
+  }
+  if (singerId === 'nagi') {
+    return <NagiArea db={db} frames={frames} perfs={perfs} />
   }
   return <Placeholder name={singer.name} frames={frames} perfs={perfs} />
 }

@@ -1,5 +1,5 @@
 === Concentus 移行 ===
-取得元: GitHub origin/main
+取得元: GitHub origin/main（キャッシュ）
 
 songs.json      1196曲 → 1189曲（除外 7件）
   正規化キーの衝突: なし

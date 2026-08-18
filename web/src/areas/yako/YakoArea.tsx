@@ -11,8 +11,26 @@ import './yako.css'
 
 const ASSET = (name: string) => `${import.meta.env.BASE_URL}yako/${name}`
 
-const SITE = {
-  name: '夜紺 火花',
+/** 領域ごとに差し替える固定情報。見た目と構成は共通のまま使う */
+export type AreaSite = {
+  /** ヒーローの日本語名。2つに分けて2×2ブロックに組む */
+  nameParts: [string, string]
+  /** 1文字目を強調する側。0なら前半、1なら後半 */
+  accentPart: 0 | 1
+  nameRomaji: string
+  leadParts: [string, string]
+  links: { label: string; url: string }[]
+  /** AboutText に渡すシンガー名 */
+  singerName: string
+  /** 最下部の注記に出す表題 */
+  noteTitle: string
+  /** 街並みの生成シード。領域ごとに変えると別の街になる */
+  citySeed: number
+}
+
+const YAKO_SITE: AreaSite = {
+  nameParts: ['夜紺', '火花'],
+  accentPart: 1,
   nameRomaji: 'YAKON HIBANA',
   leadParts: ['ファンメイドの非公式データベース', '夜紺さんの歌枠のセトリ＆楽曲情報まとめ'],
   links: [
@@ -20,6 +38,9 @@ const SITE = {
     { label: 'X', url: 'https://x.com/NIGHT_IS_NAVY' },
     { label: 'TikTok', url: 'https://www.tiktok.com/@yakon_hibana' },
   ],
+  singerName: '夜紺火花',
+  noteTitle: 'Unofficial - YAKON HIBANA DB',
+  citySeed: 20260811,
 }
 
 const NAV = [
@@ -41,10 +62,12 @@ export default function YakoArea({
   db,
   frames,
   perfs,
+  site = YAKO_SITE,
 }: {
   db: Db
   frames: Frame[]
   perfs: Performance[]
+  site?: AreaSite
 }) {
   // 流星群は既定でOFF。ヘッダーのトグルで切り替える
   const [meteorsOn, setMeteorsOn] = useState(false)
@@ -104,7 +127,7 @@ export default function YakoArea({
 
       <header className="site-header">
         <a className="site-header__logo" href="#top">
-          {SITE.nameRomaji} <em>DB</em>
+          {site.nameRomaji} <em>DB</em>
         </a>
         <nav className="site-header__nav">
           {NAV.map((n) => (
@@ -126,7 +149,7 @@ export default function YakoArea({
       </header>
 
       <div className="page">
-        <Hero />
+        <Hero site={site} />
         <LatestStreams videos={videos} streams={streams} streamByVideoId={streamByVideoId} />
         <PickUp streams={streams} />
         <Numbers
@@ -137,11 +160,11 @@ export default function YakoArea({
         />
         <Setlist streams={streams} db={db} />
         <Repertoire stats={stats} />
-        <About />
-        <Links />
+        <About site={site} />
+        <Links site={site} />
 
         <div className="site-note">
-          <strong>Unofficial - YAKON HIBANA DB</strong>
+          <strong>{site.noteTitle}</strong>
           <span>ただのファンによる非公式DBであり、ご本人とは一切関係ありません。</span>
         </div>
       </div>
@@ -150,7 +173,7 @@ export default function YakoArea({
         <CityscapeFooter
           className="cityscape--yako"
           scale={CITY_SCALE}
-          seed={20260811}
+          seed={site.citySeed}
           speed={10}
           districtScale={0.8}
         />
@@ -161,8 +184,8 @@ export default function YakoArea({
 
 /* ─────────────────────────────────────────── Hero */
 
-function Hero() {
-  const romaji = SITE.nameRomaji
+function Hero({ site }: { site: AreaSite }) {
+  const romaji = site.nameRomaji
   return (
     <section className="hero" id="top">
       <div className="hero__inner">
@@ -171,10 +194,16 @@ function Hero() {
         {/* 日本語名の2×2ブロック幅に、ローマ字を均等割り付けする */}
         <div className="hero__name-block">
           <h1 className="hero__name">
-            <span>夜紺</span>
-            <span>
-              <em>火</em>花
-            </span>
+            {site.nameParts.map((part, i) =>
+              i === site.accentPart ? (
+                <span key={i}>
+                  <em>{part.slice(0, 1)}</em>
+                  {part.slice(1)}
+                </span>
+              ) : (
+                <span key={i}>{part}</span>
+              ),
+            )}
           </h1>
           <p className="hero__romaji" aria-label={romaji}>
             {romaji.split('').map((ch, i) =>
@@ -190,9 +219,9 @@ function Hero() {
         </div>
 
         <p className="hero__lead">
-          <span>{SITE.leadParts[0]}</span>
+          <span>{site.leadParts[0]}</span>
           <span className="hero__lead-sep"> - </span>
-          <span>{SITE.leadParts[1]}</span>
+          <span>{site.leadParts[1]}</span>
         </p>
         <p className="hero__scroll">SCROLL</p>
       </div>
@@ -814,14 +843,14 @@ function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
 
 /* ─────────────────────────────────────────── About / Links */
 
-function About() {
+function About({ site }: { site: AreaSite }) {
   return (
     <section className="section" id="about">
       <div className="section__inner">
         <SectionHead title="About" sub="このサイトについて" />
         <div className="about">
           <Reveal className="about__text">
-            <AboutText singer="夜紺火花" />
+            <AboutText singer={site.singerName} />
           </Reveal>
           <Reveal className="about__visual" delay={120}>
             <img
@@ -837,14 +866,14 @@ function About() {
   )
 }
 
-function Links() {
+function Links({ site }: { site: AreaSite }) {
   return (
     <section className="section" id="links">
       <div className="section__inner">
         <SectionHead title="Official Links" sub="ご本人の公式アカウント" />
         <Reveal>
           <div className="links">
-            {SITE.links.map((l) => (
+            {site.links.map((l) => (
               <a
                 key={l.label}
                 className="link-btn"

@@ -31,7 +31,7 @@ RAW = "https://raw.githubusercontent.com/Kinshutei/{repo}/main/{path}"
 # channel_id は RKMusic_AllSinger_PFR/channels_config.json と
 # natsuyo_no_kasenjiki/fetch_contents.py から取得した実値。
 # url_path は公開URLのパス。旧DBのリポジトリ名をそのまま引き継ぐ
-# （水瀬凪さんは旧DBが無いため暫定値）。
+# （水瀬凪さんは旧DBが無いため「水凪音庫」= Mizunagi_no_Onko）。
 # color はユーザー指定の仮値。夜紺のみ既存DBのテーマカラー実値を使用
 SINGERS = [
     {
@@ -59,7 +59,7 @@ SINGERS = [
         "repo": "Imomushi_Hanemushi_Teams", "path": "streaming_info.json",
     },
     {
-        "singer_id": "nagi", "url_path": "minase_nagi", "name": "水瀬凪", "name_en": "Minase Nagi",
+        "singer_id": "nagi", "url_path": "Mizunagi_no_Onko", "name": "水瀬凪", "name_en": "Minase Nagi",
         "channel_id": "UCAplyWK80Y6_YTkb3CCDk1Q", "affiliation": "RK Music",
         "color": "#7ec8e3",  # 水色
         "repo": None, "path": None,  # 既存データ無し。これから登録する

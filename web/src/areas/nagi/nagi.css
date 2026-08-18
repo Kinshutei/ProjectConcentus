@@ -1,6 +1,8 @@
 /* 現行サイトの App.css を取り込み、他の領域へ漏れないよう .nagi-root 配下へ
    スコープしただけのもの。見た目を一致させるため宣言は変更していない。 */
 
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
+
 .nagi-root {
   --navy: #16203a;
   --navy-soft: #3a4767;
@@ -22,7 +24,9 @@
   
   --setlist-panel-h: 552px;
 
-  --sans: 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+  --sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+  /* ヒーローと見出しに使う装飾書体 */
+  --display: 'Kaisei Decol', 'Zen Kaku Gothic New', serif;
 }
 .nagi-root * {
   box-sizing: border-box;
@@ -917,4 +921,17 @@
   height: 0.5em;
   object-fit: contain;
   object-position: right bottom;
+}
+
+/* ── 書体 ──
+   ヒーローと見出しは解星デコール。装飾が強いので、曲名や枠名が並ぶ
+   本文には使わず、そちらは Zen Kaku Gothic New のまま読みやすさを取る。 */
+.nagi-root .hero__name,
+.nagi-root .hero__romaji,
+.nagi-root .hero__unofficial,
+.nagi-root .section__title,
+.nagi-root .site-header__logo,
+.nagi-root .site-note strong,
+.nagi-root .number__value {
+  font-family: var(--display);
 }

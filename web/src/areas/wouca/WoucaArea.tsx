@@ -6,6 +6,7 @@ import RankCards, { HighlightNote, markTopHalf, type RankItem } from '../../comp
 import YearPicker from '../../components/YearPicker'
 import AboutText from '../../components/AboutText'
 import { SearchIcon } from '../../components/icons'
+import { useSmoothScroll } from '../../components/useSmoothScroll'
 import './wouca.css'
 
 const asset = (name: string) => `${import.meta.env.BASE_URL}wouca/${name}`
@@ -65,6 +66,7 @@ export default function WoucaArea({
   perfs: Performance[]
 }) {
   const [aboutOpen, setAboutOpen] = useState(false)
+  useSmoothScroll(64)
   const [contents, setContents] = useState<Contents>({
     pickup: [],
     original: [],

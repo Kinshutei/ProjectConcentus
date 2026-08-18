@@ -7,6 +7,7 @@ import YearPicker from '../../components/YearPicker'
 import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Reveal'
 import { SearchIcon } from '../../components/icons'
 import AboutText from '../../components/AboutText'
+import { useSmoothScroll } from '../../components/useSmoothScroll'
 import { LANGS, storedLang, translator } from './i18n'
 import '../../components/scroll.css'
 import './mikage.css'
@@ -55,6 +56,7 @@ export default function MikageArea({
   const [lang, setLang] = useState(storedLang)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const t = useMemo(() => translator(lang), [lang])
+  useSmoothScroll(46)
 
   // 初披露は枠の開始時刻→枠内の秒 の順で song_id の初出を拾う
   const rowsByFrame = useMemo(() => {

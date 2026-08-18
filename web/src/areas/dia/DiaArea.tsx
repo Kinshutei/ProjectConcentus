@@ -5,6 +5,7 @@ import { Link } from '../../router'
 import TerminalMessage from './TerminalMessage'
 import { SearchIcon } from '../../components/icons'
 import AboutText from '../../components/AboutText'
+import { useSmoothScroll } from '../../components/useSmoothScroll'
 import RankCards, { HighlightNote, markTopHalf, type RankItem } from '../../components/RankCards'
 import YearPicker from '../../components/YearPicker'
 import './dia.css'
@@ -44,6 +45,7 @@ export default function DiaArea({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [terminalKey, setTerminalKey] = useState(0)
   const [videoIndex, setVideoIndex] = useState(0)
+  useSmoothScroll(0)
 
   const videoARef = useRef<HTMLVideoElement>(null)
   const videoBRef = useRef<HTMLVideoElement>(null)

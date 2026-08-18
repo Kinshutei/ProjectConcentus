@@ -4,6 +4,7 @@ import { hms, jstDate, loadVideos, watchUrl } from '../../data'
 import { Link } from '../../router'
 import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Reveal'
 import AboutText from '../../components/AboutText'
+import { useSmoothScroll } from '../../components/useSmoothScroll'
 import { CityscapeFooter, VIEW_H } from './CityscapeFooter'
 import { ShootingStars } from './ShootingStars'
 import './yako.css'
@@ -53,25 +54,7 @@ export default function YakoArea({
     loadVideos('yako').then(setVideos)
   }, [])
 
-  /* 節へのスムーススクロール。
-     元サイトは html に指定していたが、スコープ時に .yako-root へ移って
-     効かなくなっていた。スクロールするのは html なので、この領域を開いて
-     いる間だけ html に付け直す。 */
-  useEffect(() => {
-    const root = document.documentElement
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const apply = () => {
-      root.style.scrollBehavior = reduce.matches ? 'auto' : 'smooth'
-      root.style.scrollPaddingTop = 'calc(62px + 12px)'
-    }
-    apply()
-    reduce.addEventListener('change', apply)
-    return () => {
-      reduce.removeEventListener('change', apply)
-      root.style.scrollBehavior = ''
-      root.style.scrollPaddingTop = ''
-    }
-  }, [])
+  useSmoothScroll(62)
 
   const streams: Stream[] = useMemo(() => {
     const at = new Map(frames.map((f) => [f.frame_id, f.started_at]))

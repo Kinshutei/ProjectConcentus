@@ -1,12 +1,22 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import {
+  useCallback, useEffect, useMemo, useRef, useState, type AnimationEvent, type CSSProperties,
+} from 'react'
 import './StarfieldSky.css'
-import { SKY_ANGLE, SKY_MIN_WIDTH, SKY_SEED, SKY_SPEED, SKY_WIDTH_FACTOR } from './constants'
+import {
+  SKY_ANGLE, SKY_MIN_WIDTH, SKY_SEED, SKY_SPEED, SKY_WIDTH_FACTOR,
+  SLOT_COUNT, SLOT_MARGIN,
+} from './constants'
 import { generateSky } from './generator'
+import { currentSeason, seasonPool } from './seasons'
+import { makeSlot } from './slots'
+import type { Season, SlotState } from './types'
 
 export interface StarfieldSkyProps {
   seed?: number
   speed?: number
   angle?: number
+  /** 省略時は現在の月から判定する */
+  season?: Season
   className?: string
 }
 
@@ -19,6 +29,7 @@ export function StarfieldSky({
   seed = SKY_SEED,
   speed = SKY_SPEED,
   angle = SKY_ANGLE,
+  season,
   className = '',
 }: StarfieldSkyProps) {
   const hostRef = useRef<HTMLDivElement>(null)
@@ -51,6 +62,56 @@ export function StarfieldSky({
   const strip = useMemo(() => generateSky({ seed, width: Ws, height: Hr }), [seed, Ws, Hr])
 
   const dur = Ws / speed
+
+  // ── 星座のスロット ──
+  const activeSeason: Season = season ?? currentSeason()
+  const pool = useMemo(() => seasonPool(activeSeason), [activeSeason])
+
+  /*
+   * 縦位置の制約。回転枠の高さ Hr は画面より大きいので、0〜Hr の一様乱数で
+   * 決めると大半の星座が一度も画面に現れない。スロットが画面中央を通る瞬間に
+   * 見えている縦幅は Hc / cos θ なので、その帯の割合に収める。
+   */
+  const bandRatio = (box.h / cos) / Hr
+
+  const [slots, setSlots] = useState<SlotState[]>([])
+
+  // プールが変わったら全スロットを作り直す。
+  // bandRatio は依存に入れない。リサイズのたびに星座が総入れ替えになるため
+  useEffect(() => {
+    const next: SlotState[] = []
+    const used = new Set<string>()
+    for (let i = 0; i < SLOT_COUNT; i++) {
+      const s = makeSlot(pool, used, bandRatio)
+      used.add(s.constellation.id)
+      if (s.constellation.group) used.add(s.constellation.group)
+      next.push(s)
+    }
+    setSlots(next)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pool])
+
+  const travel = Wr + SLOT_MARGIN * 2
+  const slotDur = travel / speed
+
+  const handleIteration = useCallback(
+    (index: number, e: AnimationEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return
+      if (e.animationName !== 'sky-slot-travel') return
+      setSlots((prev) => {
+        const used = new Set<string>()
+        prev.forEach((s, k) => {
+          if (k === index) return
+          used.add(s.constellation.id)
+          if (s.constellation.group) used.add(s.constellation.group)
+        })
+        const next = [...prev]
+        next[index] = makeSlot(pool, used, bandRatio)
+        return next
+      })
+    },
+    [pool, bandRatio],
+  )
 
   return (
     <div ref={hostRef} className={`sky ${className}`.trim()} aria-hidden="true">
@@ -108,6 +169,56 @@ export function StarfieldSky({
             </svg>
           ))}
         </div>
+
+        {slots.map((s, i) => {
+          const c = s.constellation
+          const pts = c.stars.map((st) => ({
+            px: st.x * s.size,
+            py: st.y * s.size,
+            mag: st.mag,
+          }))
+          const d = c.lines
+            .map(([a, b]) =>
+              `M${pts[a].px.toFixed(1)} ${pts[a].py.toFixed(1)} L${pts[b].px.toFixed(1)} ${pts[b].py.toFixed(1)}`,
+            )
+            .join(' ')
+
+          return (
+            <div
+              key={s.key}
+              className="sky__slot"
+              onAnimationIteration={(e) => handleIteration(i, e)}
+              style={{
+                top: `${s.topRatio * 100}%`,
+                ['--travel' as string]: `${travel}px`,
+                ['--margin' as string]: `${SLOT_MARGIN}px`,
+                animationDuration: `${slotDur}s`,
+                animationDelay: `${-(i / SLOT_COUNT) * slotDur}s`,
+              } as CSSProperties}
+            >
+              <svg
+                width={s.size}
+                height={s.size}
+                style={{
+                  transform: `rotate(${angle}deg)`,
+                  transformOrigin: '50% 50%',
+                  overflow: 'visible',
+                }}
+              >
+                <path className="sky__lines" d={d} />
+                {pts.map((p, k) => (
+                  <circle
+                    key={k}
+                    cx={p.px.toFixed(1)}
+                    cy={p.py.toFixed(1)}
+                    r={Math.max(1.0, Math.min(2.0, 1.95 - 0.3 * p.mag) * 1.25).toFixed(2)}
+                    fill="var(--sky-star-bright)"
+                  />
+                ))}
+              </svg>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

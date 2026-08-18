@@ -51,10 +51,47 @@
   to   { opacity: 1; }
 }
 
+/* --- 星座（スロット） --- */
+.sky__slot {
+  position: absolute;
+  left: 0;
+  will-change: transform, opacity;
+  animation-name: sky-slot-travel, sky-slot-reveal;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes sky-slot-travel {
+  from { transform: translateX(calc(var(--margin) * -1)); }
+  to   { transform: translateX(calc(var(--travel) - var(--margin))); }
+}
+
+@keyframes sky-slot-reveal {
+  0%   { opacity: 0; }
+  30%  { opacity: 0; }
+  50%  { opacity: 1; }
+  70%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.sky__lines {
+  fill: none;
+  stroke: var(--sky-line);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
 /* --- モーション低減 --- */
 @media (prefers-reduced-motion: reduce) {
   .sky__track,
   .sky__stars circle.is-twinkle {
     animation: none !important;
+  }
+  .sky__slot {
+    animation: none !important;
+    opacity: 0.55;
+    transform: translateX(calc(var(--travel) * 0.5));
   }
 }

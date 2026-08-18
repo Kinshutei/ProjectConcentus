@@ -822,7 +822,7 @@
   right: 0;
   /* 町並みの手前から上空まで、切れ目のない1枚のもやとして敷く */
   bottom: 0;
-  height: calc(100% + 300px);
+  height: calc(100% + 150px);
   pointer-events: none;
   /* 都市の照明で下ほど明るくなった夜空 */
   background: linear-gradient(

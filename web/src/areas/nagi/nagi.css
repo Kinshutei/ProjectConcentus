@@ -204,27 +204,37 @@
   border-radius: 12px;
   overflow: hidden;
 }
+/* 金色を主役にした細身のつまみ。地は夜空へ沈む溝を一本引くだけにする */
 .nagi-root .fancy-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--navy-soft) transparent;
+  scrollbar-color: var(--spark) rgba(169, 198, 220, 0.08);
 }
 .nagi-root .fancy-scroll::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 .nagi-root .fancy-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  background: linear-gradient(rgba(169, 198, 220, 0.1), rgba(169, 198, 220, 0.1)) center / 2px 100%
+    no-repeat;
 }
 .nagi-root .fancy-scroll::-webkit-scrollbar-thumb {
-  background-color: var(--navy-soft);
+  background-color: var(--spark);
+  background-image: linear-gradient(180deg, var(--spark-soft), var(--spark));
   border-radius: 99px;
-  
   border: 3px solid transparent;
   background-clip: padding-box;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, border-width 0.2s;
 }
 .nagi-root .fancy-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: var(--spark);
+  background-image: linear-gradient(180deg, #fff1cf, var(--spark-soft));
+  border-width: 2px;
+}
+/* 端の矢印は出さない。つまみと溝だけで見せる */
+.nagi-root .fancy-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 .nagi-root .fancy-scroll::-webkit-scrollbar-corner {
   background: transparent;
@@ -480,8 +490,14 @@
   /* 左の一覧を右カラムと同じ高さに伸ばす。高さは右の中身が決める */
   display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: stretch;
 }
-.nagi-root .setlist__list {
+/* 高さの基準になる外枠。右カラムに合わせて伸び、これ以上は伸びない */
+.nagi-root .setlist__list-frame {
+  position: relative;
   min-height: 0;
+}
+.nagi-root .setlist__list {
+  position: absolute;
+  inset: 0;
   overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -869,7 +885,12 @@
 .nagi-root .setlist {
   grid-template-columns: 1fr;
 }
+/* 縦積みでは右に並ぶ相手がいないので、絶対配置をやめて高さを決め打つ */
+.nagi-root .setlist__list-frame {
+  position: static;
+}
 .nagi-root .setlist__list {
+  position: static;
   max-height: 320px;
 }
 .nagi-root .setlist__detail-head {

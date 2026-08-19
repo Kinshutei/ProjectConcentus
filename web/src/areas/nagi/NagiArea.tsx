@@ -489,19 +489,23 @@ function Setlist({ streams, db }: { streams: Stream[]; db: Db }) {
         ) : (
           <Reveal>
             <div className="setlist">
-              <div className="setlist__list fancy-scroll">
-                {streams.map((s, i) => (
-                  <button
-                    key={s.frame.frame_id}
-                    className={`setlist__item ${i === selected ? 'is-active' : ''}`}
-                    onClick={() => selectStream(i)}
-                  >
-                    <div className="setlist__item-date">
-                      {jstDate(s.frame.started_at)} ・ {s.rows.length}曲
-                    </div>
-                    <div className="setlist__item-title">{s.frame.title}</div>
-                  </button>
-                ))}
+              {/* 枠の一覧は右の曲表と同じ高さに収める。溢れたぶんは中で送る。
+                  外枠を基準にして中身を絶対配置しないと、件数だけ縦に伸びてしまう */}
+              <div className="setlist__list-frame">
+                <div className="setlist__list fancy-scroll">
+                  {streams.map((s, i) => (
+                    <button
+                      key={s.frame.frame_id}
+                      className={`setlist__item ${i === selected ? 'is-active' : ''}`}
+                      onClick={() => selectStream(i)}
+                    >
+                      <div className="setlist__item-date">
+                        {jstDate(s.frame.started_at)} ・ {s.rows.length}曲
+                      </div>
+                      <div className="setlist__item-title">{s.frame.title}</div>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="setlist__detail">

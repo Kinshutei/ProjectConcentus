@@ -1214,5 +1214,12 @@
 {"song_id":"S1233","title":"君がいて水になる","artist":"ずっと真夜中でいいのに。","lyricists":["ACAね"],"composers":["ACAね"],"arrangers":[],"released":"2018-11-14","song_tags":[],"norm_key":"君がいて水になる\u001fずっと真夜中でいいのに"},
 {"song_id":"S1234","title":"翡翠のまち","artist":"メル","lyricists":["メル"],"composers":["メル"],"arrangers":["メル"],"released":"2016-04-09","song_tags":[],"norm_key":"翡翠のまち\u001fメル"},
 {"song_id":"S1235","title":"試作品第12号","artist":"ハンバートハンバート","lyricists":["佐藤良成"],"composers":["佐藤良成"],"arrangers":[],"released":"2020-10-21","song_tags":[],"norm_key":"試作品第12号\u001fハンバトハンバト"},
-{"song_id":"S1236","title":"陽","artist":"クリープハイプ","lyricists":["尾崎世界観"],"composers":["尾崎世界観"],"arrangers":[],"released":"2017-02-22","song_tags":[],"norm_key":"陽\u001fクリプハイプ"}
+{"song_id":"S1236","title":"陽","artist":"クリープハイプ","lyricists":["尾崎世界観"],"composers":["尾崎世界観"],"arrangers":[],"released":"2017-02-22","song_tags":[],"norm_key":"陽\u001fクリプハイプ"},
+{"song_id":"S1237","title":"サマータイム","artist":"evening cinema","lyricists":["原田夏樹","鈴木まりこ"],"composers":["原田夏樹"],"arrangers":["原田夏樹","cinnamons"],"released":"2018-02-14","song_tags":[],"norm_key":"サマタイム\u001feveningcinema"},
+{"song_id":"S1238","title":"Ginger","artist":"TOMOO","lyricists":["TOMOO"],"composers":["TOMOO"],"arrangers":["mabanua"],"released":"2021-08-10","song_tags":[],"norm_key":"ginger\u001ftomoo"},
+{"song_id":"S1239","title":"真夏のダイナソー","artist":"日食なつこ","lyricists":["日食なつこ"],"composers":["日食なつこ"],"arrangers":[],"released":"2021-06-23","song_tags":[],"norm_key":"真夏のダイナソ\u001f日食なつこ"},
+{"song_id":"S1240","title":"遣ラズノ雨","artist":"アザミ","lyricists":["アザミ"],"composers":["アザミ"],"arrangers":["アザミ"],"released":"2021-05-05","song_tags":[],"norm_key":"遣ラズノ雨\u001fアザミ"},
+{"song_id":"S1241","title":"アンチポップ","artist":"アザミ","lyricists":["アザミ"],"composers":["アザミ"],"arrangers":["アザミ"],"released":"2022-04-23","song_tags":[],"norm_key":"アンチポップ\u001fアザミ"},
+{"song_id":"S1242","title":"ワールドワイドワンダー","artist":"TOKOTOKO","lyricists":["TOKOTOKO"],"composers":["TOKOTOKO"],"arrangers":["TOKOTOKO"],"released":"2021-12-18","song_tags":[],"norm_key":"ワルドワイドワンダ\u001ftokotoko"},
+{"song_id":"S1243","title":"ボイジャー","artist":"水瀬凪","lyricists":["水瀬凪"],"composers":["amazuti"],"arrangers":[],"released":"2024-08-29","song_tags":[],"norm_key":"ボイジャ\u001f水瀬凪"}
 ]

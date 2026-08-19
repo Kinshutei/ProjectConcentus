@@ -15,6 +15,8 @@
   --ink: #0c2033;
   --line: rgba(169, 198, 220, 0.18);
   --surface: rgba(18, 48, 79, 0.62);
+  /* 行や項目に触れたときの下地。夜空の上なので明色ではなく淡い青を重ねる */
+  --hover: rgba(169, 198, 220, 0.09);
 
   --footer-h: 107px;
   --header-h: 62px;
@@ -24,7 +26,8 @@
   
   --rank-card-h: 84px;
   
-  --setlist-panel-h: 552px;
+  /* 7曲ぶんの表がちょうど収まる高さ。行を詰めたぶん短くしてある */
+  --setlist-panel-h: 452px;
 
   --sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
   /* ヒーローと見出しに使う装飾書体 */
@@ -474,10 +477,11 @@
   color: var(--navy-mute);
 }
 .nagi-root .setlist {
-  display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: start;
+  /* 左の一覧を右カラムと同じ高さに伸ばす。高さは右の中身が決める */
+  display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: stretch;
 }
 .nagi-root .setlist__list {
-  max-height: var(--setlist-panel-h);
+  min-height: 0;
   overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -501,7 +505,7 @@
   border-bottom: none;
 }
 .nagi-root .setlist__item:hover {
-  background: #f7f9fc;
+  background: var(--hover);
 }
 .nagi-root .setlist__item.is-active {
   border-left-color: var(--spark); background: rgba(232, 85, 47, 0.06);
@@ -532,8 +536,9 @@
   margin: 0 0 8px; font-size: 17px; font-weight: 800; line-height: 1.5;
 }
 .nagi-root .songs-wrap {
-  height: var(--setlist-panel-h);
-  overflow: hidden;
+  /* ページを送っても高さが動かないよう下限を決める。
+     曲名が折り返して伸びたときは切らずに広げる */
+  min-height: var(--setlist-panel-h);
 }
 .nagi-root .songs {
   width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed;
@@ -548,10 +553,10 @@
   font-weight: 700;
 }
 .nagi-root .songs td {
-  padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top;
+  padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top;
 }
 .nagi-root .songs tr:hover td {
-  background: #f7f9fc;
+  background: var(--hover);
 }
 .nagi-root .songs__no {
   width: 52px; color: var(--navy-mute); font-variant-numeric: tabular-nums;
@@ -569,10 +574,12 @@
   width: 112px; text-align: center;
 }
 .nagi-root .songs__play {
+  /* 時刻の下に積むと行が高くなるので、横に並べる */
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 6px;
+  justify-content: flex-end;
+  gap: 8px;
   color: var(--spark);
   font-size: 12px;
   font-weight: 700;
@@ -580,10 +587,11 @@
   white-space: nowrap;
 }
 .nagi-root .songs__play-btn {
-  width: 26px;
-  height: 26px;
+  width: 18px;
+  height: 18px;
+  flex: none;
   border-radius: 50%;
-  border: 1.4px solid var(--spark);
+  border: 1.2px solid var(--spark);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -592,9 +600,9 @@
 .nagi-root .songs__play-btn::after {
   content: '';
   border-style: solid;
-  border-width: 5px 0 5px 8px;
+  border-width: 3.5px 0 3.5px 5.5px;
   border-color: transparent transparent transparent var(--spark);
-  margin-left: 2px;
+  margin-left: 1.5px;
   transition: border-color 0.18s;
 }
 .nagi-root .songs__play:hover .songs__play-btn {
@@ -886,7 +894,7 @@
   display: block;
 }
 .nagi-root .songs-wrap {
-  height: auto;
+  min-height: 0;
 }
 .nagi-root .hero__lead span {
   display: block;

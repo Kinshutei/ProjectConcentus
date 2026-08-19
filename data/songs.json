@@ -1188,5 +1188,6 @@
 {"song_id":"S0003","title":"Stellar Stellar","artist":"星街すいせい","lyricists":["星街すいせい"],"composers":["TAKU INOUE"],"arrangers":["TAKU INOUE"],"released":"2021-09-29","song_tags":[],"norm_key":"stellarstellar\u001f星街すいせい"},
 {"song_id":"S0002","title":"秒針を噛む","artist":"ずっと真夜中でいいのに。","lyricists":["ACAね"],"composers":["ACAね","ぬゆり"],"arrangers":["ぬゆり"],"released":"2018-08-30","song_tags":[],"norm_key":"秒針を噛む\u001fずっと真夜中でいいのに"},
 {"song_id":"S0001","title":"ラプンツェル","artist":"n-buna","lyricists":["n-buna"],"composers":["n-buna"],"arrangers":["n-buna"],"released":"2016-07-06","song_tags":[],"norm_key":"ラプンツェル\u001fnbuna"},
-{"song_id":"S1210","title":"トイレの神様","artist":"植村花菜","lyricists":["植村花菜","山田ひろし"],"composers":["植村花菜"],"arrangers":["寺岡呼人","篠崎正嗣"],"released":"2010-11-24","song_tags":[],"norm_key":"トイレの神様\u001f植村花菜"}
+{"song_id":"S1210","title":"トイレの神様","artist":"植村花菜","lyricists":["植村花菜","山田ひろし"],"composers":["植村花菜"],"arrangers":["寺岡呼人","篠崎正嗣"],"released":"2010-11-24","song_tags":[],"norm_key":"トイレの神様\u001f植村花菜"},
+{"song_id":"S1211","title":"カフェオーレのうた","artist":"きっかレン","lyricists":["松本巌"],"composers":["松本巌","原田博行"],"arrangers":[],"released":"2013-08-07","song_tags":[],"norm_key":"カフェオレのうた\u001fきっかレン"}
 ]

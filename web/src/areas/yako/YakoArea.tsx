@@ -6,7 +6,7 @@ import { Reveal, SectionHead, useCountUp, useInView } from '../../components/Rev
 import AboutText from '../../components/AboutText'
 import { useSmoothScroll } from '../../components/useSmoothScroll'
 import { CityscapeFooter, VIEW_H } from '../../components/CityscapeFooter'
-import { ShootingStars } from '../../components/ShootingStars'
+import { ShootingStars } from './meteors'
 import './yako.css'
 
 const ASSET = (name: string) => `${import.meta.env.BASE_URL}yako/${name}`

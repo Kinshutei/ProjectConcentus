@@ -7,7 +7,7 @@ import AboutText from '../../components/AboutText'
 import { useSmoothScroll } from '../../components/useSmoothScroll'
 import { NagiCityscape, VIEW_H } from './cityscape'
 import { StarfieldSky } from './starfield'
-import { ShootingStars } from '../../components/ShootingStars'
+import { ShootingStars } from './meteors'
 import './nagi.css'
 
 const ASSET = (name: string) => `${import.meta.env.BASE_URL}nagi/${name}`

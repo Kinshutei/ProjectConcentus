@@ -631,6 +631,10 @@ type CardItem = {
   sub?: string
   value: number
   unit: string
+  /** 全体に占める割合。省略すると出さない */
+  share?: number
+  /** 上位の常連として目立たせるか */
+  core?: boolean
 }
 
 /** キーごとに楽曲をまとめ、曲数の多い順に返す。同数のときは第2キーで安定させる */
@@ -667,7 +671,13 @@ function Cards({ items }: { items: CardItem[] }) {
     <div className="rank-grid">
       {items.map((item) => (
         <div
-          className={`rank-card ${item.rank !== undefined && item.rank <= 3 ? 'rank-card--top' : ''}`}
+          className={[
+            'rank-card',
+            item.rank !== undefined && item.rank <= 3 ? 'rank-card--top' : '',
+            item.core ? 'rank-card--core' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           key={item.key}
         >
           {item.rank !== undefined && <span className="rank-card__no">{item.rank}</span>}
@@ -678,6 +688,9 @@ function Cards({ items }: { items: CardItem[] }) {
           <div className="rank-card__value">
             {item.value}
             <span>{item.unit}</span>
+            {item.share !== undefined && (
+              <span className="rank-card__share">（{item.share.toFixed(1)}%）</span>
+            )}
           </div>
         </div>
       ))}
@@ -747,18 +760,28 @@ function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
     [stats],
   )
 
-  const artistDist = useMemo<CardItem[]>(
-    () =>
-      groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja')).map((a, i) => ({
+  const artistDist = useMemo<CardItem[]>(() => {
+    const groups = groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja'))
+    // 分母はアーティストの判っている曲だけ。割合の合計が100%になるようにする
+    const total = groups.reduce((n, g) => n + g.songs.length, 0)
+    // 上から曲数を足していき、半数に届くまでを常連とみなす。
+    // 届かせた1組も含める。同数が続く位置に境目が来ると並び順で分かれる
+    let stacked = 0
+    return groups.map((a, i) => {
+      const core = stacked < total / 2
+      stacked += a.songs.length
+      return {
         key: a.label,
         rank: i + 1,
         title: a.label,
         sub: summarize(a.songs),
         value: a.songs.length,
         unit: '曲',
-      })),
-    [stats],
-  )
+        share: total ? (a.songs.length / total) * 100 : 0,
+        core,
+      }
+    })
+  }, [stats])
 
   const items =
     tab === 'list' ? songList : tab === 'ranking' ? ranking : tab === 'year' ? yearDist : artistDist

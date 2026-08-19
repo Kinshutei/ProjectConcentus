@@ -733,6 +733,14 @@
   font-weight: 700;
   color: var(--navy-mute);
 }
+.nagi-root .rank-card__share {
+  margin-left: 2px;
+}
+/* 上から数えて半数ぶんを占めるアーティスト。薄い黄で下地を敷く */
+.nagi-root .rank-card--core {
+  background: linear-gradient(rgba(242, 196, 99, 0.1), rgba(242, 196, 99, 0.1)), var(--surface);
+  border-color: rgba(242, 196, 99, 0.3);
+}
 .nagi-root .pager {
   display: flex;
   align-items: center;

@@ -1208,5 +1208,7 @@
 {"song_id":"S1227","title":"流浪の詩","artist":"中島みゆき","lyricists":["中島みゆき"],"composers":["中島みゆき"],"arrangers":["エジソン"],"released":"1976-10-25","song_tags":[],"norm_key":"流浪の詩\u001f中島みゆき"},
 {"song_id":"S1228","title":"犬のおまわりさん","artist":"童謡","lyricists":["佐藤義美"],"composers":["大中恩"],"arrangers":[],"released":"1960-10-1","song_tags":[],"norm_key":"犬のおまわりさん\u001f童謡"},
 {"song_id":"S1229","title":"大きな古時計","artist":"ヘンリー・クレイ・ワーク","lyricists":["ヘンリー・クレイ・ワーク"],"composers":["ヘンリー・クレイ・ワーク"],"arrangers":[],"released":"1876-01-01","song_tags":[],"norm_key":"大きな古時計\u001fヘンリクレイワク"},
-{"song_id":"S1230","title":"ふるさと","artist":"唱歌","lyricists":["高野辰之"],"composers":["岡野貞一"],"arrangers":[],"released":"1914-01-01","song_tags":[],"norm_key":"ふるさと\u001f唱歌"}
+{"song_id":"S1230","title":"ふるさと","artist":"唱歌","lyricists":["高野辰之"],"composers":["岡野貞一"],"arrangers":[],"released":"1914-01-01","song_tags":[],"norm_key":"ふるさと\u001f唱歌"},
+{"song_id":"S1231","title":"打上花火","artist":"DAOKO×米津玄師","lyricists":["米津玄師"],"composers":["米津玄師"],"arrangers":["米津玄師","田中隼人"],"released":"2017-08-16","song_tags":[],"norm_key":"打上花火\u001fdaoko×米津玄師"},
+{"song_id":"S1232","title":"Fire◎Flower","artist":"halyosy","lyricists":["halyosy"],"composers":["halyosy"],"arrangers":["halyos"],"released":"2008-08-02","song_tags":[],"norm_key":"fire◎flower\u001fhalyosy"}
 ]

@@ -625,13 +625,30 @@ function Setlist({ streams, db }: { streams: Stream[]; db: Db }) {
 
 /* ─────────────────────────────────────────── Repertoire */
 
-type Tab = 'list' | 'ranking' | 'year' | 'artist'
+// 外側のタブで「何を数えるか」を選び、右のボタンで「どう束ねるか」を選ぶ
+type Tab = 'list' | 'ranking' | 'count'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'list', label: '楽曲一覧' },
   { id: 'ranking', label: '歌唱回数' },
-  { id: 'year', label: 'リリース年' },
+  { id: 'count', label: '曲数' },
+]
+
+/** 歌唱回数タブの束ね方 */
+type RankBy = 'song' | 'artist' | 'year'
+
+const RANK_BYS: { id: RankBy; label: string }[] = [
+  { id: 'song', label: '楽曲' },
   { id: 'artist', label: '原曲アーティスト' },
+  { id: 'year', label: 'リリース年' },
+]
+
+/** 曲数タブの束ね方。楽曲で束ねても常に1曲なので、この2つだけ */
+type CountBy = 'artist' | 'year'
+
+const COUNT_BYS: { id: CountBy; label: string }[] = [
+  { id: 'artist', label: '原曲アーティスト' },
+  { id: 'year', label: 'リリース年' },
 ]
 
 const REP_PER_PAGE = 10
@@ -657,9 +674,9 @@ type CardItem = {
  * 上から曲数を足していき、半数に届くまでを常連とみなす。届かせた1組も含める。
  * 同数が続く位置に境目が来ると、並び順で分かれる。
  */
-function withShare(
-  groups: { label: string; songs: string[] }[],
-): { label: string; songs: string[]; share: number; core: boolean }[] {
+function withShare<T extends { songs: string[] }>(
+  groups: T[],
+): (T & { share: number; core: boolean })[] {
   const total = groups.reduce((n, g) => n + g.songs.length, 0)
   let stacked = 0
   return groups.map((g) => {
@@ -669,23 +686,37 @@ function withShare(
   })
 }
 
+/** plays はそのまとまりを歌った延べ回数。songs は曲の種類 */
+type Group = { label: string; songs: string[]; plays: number }
+
 /** キーごとに楽曲をまとめ、曲数の多い順に返す。同数のときは第2キーで安定させる */
 function groupSongs(
   stats: { song: Song; count: number }[],
   key: (s: Song) => string,
   tieBreak: (a: string, b: string) => number,
-): { label: string; songs: string[] }[] {
-  const map = new Map<string, string[]>()
+): Group[] {
+  const map = new Map<string, Group>()
   for (const s of stats) {
     const k = key(s.song)
     if (!k) continue
-    const arr = map.get(k)
-    if (arr) arr.push(s.song.title)
-    else map.set(k, [s.song.title])
+    const g = map.get(k)
+    if (g) {
+      g.songs.push(s.song.title)
+      g.plays += s.count
+    } else {
+      map.set(k, { label: k, songs: [s.song.title], plays: s.count })
+    }
   }
-  return [...map.entries()]
-    .sort((a, b) => b[1].length - a[1].length || tieBreak(a[0], b[0]))
-    .map(([label, songs]) => ({ label, songs }))
+  return [...map.values()].sort(
+    (a, b) => b.songs.length - a.songs.length || tieBreak(a.label, b.label),
+  )
+}
+
+/** 歌った回数の多い順に並べ替える。同数のときは曲数の多いほうを先に */
+function byPlays(groups: Group[], tieBreak: (a: string, b: string) => number): Group[] {
+  return [...groups].sort(
+    (a, b) => b.plays - a.plays || b.songs.length - a.songs.length || tieBreak(a.label, b.label),
+  )
 }
 
 /** カード2行目に載せる曲名。多いときは先頭3曲＋残数 */
@@ -741,6 +772,9 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
   const [page, setPage] = useState(1)
   // 楽曲一覧は歌唱回数のタブと役割を分ける。歌った日の新しい順が既定
   const [order, setOrder] = useState<'new' | 'old'>('new')
+  // 歌唱回数は同じ「回数」を、楽曲・原曲アーティスト・リリース年のどれで束ねるか選ぶ
+  const [rankBy, setRankBy] = useState<RankBy>('song')
+  const [countBy, setCountBy] = useState<CountBy>('artist')
 
   const changeTab = (t: Tab) => {
     setTab(t)
@@ -752,6 +786,14 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
   }
   const changeOrder = (o: 'new' | 'old') => {
     setOrder(o)
+    setPage(1)
+  }
+  const changeRankBy = (b: RankBy) => {
+    setRankBy(b)
+    setPage(1)
+  }
+  const changeCountBy = (b: CountBy) => {
+    setCountBy(b)
     setPage(1)
   }
 
@@ -785,57 +827,61 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
     }))
   }, [stats, query, order])
 
-  const ranking = useMemo<CardItem[]>(
-    () =>
-      stats.map((s, i) => ({
+  // 歌唱回数。数えるものは常に延べ回数で、束ね方だけを切り替える
+  const ranking = useMemo<CardItem[]>(() => {
+    if (rankBy === 'song') {
+      return stats.map((s, i) => ({
         key: s.song.song_id,
         rank: i + 1,
         title: s.song.title,
         sub: s.song.artist,
         value: s.count,
         unit: '回',
-      })),
-    [stats],
-  )
+      }))
+    }
+    const groups =
+      rankBy === 'artist'
+        ? byPlays(
+            groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja')),
+            (a, b) => a.localeCompare(b, 'ja'),
+          )
+        : byPlays(
+            groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a)),
+            (a, b) => b.localeCompare(a),
+          )
+    return groups.map((g, i) => ({
+      key: g.label,
+      rank: i + 1,
+      title: rankBy === 'year' ? `${g.label}年` : g.label,
+      titleNote: `${g.songs.length}曲`,
+      sub: summarize(g.songs),
+      value: g.plays,
+      unit: '回',
+    }))
+  }, [stats, rankBy])
 
-  const yearDist = useMemo<CardItem[]>(
-    // 曲数の多い年から並べる。同数なら新しい年を先に
-    () =>
-      withShare(
-        groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a)),
-      ).map((y, i) => ({
-        key: y.label,
-        rank: i + 1,
-        title: `${y.label}年`,
-        sub: summarize(y.songs),
-        value: y.songs.length,
-        unit: '曲',
-        share: y.share,
-        core: y.core,
-      })),
-    [stats],
-  )
+  // 曲数。数えるものは常に曲の種類で、束ね方だけを切り替える。
+  // 分母は束ねる値の判っている曲だけなので、割合の合計は100%になる
+  const counting = useMemo<CardItem[]>(() => {
+    const groups =
+      countBy === 'artist'
+        ? groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja'))
+        : // 曲数の多い年から並べる。同数なら新しい年を先に
+          groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a))
+    return withShare(groups).map((g, i) => ({
+      key: g.label,
+      rank: i + 1,
+      title: countBy === 'year' ? `${g.label}年` : g.label,
+      titleNote: `${g.plays}回`,
+      sub: summarize(g.songs),
+      value: g.songs.length,
+      unit: '曲',
+      share: g.share,
+      core: g.core,
+    }))
+  }, [stats, countBy])
 
-  const artistDist = useMemo<CardItem[]>(
-    // 分母はアーティストの判っている曲だけ。割合の合計が100%になる
-    () =>
-      withShare(groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja'))).map(
-        (a, i) => ({
-          key: a.label,
-          rank: i + 1,
-          title: a.label,
-          sub: summarize(a.songs),
-          value: a.songs.length,
-          unit: '曲',
-          share: a.share,
-          core: a.core,
-        }),
-      ),
-    [stats],
-  )
-
-  const items =
-    tab === 'list' ? songList : tab === 'ranking' ? ranking : tab === 'year' ? yearDist : artistDist
+  const items = tab === 'list' ? songList : tab === 'ranking' ? ranking : counting
 
   const totalPages = Math.max(1, Math.ceil(items.length / REP_PER_PAGE))
   const safePage = Math.min(page, totalPages)
@@ -865,6 +911,32 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
                   </button>
                 ))}
               </div>
+              {tab === 'ranking' && (
+                <div className="rep__order">
+                  {RANK_BYS.map((b) => (
+                    <button
+                      key={b.id}
+                      className={`rep__order-btn ${rankBy === b.id ? 'is-active' : ''}`}
+                      onClick={() => changeRankBy(b.id)}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {tab === 'count' && (
+                <div className="rep__order">
+                  {COUNT_BYS.map((b) => (
+                    <button
+                      key={b.id}
+                      className={`rep__order-btn ${countBy === b.id ? 'is-active' : ''}`}
+                      onClick={() => changeCountBy(b.id)}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              )}
               {tab === 'list' && (
                 <>
                   {/* 並び順は2つだけ。畳まずそのまま出す */}

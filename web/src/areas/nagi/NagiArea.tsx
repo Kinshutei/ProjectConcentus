@@ -641,6 +641,8 @@ type CardItem = {
   /** 省略すると順位バッジを出さない */
   rank?: number
   title: string
+  /** 曲名の右へ添える一言。省略すると出さない */
+  titleNote?: string
   sub?: string
   value: number
   unit: string
@@ -712,7 +714,12 @@ function Cards({ items }: { items: CardItem[] }) {
         >
           {item.rank !== undefined && <span className="rank-card__no">{item.rank}</span>}
           <div className="rank-card__body">
-            <div className="rank-card__title">{item.title}</div>
+            <div className="rank-card__title">
+              {item.title}
+              {item.titleNote && (
+                <span className="rank-card__note">{item.titleNote}</span>
+              )}
+            </div>
             {item.sub && <div className="rank-card__sub">{item.sub}</div>}
           </div>
           <div className="rank-card__value">
@@ -768,11 +775,9 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
     return sorted.map((s) => ({
       key: s.song.song_id,
       title: s.song.title,
-      sub: [
-        s.lastAt ? `${jstDate(s.lastAt)} に歌唱` : '歌唱日不明',
-        s.song.artist,
-        s.song.released && `${s.song.released.slice(0, 4)}年`,
-      ]
+      // 並びの基準になる日。曲名のすぐ右に出す
+      titleNote: s.lastAt ? `配信日：${jstDate(s.lastAt)}` : '配信日：不明',
+      sub: [s.song.artist, s.song.released && `${s.song.released.slice(0, 4)}年`]
         .filter(Boolean)
         .join(' ・ '),
       value: s.count,

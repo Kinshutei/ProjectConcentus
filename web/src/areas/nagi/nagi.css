@@ -641,9 +641,36 @@
 .nagi-root .rep__bar {
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;
 }
+/* 並び順の切り替え。検索の左に置き、右端は検索のままにする */
+.nagi-root .rep__order {
+  display: flex;
+  margin-left: auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.nagi-root .rep__order-btn {
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-mute);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.nagi-root .rep__order-btn:hover {
+  color: var(--navy);
+}
+.nagi-root .rep__order-btn.is-active {
+  background: var(--spark);
+  color: var(--ink);
+}
 .nagi-root .rep__search {
   flex: 0 1 300px;
-  margin-left: auto;
+  margin-left: 10px;
   
   padding: 8px 16px;
   font-family: inherit;
@@ -933,6 +960,9 @@
 }
 .nagi-root .rep__search {
   flex: 1 1 100%; margin-left: 0;
+}
+.nagi-root .rep__order {
+  margin-left: 0;
 }
 .nagi-root .song-card {
   border: 1px solid var(--line);

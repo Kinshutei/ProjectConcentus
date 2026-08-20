@@ -33,6 +33,8 @@ const FOOTER_H = Math.round(VIEW_H * CITY_SCALE)
 
 type Row = { no: number; song: Song | undefined; perf: Performance; isFirst: boolean }
 type Stream = { frame: Frame; rows: Row[] }
+/** lastAt は直近に歌った枠の started_at。未設定の枠しか無ければ空 */
+type SongStat = { song: Song; count: number; lastAt: string }
 
 export default function NagiArea({
   db,
@@ -78,15 +80,22 @@ export default function NagiArea({
   }, [db, frames, perfs])
 
   const stats = useMemo(() => {
+    const at = new Map(frames.map((f) => [f.frame_id, f.started_at ?? '']))
     const counts = new Map<string, number>()
-    for (const p of perfs) counts.set(p.song_id, (counts.get(p.song_id) ?? 0) + 1)
-    const list: { song: Song; count: number }[] = []
+    // 直近に歌った日。楽曲一覧を新しい順に並べるために持つ
+    const last = new Map<string, string>()
+    for (const p of perfs) {
+      counts.set(p.song_id, (counts.get(p.song_id) ?? 0) + 1)
+      const t = at.get(p.frame_id) ?? ''
+      if (t > (last.get(p.song_id) ?? '')) last.set(p.song_id, t)
+    }
+    const list: SongStat[] = []
     for (const [id, count] of counts) {
       const song = db.songById.get(id)
-      if (song) list.push({ song, count })
+      if (song) list.push({ song, count, lastAt: last.get(id) ?? '' })
     }
     return list.sort((a, b) => b.count - a.count || a.song.title.localeCompare(b.song.title, 'ja'))
-  }, [perfs, db])
+  }, [perfs, frames, db])
 
   const artistCount = new Set(
     perfs
@@ -641,6 +650,23 @@ type CardItem = {
   core?: boolean
 }
 
+/**
+ * まとめたグループに、全体に占める割合と「上から半数ぶん」の印を付ける。
+ * 上から曲数を足していき、半数に届くまでを常連とみなす。届かせた1組も含める。
+ * 同数が続く位置に境目が来ると、並び順で分かれる。
+ */
+function withShare(
+  groups: { label: string; songs: string[] }[],
+): { label: string; songs: string[]; share: number; core: boolean }[] {
+  const total = groups.reduce((n, g) => n + g.songs.length, 0)
+  let stacked = 0
+  return groups.map((g) => {
+    const core = stacked < total / 2
+    stacked += g.songs.length
+    return { ...g, share: total ? (g.songs.length / total) * 100 : 0, core }
+  })
+}
+
 /** キーごとに楽曲をまとめ、曲数の多い順に返す。同数のときは第2キーで安定させる */
 function groupSongs(
   stats: { song: Song; count: number }[],
@@ -702,10 +728,12 @@ function Cards({ items }: { items: CardItem[] }) {
   )
 }
 
-function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
+function Repertoire({ stats }: { stats: SongStat[] }) {
   const [tab, setTab] = useState<Tab>('list')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
+  // 楽曲一覧は歌唱回数のタブと役割を分ける。歌った日の新しい順が既定
+  const [order, setOrder] = useState<'new' | 'old'>('new')
 
   const changeTab = (t: Tab) => {
     setTab(t)
@@ -713,6 +741,10 @@ function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
   }
   const changeQuery = (q: string) => {
     setQuery(q)
+    setPage(1)
+  }
+  const changeOrder = (o: 'new' | 'old') => {
+    setOrder(o)
     setPage(1)
   }
 
@@ -724,16 +756,29 @@ function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
             s.song.title.toLowerCase().includes(q) || s.song.artist.toLowerCase().includes(q),
         )
       : stats
-    return rows.map((s) => ({
+    // 歌った日が判らない曲は、どちらの向きでも最後に置く
+    const dir = order === 'new' ? -1 : 1
+    const sorted = [...rows].sort((a, b) => {
+      if (!a.lastAt !== !b.lastAt) return a.lastAt ? -1 : 1
+      return (
+        a.lastAt.localeCompare(b.lastAt) * dir ||
+        a.song.title.localeCompare(b.song.title, 'ja')
+      )
+    })
+    return sorted.map((s) => ({
       key: s.song.song_id,
       title: s.song.title,
-      sub: [s.song.artist, s.song.released && `${s.song.released.slice(0, 4)}年`]
+      sub: [
+        s.lastAt ? `${jstDate(s.lastAt)} に歌唱` : '歌唱日不明',
+        s.song.artist,
+        s.song.released && `${s.song.released.slice(0, 4)}年`,
+      ]
         .filter(Boolean)
         .join(' ・ '),
       value: s.count,
       unit: '回',
     }))
-  }, [stats, query])
+  }, [stats, query, order])
 
   const ranking = useMemo<CardItem[]>(
     () =>
@@ -751,41 +796,38 @@ function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
   const yearDist = useMemo<CardItem[]>(
     // 曲数の多い年から並べる。同数なら新しい年を先に
     () =>
-      groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a)).map(
-        (y, i) => ({
-          key: y.label,
+      withShare(
+        groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a)),
+      ).map((y, i) => ({
+        key: y.label,
+        rank: i + 1,
+        title: `${y.label}年`,
+        sub: summarize(y.songs),
+        value: y.songs.length,
+        unit: '曲',
+        share: y.share,
+        core: y.core,
+      })),
+    [stats],
+  )
+
+  const artistDist = useMemo<CardItem[]>(
+    // 分母はアーティストの判っている曲だけ。割合の合計が100%になる
+    () =>
+      withShare(groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja'))).map(
+        (a, i) => ({
+          key: a.label,
           rank: i + 1,
-          title: `${y.label}年`,
-          sub: summarize(y.songs),
-          value: y.songs.length,
+          title: a.label,
+          sub: summarize(a.songs),
+          value: a.songs.length,
           unit: '曲',
+          share: a.share,
+          core: a.core,
         }),
       ),
     [stats],
   )
-
-  const artistDist = useMemo<CardItem[]>(() => {
-    const groups = groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja'))
-    // 分母はアーティストの判っている曲だけ。割合の合計が100%になるようにする
-    const total = groups.reduce((n, g) => n + g.songs.length, 0)
-    // 上から曲数を足していき、半数に届くまでを常連とみなす。
-    // 届かせた1組も含める。同数が続く位置に境目が来ると並び順で分かれる
-    let stacked = 0
-    return groups.map((a, i) => {
-      const core = stacked < total / 2
-      stacked += a.songs.length
-      return {
-        key: a.label,
-        rank: i + 1,
-        title: a.label,
-        sub: summarize(a.songs),
-        value: a.songs.length,
-        unit: '曲',
-        share: total ? (a.songs.length / total) * 100 : 0,
-        core,
-      }
-    })
-  }, [stats])
 
   const items =
     tab === 'list' ? songList : tab === 'ranking' ? ranking : tab === 'year' ? yearDist : artistDist
@@ -819,13 +861,32 @@ function Repertoire({ stats }: { stats: { song: Song; count: number }[] }) {
                 ))}
               </div>
               {tab === 'list' && (
-                <input
-                  className="rep__search"
-                  type="search"
-                  placeholder="楽曲名・原曲アーティストで検索"
-                  value={query}
-                  onChange={(e) => changeQuery(e.target.value)}
-                />
+                <>
+                  {/* 並び順は2つだけ。畳まずそのまま出す */}
+                  <div className="rep__order">
+                    {(
+                      [
+                        { id: 'new', label: '新しい順' },
+                        { id: 'old', label: '古い順' },
+                      ] as const
+                    ).map((o) => (
+                      <button
+                        key={o.id}
+                        className={`rep__order-btn ${order === o.id ? 'is-active' : ''}`}
+                        onClick={() => changeOrder(o.id)}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    className="rep__search"
+                    type="search"
+                    placeholder="楽曲名・原曲アーティストで検索"
+                    value={query}
+                    onChange={(e) => changeQuery(e.target.value)}
+                  />
+                </>
               )}
             </div>
 

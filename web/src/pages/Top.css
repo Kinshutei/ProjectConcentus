@@ -15,10 +15,15 @@
   padding-top: var(--top-header-h);
   color: var(--text);
   background-color: var(--bg);
-  /* 夜紺火花DBと同じ点。間隔だけ5倍にして疎にする */
-  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
-  background-size: 70px 70px;
+  /* 70px 四方のタイルの中央に十字を1つ描く。点より少し大きい。
+     色を CSS 変数で渡せないので、--dot と同じ値を直に書いている */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Cpath d='M35 30.5v9M30.5 35h9' stroke='%2316203a' stroke-opacity='0.16' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
   background-attachment: fixed;
+}
+
+/* トップは中身を画面幅いっぱいに使う。左右の余白は端に触れないぶんだけ残す */
+.top .wrap {
+  max-width: none;
 }
 
 /* スクロールしても残す。下の点や中身が透けないよう地は白で塗る */
@@ -64,38 +69,6 @@
 
 .top-header__link:hover {
   opacity: 0.55;
-}
-
-.top-hero {
-  padding: 84px 0 56px;
-  border-bottom: 1px solid var(--border);
-}
-
-.wordmark {
-  margin: 0;
-  font-size: clamp(40px, 9vw, 78px);
-  line-height: 0.92;
-  letter-spacing: 0.02em;
-  font-weight: 700;
-}
-
-.wordmark span {
-  display: block;
-}
-
-.wordmark span:nth-child(2) {
-  padding-left: 0.55em;
-}
-
-.wordmark span:nth-child(3) {
-  padding-left: 1.1em;
-  color: var(--muted);
-  font-weight: 400;
-}
-
-.top-lead {
-  margin: 28px 0 0;
-  color: var(--muted);
 }
 
 .singer-grid {

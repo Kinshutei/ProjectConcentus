@@ -19,19 +19,6 @@ export default function Top({ db }: { db: Db }) {
         </div>
       </div>
 
-      <header className="top-hero">
-        <div className="wrap">
-          <h1 className="wordmark">
-            <span>uta-</span>
-            <span>waku</span>
-            <span>archive</span>
-          </h1>
-          <p className="top-lead">
-            VSingerの歌枠を記録する、非公式ファンメイドのアーカイブです。
-          </p>
-        </div>
-      </header>
-
       <main className="wrap">
         <ul className="singer-grid">
           {db.singers.map((s) => (

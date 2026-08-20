@@ -1,3 +1,71 @@
+/* トップだけ白地にする。配色は .top の中で閉じるので、
+   個別ページ（.nagi-root など）や body には影響しない */
+.top {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --border: rgba(22, 32, 58, 0.12);
+  --text: #16203a;
+  --muted: #6b7896;
+  --accent: #3a4767;
+  --dot: rgba(22, 32, 58, 0.13);
+  --top-header-h: 70px;
+
+  min-height: 100vh;
+  /* ヘッダーを浮かせたぶん、中身を下げる */
+  padding-top: var(--top-header-h);
+  color: var(--text);
+  background-color: var(--bg);
+  /* 夜紺火花DBと同じ点。間隔だけ5倍にして疎にする */
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: 70px 70px;
+  background-attachment: fixed;
+}
+
+/* スクロールしても残す。下の点や中身が透けないよう地は白で塗る */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--top-header-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.top-header__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* 白地に黒。サイト名も導線も同じ濃さで置く */
+.top-header__name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #000;
+}
+
+.top-header__nav {
+  display: flex;
+  gap: 24px;
+}
+
+.top-header__link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.top-header__link:hover {
+  opacity: 0.55;
+}
+
 .top-hero {
   padding: 84px 0 56px;
   border-bottom: 1px solid var(--border);

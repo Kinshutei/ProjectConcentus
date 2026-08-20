@@ -8,6 +8,17 @@ export default function Top({ db }: { db: Db }) {
 
   return (
     <div className="top">
+      {/* 更新履歴と About me のページはまだ無い。デザインが決まるまで飛び先は付けない */}
+      <div className="top-header">
+        <div className="wrap top-header__inner">
+          <span className="top-header__name">uta-waku Archive</span>
+          <nav className="top-header__nav">
+            <span className="top-header__link">更新履歴</span>
+            <span className="top-header__link">About me</span>
+          </nav>
+        </div>
+      </div>
+
       <header className="top-hero">
         <div className="wrap">
           <h1 className="wordmark">

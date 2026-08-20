@@ -219,10 +219,13 @@
   min-height: var(--top-footer-h);
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
   padding-top: 8px;
   padding-bottom: 8px;
+  /* 折り返したときも行ごとに中央へ揃える */
+  text-align: center;
 }
 
 .top-foot__sep {

@@ -9,10 +9,12 @@
   --accent: #3a4767;
   --dot: rgba(22, 32, 58, 0.13);
   --top-header-h: 70px;
+  --top-footer-h: 50px;
 
   min-height: 100vh;
-  /* ヘッダーを浮かせたぶん、中身を下げる */
+  /* ヘッダーとフッターを浮かせたぶん、中身の上下を空ける */
   padding-top: var(--top-header-h);
+  padding-bottom: var(--top-footer-h);
   color: var(--text);
   background-color: var(--bg);
   /* 70px 四方のタイルの中央に十字を1つ描く。点より少し大きい。
@@ -94,6 +96,11 @@
 
 /* 狭いと中央寄せでは左右にぶつかる。流れの中へ戻して詰める */
 @media (max-width: 860px) {
+  /* フッターが2行になるので、そのぶん中身の下を余計に空ける */
+  .top {
+    padding-bottom: calc(var(--top-footer-h) + 30px);
+  }
+
   .top-office {
     position: static;
     transform: none;
@@ -193,16 +200,23 @@
   font-size: 12px;
 }
 
-/* 1行に収める。狭いときだけ折り返して高さが伸びる */
+/* 最下段に固定。1行に収める。狭いときだけ折り返して高さが伸びる。
+   下の中身が透けないよう地は白で塗る */
 .top-foot {
-  min-height: 50px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  min-height: var(--top-footer-h);
+  background: var(--bg);
   border-top: 1px solid var(--border);
   color: var(--muted);
   font-size: 11px;
 }
 
 .top-foot__inner {
-  min-height: 50px;
+  min-height: var(--top-footer-h);
   display: flex;
   align-items: center;
   flex-wrap: wrap;

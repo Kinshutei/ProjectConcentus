@@ -9,6 +9,10 @@ export type Singer = {
   color: string | null
   /** トップの札に出す一行紹介。未設定なら出さない */
   tagline?: string | null
+  /** 紹介文の全文。札には入りきらないので、詳しい場所で使う */
+  profile?: string | null
+  /** profile と tagline の出どころ */
+  profile_source?: string | null
   /** 札の背景に敷く画像のURL。未設定なら color で塗る */
   card_image?: string | null
   /** 寄り具合。1で等倍、1.8なら1.8倍まで寄る */

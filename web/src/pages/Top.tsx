@@ -93,7 +93,11 @@ export default function Top({ db }: { db: Db }) {
                   <span className="tarot__en">{s.name_en}</span>
                   <span className="tarot__name">{s.name}</span>
                   <span className="tarot__desc">
-                    {s.tagline ?? <em className="tarot__todo">説明は未設定</em>}
+                    {s.tagline ? (
+                      `「${s.tagline}」`
+                    ) : (
+                      <em className="tarot__todo">説明は未設定</em>
+                    )}
                   </span>
                 </span>
               </Link>

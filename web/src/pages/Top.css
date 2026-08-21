@@ -196,7 +196,8 @@
   box-shadow: 0 10px 24px rgba(22, 32, 58, 0.18);
 }
 
-/* 背景の層。画像を入れたら --card-art が効き、無ければ固有色で塗る */
+/* 背景の層。画像を入れたら --card-art が効き、無ければ固有色で塗る。
+   --card-zoom で寄り、--card-focus が寄ったときに残す基準点になる */
 .tarot__art {
   position: absolute;
   inset: 0;
@@ -204,11 +205,19 @@
   background-image: var(--card-art, none);
   background-size: cover;
   background-position: center;
+  transform: scale(var(--card-zoom, 1));
+  transform-origin: var(--card-focus, 50% 50%);
   transition: transform 0.35s;
 }
 
 .tarot__link:hover .tarot__art {
-  transform: scale(1.04);
+  transform: scale(calc(var(--card-zoom, 1) * 1.05));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarot__art {
+    transition: none;
+  }
 }
 
 /* 文字を読ませるための影。下ほど濃くする */

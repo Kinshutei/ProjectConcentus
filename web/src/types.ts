@@ -11,6 +11,10 @@ export type Singer = {
   tagline?: string | null
   /** 札の背景に敷く画像のURL。未設定なら color で塗る */
   card_image?: string | null
+  /** 寄り具合。1で等倍、1.8なら1.8倍まで寄る */
+  card_zoom?: number | null
+  /** 寄ったときに画面へ残す基準点。"50% 52%" のように書く */
+  card_focus?: string | null
   active: boolean
 }
 

@@ -82,6 +82,8 @@ export default function Top({ db }: { db: Db }) {
                   {
                     '--card': s.color ?? '#8e99b0',
                     ...(s.card_image ? { '--card-art': `url("${s.card_image}")` } : {}),
+                    ...(s.card_zoom ? { '--card-zoom': String(s.card_zoom) } : {}),
+                    ...(s.card_focus ? { '--card-focus': s.card_focus } : {}),
                   } as React.CSSProperties
                 }
               >

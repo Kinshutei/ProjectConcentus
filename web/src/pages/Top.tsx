@@ -93,10 +93,15 @@ export default function Top({ db }: { db: Db }) {
                   <span className="tarot__en">{s.name_en}</span>
                   <span className="tarot__name">{s.name}</span>
                   {/* 鉤括弧は付けない。要るかどうかは文面ごとに違うので、
-                      singers.json の tagline に書いてあるとおりに出す */}
-                  <span className="tarot__desc">
-                    {s.tagline ?? <em className="tarot__todo">説明は未設定</em>}
-                  </span>
+                      singers.json の tagline に書いてあるとおりに出す。
+                      空文字は「説明を置かない」の意味。未設定とは区別する */}
+                  {s.tagline == null ? (
+                    <span className="tarot__desc">
+                      <em className="tarot__todo">説明は未設定</em>
+                    </span>
+                  ) : (
+                    s.tagline !== '' && <span className="tarot__desc">{s.tagline}</span>
+                  )}
                 </span>
               </Link>
             </li>

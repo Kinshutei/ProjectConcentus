@@ -7,6 +7,10 @@ export type Singer = {
   channel_id: string
   affiliation: string | null
   color: string | null
+  /** トップの札に出す一行紹介。未設定なら出さない */
+  tagline?: string | null
+  /** 札の背景に敷く画像のURL。未設定なら color で塗る */
+  card_image?: string | null
   active: boolean
 }
 

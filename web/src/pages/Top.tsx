@@ -6,11 +6,10 @@ import './Top.css'
 /** 所属の無いシンガーはここへ入れる */
 const SOLO = '個人勢'
 const ALL = 'ALL'
+/** 横5枚×縦2列。埋まらないぶんは仮の空き枠で見せる */
+const TAROT_SLOTS = 10
 
 export default function Top({ db }: { db: Db }) {
-  const counts = new Map<string, number>()
-  for (const f of db.frames) counts.set(f.singer_id, (counts.get(f.singer_id) ?? 0) + 1)
-
   // 事務所はデータから拾う。個人勢だけは末尾へ回す
   const offices = useMemo(() => {
     const seen: string[] = []
@@ -70,22 +69,36 @@ export default function Top({ db }: { db: Db }) {
         </div>
       </div>
 
-      <main className="wrap">
-        <ul className="singer-grid">
+      {/* タロット札の形をした箱を横5枚×縦2列。中身はまだ入れず、並びと形だけを見る。
+          シンガーは6人なので、10枚の見え方が判るよう空き枠を仮で足している */}
+      <main className="tarot-area">
+        <ul className="tarot-grid">
           {shown.map((s) => (
-            <li key={s.singer_id}>
+            <li key={s.singer_id} className="tarot">
               <Link
                 to={`/${s.url_path}`}
-                className="singer-card"
-                style={{ '--card': s.color ?? 'var(--accent)' } as React.CSSProperties}
+                className="tarot__link"
+                style={
+                  {
+                    '--card': s.color ?? '#8e99b0',
+                    ...(s.card_image ? { '--card-art': `url("${s.card_image}")` } : {}),
+                  } as React.CSSProperties
+                }
               >
-                <span className="singer-en">{s.name_en}</span>
-                <span className="singer-name">{s.name}</span>
-                <span className="singer-meta muted">
-                  {s.affiliation ?? '個人勢'} ・ 枠 {counts.get(s.singer_id) ?? 0}
+                {/* 背景の層。画像が入るまでは固有色で塗っておく */}
+                <span className="tarot__art" />
+                <span className="tarot__body">
+                  <span className="tarot__en">{s.name_en}</span>
+                  <span className="tarot__name">{s.name}</span>
+                  <span className="tarot__desc">
+                    {s.tagline ?? <em className="tarot__todo">説明は未設定</em>}
+                  </span>
                 </span>
               </Link>
             </li>
+          ))}
+          {Array.from({ length: Math.max(0, TAROT_SLOTS - shown.length) }, (_, i) => (
+            <li key={`empty_${i}`} className="tarot tarot--empty" aria-hidden="true" />
           ))}
         </ul>
       </main>

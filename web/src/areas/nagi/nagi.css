@@ -1021,11 +1021,136 @@
 .nagi-root .hero__lead span.hero__lead-sep {
   display: none;
 }
-.nagi-root .rep__search {
-  flex: 1 1 100%; margin-left: 0;
+/* ── Repertoire も1画面に収める ──
+   カード1枚84pxの10枚で966px使っていた。1曲1行の並びに変えて詰める。 */
+
+/* タブは1行で横送り。並び替えと検索は2行目に並べる */
+.nagi-root .rep__bar {
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.nagi-root .rep__bar .tabs {
+  flex: 1 1 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nagi-root .rep__bar .tabs::-webkit-scrollbar {
+  display: none;
+}
+.nagi-root .tab-btn {
+  padding: 7px 12px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 .nagi-root .rep__order {
+  flex: 0 0 auto;
   margin-left: 0;
+}
+.nagi-root .rep__order-btn {
+  padding: 7px 10px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.nagi-root .rep__search {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-left: 0;
+  padding: 7px 12px;
+}
+
+/* カードは1行の並びにする */
+/* 最低高はページを送っても枠が動かないための下限。
+   1行30pxの10枚ぶんへ引き下げる（元は476pxで、詰めた意味が消える） */
+.nagi-root .rank-grid {
+  grid-template-columns: 1fr;
+  gap: 0;
+  min-height: 312px;
+}
+.nagi-root .rank-card {
+  min-height: 0;
+  gap: 8px;
+  padding: 6px 4px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+.nagi-root .rank-card:first-child {
+  border-top: 1px solid var(--line);
+}
+.nagi-root .rank-card:hover {
+  transform: none;
+  border-color: var(--line);
+}
+/* 上位の色分けは残す。地を消したので、この節で敷き直す */
+.nagi-root .rank-card--core {
+  background: linear-gradient(rgba(242, 196, 99, 0.1), rgba(242, 196, 99, 0.1));
+}
+/* 順位は角から動かして行の先頭へ */
+.nagi-root .rank-card__no {
+  position: static;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 5px;
+  font-size: 10px;
+}
+/* 見出しと補足を1行に並べ、溢れたら補足から詰める */
+.nagi-root .rank-card__body {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.nagi-root .rank-card__title {
+  font-size: 12px;
+  line-height: 1.4;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nagi-root .rank-card__note {
+  margin-left: 2px;
+  font-size: 9px;
+}
+.nagi-root .rank-card__sub {
+  margin-top: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nagi-root .rank-card__value {
+  font-size: 15px;
+}
+.nagi-root .rank-card__value span {
+  margin-left: 2px;
+  font-size: 9px;
+}
+.nagi-root .rank-card__share {
+  font-size: 9px;
+}
+
+/* この節だけ余白を詰める */
+.nagi-root #repertoire.section {
+  padding-top: 28px;
+  padding-bottom: 20px;
+}
+.nagi-root #repertoire .section__head {
+  margin-bottom: 14px;
+}
+.nagi-root #repertoire .section__title {
+  font-size: 26px;
+}
+.nagi-root #repertoire .section__sub {
+  margin-top: 6px;
+  font-size: 11px;
+}
+.nagi-root #repertoire .pager {
+  margin-top: 10px;
 }
 /* ── ここから Setlist を1画面に収めるための詰め ──
    枠の一覧・サムネ・曲の3つを縦に積むと1780pxになり画面へ入らない。

@@ -1060,11 +1060,16 @@
 
 /* カードは1行の並びにする */
 /* 最低高はページを送っても枠が動かないための下限。
-   1行30pxの10枚ぶんへ引き下げる（元は476pxで、詰めた意味が消える） */
+   1行30pxの10枚ぶんへ引き下げる（元は476pxで、詰めた意味が消える）。
+   列は minmax(0,1fr)。1fr のままだと中身の min-content より狭くならず、
+   補足の曲名が長い行で列ごと画面外へはみ出す */
 .nagi-root .rank-grid {
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0;
   min-height: 312px;
+}
+.nagi-root .rank-card {
+  min-width: 0;
 }
 .nagi-root .rank-card {
   min-height: 0;
@@ -1101,10 +1106,13 @@
   align-items: baseline;
   gap: 6px;
 }
+/* 主役は見出し。先に幅を取り、余りを補足へ回す。
+   基準を auto にしておかないと、長い補足に押されて見出しから潰れる */
 .nagi-root .rank-card__title {
   font-size: 12px;
   line-height: 1.4;
   flex: 0 1 auto;
+  max-width: 62%;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1116,7 +1124,7 @@
 }
 .nagi-root .rank-card__sub {
   margin-top: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   font-size: 10px;
   overflow: hidden;
@@ -1185,12 +1193,15 @@
 .nagi-root .song-card__title {
   font-weight: 700;
   font-size: 13px;
+  flex: 0 1 auto;
+  max-width: 68%;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .nagi-root .song-card__meta {
-  flex: 0 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   font-size: 10px;
   color: var(--navy-mute);

@@ -526,10 +526,15 @@
   /* 左の一覧を右カラムと同じ高さに伸ばす。高さは右の中身が決める */
   display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: stretch;
 }
-/* 高さの基準になる外枠。右カラムに合わせて伸び、これ以上は伸びない */
+/* 高さの基準になる外枠。右カラムに合わせて伸び、これ以上は伸びない。
+   min-width を切らないと、中の一覧が枠数ぶんの幅まで広がって画面から溢れる */
 .nagi-root .setlist__list-frame {
   position: relative;
   min-height: 0;
+  min-width: 0;
+}
+.nagi-root .setlist__detail {
+  min-width: 0;
 }
 .nagi-root .setlist__list {
   position: absolute;
@@ -1022,24 +1027,137 @@
 .nagi-root .rep__order {
   margin-left: 0;
 }
+/* ── ここから Setlist を1画面に収めるための詰め ──
+   枠の一覧・サムネ・曲の3つを縦に積むと1780pxになり画面へ入らない。
+   一覧を横送りにし、サムネを小さくし、曲を1行にして収める。 */
+
+/* 曲は1行。行そのものを押せば頭出しできる */
 .nagi-root .song-card {
-  border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--line);
 }
-.nagi-root .song-card__head {
-  display: flex; align-items: baseline; gap: 8px;
+.nagi-root .song-card:first-child {
+  border-top: 1px solid var(--line);
 }
 .nagi-root .song-card__no {
-  font-size: 11px; color: var(--navy-mute); font-variant-numeric: tabular-nums;
+  flex: none;
+  width: 18px;
+  font-size: 11px;
+  color: var(--navy-mute);
+  font-variant-numeric: tabular-nums;
+}
+/* 曲名とアーティストを1行に並べ、溢れたら曲名から詰める */
+.nagi-root .song-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 .nagi-root .song-card__title {
-  font-weight: 700; font-size: 13px;
+  font-weight: 700;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .nagi-root .song-card__meta {
-  font-size: 11px; color: var(--navy-mute); margin-top: 4px;
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 10px;
+  color: var(--navy-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nagi-root .song-card__time {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--spark);
+  font-variant-numeric: tabular-nums;
+}
+.nagi-root .badge--tiny {
+  flex: none;
+  padding: 1px 5px;
+  font-size: 9px;
+}
+
+/* 枠の一覧は横送りにする。縦に積むと320px取られる */
+.nagi-root .setlist__list {
+  max-height: none;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 10px;
+}
+.nagi-root .setlist__item {
+  flex: 0 0 190px;
+  border-bottom: none;
+  border-left: none;
+  border-right: 1px solid var(--line);
+  border-top: 3px solid transparent;
+  padding: 8px 10px;
+}
+.nagi-root .setlist__item.is-active {
+  border-left-color: transparent;
+  border-top-color: var(--spark);
+}
+.nagi-root .setlist__item-title {
+  font-size: 11px;
+  -webkit-line-clamp: 2;
+}
+
+/* サムネは小さくして枠名の横へ */
+.nagi-root .setlist {
+  gap: 12px;
+}
+.nagi-root .setlist__detail-head {
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.nagi-root .setlist__detail-head .thumb {
+  width: 120px;
+  flex: none;
+}
+/* 枠名は長い。2行で打ち切らないと、ここだけで高さを食い潰す */
+.nagi-root .setlist__detail-title {
+  font-size: 13px;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.nagi-root .setlist__detail-head .stream-card__meta {
+  font-size: 10px;
+}
+.nagi-root .setlist__detail-head .songs__link {
+  font-size: 11px;
+}
+
+/* この節だけ余白を詰める。1画面に収めるため */
+.nagi-root #setlist.section {
+  padding-top: 28px;
+  padding-bottom: 20px;
+}
+.nagi-root #setlist .section__head {
+  margin-bottom: 16px;
+}
+.nagi-root #setlist .section__title {
+  font-size: 26px;
+}
+.nagi-root #setlist .section__sub {
+  margin-top: 6px;
+  font-size: 11px;
+}
+.nagi-root #setlist .pager {
+  margin-top: 10px;
 }
 }
 

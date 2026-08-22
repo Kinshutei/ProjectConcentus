@@ -640,25 +640,24 @@ function Setlist({ streams, db }: { streams: Stream[]; db: Db }) {
                         </tbody>
                       </table>
 
-                      {/* 狭幅ではカード表示に切り替わる */}
+                      {/* 狭幅ではカード表示に切り替わる。1曲1行に収め、行ごと押せるようにする */}
                       <div className="songs-cards">
                         {shown.map((r) => (
-                          <div className="song-card" key={`c_${r.perf.start_sec}`}>
-                            <div className="song-card__head">
-                              <span className="song-card__no">{r.no}</span>
+                          <a
+                            className="song-card"
+                            key={`c_${r.perf.start_sec}`}
+                            href={watchUrl(current.frame.video_id, r.perf.start_sec)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="song-card__no">{r.no}</span>
+                            <span className="song-card__body">
                               <span className="song-card__title">{r.song?.title ?? ''}</span>
-                              {r.isFirst && <span className="badge">初歌唱</span>}
-                            </div>
-                            <div className="song-card__meta">{r.song?.artist ?? ''}</div>
-                            <a
-                              className="songs__link"
-                              href={watchUrl(current.frame.video_id, r.perf.start_sec)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {hms(r.perf.start_sec)} →
-                            </a>
-                          </div>
+                              <span className="song-card__meta">{r.song?.artist ?? ''}</span>
+                            </span>
+                            {r.isFirst && <span className="badge badge--tiny">初</span>}
+                            <span className="song-card__time">{hms(r.perf.start_sec)}</span>
+                          </a>
                         ))}
                       </div>
                     </div>

@@ -682,6 +682,26 @@
 .nagi-root .rep__bar {
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;
 }
+/* 色分けの見本。カードの下地と同じ色を小さく置く */
+.nagi-root .rep__legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--navy-mute);
+  white-space: nowrap;
+  cursor: help;
+}
+.nagi-root .rep__legend-chip {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(rgba(242, 196, 99, 0.1), rgba(242, 196, 99, 0.1)), var(--surface);
+  border: 1px solid rgba(242, 196, 99, 0.3);
+}
+
 /* 並び順の切り替え。検索の左に置き、右端は検索のままにする */
 .nagi-root .rep__order {
   display: flex;
@@ -1050,6 +1070,20 @@
   padding: 7px 10px;
   font-size: 11px;
   white-space: nowrap;
+}
+/* タブが1段目を占める。見本だけで1段使わないよう、並び替えと同じ段の右端へ回す。
+   束ね方が3つ並ぶ歌唱回数でも同じ段に収まるよう、目一杯詰める */
+.nagi-root .rep__legend {
+  order: 1;
+  margin-left: auto;
+  gap: 4px;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.nagi-root .rep__legend-chip {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
 }
 .nagi-root .rep__search {
   flex: 1 1 0;

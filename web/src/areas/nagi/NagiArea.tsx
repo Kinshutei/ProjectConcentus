@@ -721,19 +721,23 @@ type CardItem = {
 }
 
 /**
- * まとめたグループに、全体に占める割合と「上から半数ぶん」の印を付ける。
- * 上から曲数を足していき、半数に届くまでを常連とみなす。届かせた1組も含める。
+ * 並んだものに、全体に占める割合と「上から3割ぶん」の印を付ける。
+ * 上から足していき、3割に届くまでを常連とみなす。届かせた1件も含める。
  * 同数が続く位置に境目が来ると、並び順で分かれる。
  */
-function withShare<T extends { songs: string[] }>(
-  groups: T[],
+/** 上から積み上げてここに届くまでを常連とみなす */
+const CORE_SHARE = 0.3
+
+function withShare<T>(
+  items: T[],
+  size: (item: T) => number,
 ): (T & { share: number; core: boolean })[] {
-  const total = groups.reduce((n, g) => n + g.songs.length, 0)
+  const total = items.reduce((n, x) => n + size(x), 0)
   let stacked = 0
-  return groups.map((g) => {
-    const core = stacked < total / 2
-    stacked += g.songs.length
-    return { ...g, share: total ? (g.songs.length / total) * 100 : 0, core }
+  return items.map((x) => {
+    const core = stacked < total * CORE_SHARE
+    stacked += size(x)
+    return { ...x, share: total ? (size(x) / total) * 100 : 0, core }
   })
 }
 
@@ -878,16 +882,19 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
     }))
   }, [stats, query, order])
 
-  // 歌唱回数。数えるものは常に延べ回数で、束ね方だけを切り替える
+  // 歌唱回数。数えるものは常に延べ回数で、束ね方だけを切り替える。
+  // 割合の分母も延べ回数なので、合計は100%になる
   const ranking = useMemo<CardItem[]>(() => {
     if (rankBy === 'song') {
-      return stats.map((s, i) => ({
+      return withShare(stats, (s) => s.count).map((s, i) => ({
         key: s.song.song_id,
         rank: i + 1,
         title: s.song.title,
         sub: s.song.artist,
         value: s.count,
         unit: '回',
+        share: s.share,
+        core: s.core,
       }))
     }
     const groups =
@@ -900,7 +907,7 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
             groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a)),
             (a, b) => b.localeCompare(a),
           )
-    return groups.map((g, i) => ({
+    return withShare(groups, (g) => g.plays).map((g, i) => ({
       key: g.label,
       rank: i + 1,
       title: rankBy === 'year' ? `${g.label}年` : g.label,
@@ -908,6 +915,8 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
       sub: summarize(g.songs),
       value: g.plays,
       unit: '回',
+      share: g.share,
+      core: g.core,
     }))
   }, [stats, rankBy])
 
@@ -919,7 +928,7 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
         ? groupSongs(stats, (s) => s.artist, (a, b) => a.localeCompare(b, 'ja'))
         : // 曲数の多い年から並べる。同数なら新しい年を先に
           groupSongs(stats, (s) => s.released.slice(0, 4), (a, b) => b.localeCompare(a))
-    return withShare(groups).map((g, i) => ({
+    return withShare(groups, (g) => g.songs.length).map((g, i) => ({
       key: g.label,
       rank: i + 1,
       title: countBy === 'year' ? `${g.label}年` : g.label,
@@ -962,6 +971,16 @@ function Repertoire({ stats }: { stats: SongStat[] }) {
                   </button>
                 ))}
               </div>
+              {/* 色分けの意味を示す。色を使うのは歌唱回数と曲数だけ */}
+              {tab !== 'list' && (
+                <span
+                  className="rep__legend"
+                  title={`上から積み上げて全体の${CORE_SHARE * 100}%に達するまでを塗っています`}
+                >
+                  <i className="rep__legend-chip" aria-hidden="true" />
+                  上位{CORE_SHARE * 100}%
+                </span>
+              )}
               {tab === 'ranking' && (
                 <div className="rep__order">
                   {RANK_BYS.map((b) => (

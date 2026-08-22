@@ -73,6 +73,9 @@
   border-bottom: 1px solid var(--line);
 }
 .nagi-root .site-header__logo {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.35em;
   font-weight: 800;
   letter-spacing: 0.14em;
   font-size: 14px;
@@ -81,12 +84,45 @@
 .nagi-root .site-header__logo em {
   font-style: normal; color: var(--spark);
 }
+/* 送り矢印を重ねる土台。min-width:0 を入れないと、この枠が縮まずに
+   右隣の流星群トグルを画面外へ押し出してしまう */
+.nagi-root .site-header__navwrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+}
 .nagi-root .site-header__nav {
-  margin-left: auto;
   display: flex;
   gap: 4px;
   overflow-x: auto;
   scrollbar-width: none;
+  /* 矢印の下に文字が潜り込んで読めなくなるのを避ける */
+  padding: 0 2px;
+  scroll-padding: 0 18px;
+}
+/* まだ先に項目があることを示す。押すためのものではないので触れない */
+.nagi-root .site-header__more {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--spark);
+  padding: 4px 3px;
+}
+.nagi-root .site-header__more--left {
+  left: -2px;
+  background: linear-gradient(to right, var(--paper) 45%, rgba(12, 32, 51, 0));
+  padding-right: 10px;
+}
+.nagi-root .site-header__more--right {
+  right: -2px;
+  background: linear-gradient(to left, var(--paper) 45%, rgba(12, 32, 51, 0));
+  padding-left: 10px;
 }
 .nagi-root .site-header__nav::-webkit-scrollbar {
   display: none;
@@ -941,10 +977,23 @@
   padding: 68px 18px;
 }
 .nagi-root .site-header {
-  padding: 0 14px; gap: 8px;
+  padding: 0 10px; gap: 8px;
 }
+/* サイト名を2段に折り、空いた幅は導線へ回す */
 .nagi-root .site-header__logo {
-  font-size: 12px;
+  flex-direction: column;
+  gap: 0;
+  font-size: 10px;
+  line-height: 1.25;
+  letter-spacing: 0.1em;
+}
+.nagi-root .site-header__nav {
+  gap: 0;
+}
+.nagi-root .site-header__nav a {
+  padding: 6px 7px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
 }
 .nagi-root .meteor-toggle {
   padding: 5px 6px 5px 10px; font-size: 10px; gap: 6px;

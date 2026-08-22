@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ChannelVideo, Db, Frame, Performance, Song } from '../../types'
 import { hms, jstDate, loadVideos, watchUrl } from '../../data'
 import { Link } from '../../router'
@@ -112,17 +112,14 @@ export default function NagiArea({
       {meteorsOn && <ShootingStars />}
 
       <header className="site-header">
+        {/* 狭い画面では2段に折る。姓と名で割り、DBは下段の末尾へ付ける */}
         <a className="site-header__logo" href="#top">
-          {SITE.nameRomaji} <em>DB</em>
+          <span>{SITE.nameRomaji.split(' ')[0]}</span>
+          <span>
+            {SITE.nameRomaji.split(' ').slice(1).join(' ')} <em>DB</em>
+          </span>
         </a>
-        <nav className="site-header__nav">
-          {NAV.map((n) => (
-            <a key={n.id} href={`#${n.id}`}>
-              {n.label}
-            </a>
-          ))}
-          <Link to="/">HOME</Link>
-        </nav>
+        <HeaderNav />
         <button
           type="button"
           className={`meteor-toggle ${meteorsOn ? 'is-on' : ''}`}
@@ -158,6 +155,61 @@ export default function NagiArea({
       <div className="city-fixed" style={{ height: FOOTER_H }}>
         <NagiCityscape scale={CITY_SCALE} speed={10} districtScale={0.8} />
       </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────── ヘッダーの導線 */
+
+/**
+ * 画面が狭いと項目が収まりきらず横へ送ることになる。
+ * 送り先にまだ項目があることが判るよう、隠れている側へ矢印を出す。
+ */
+function HeaderNav() {
+  const ref = useRef<HTMLElement>(null)
+  const [more, setMore] = useState({ left: false, right: false })
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const update = () => {
+      // 端の判定は小数の誤差が出るので1pxの余裕を持たせる
+      const left = el.scrollLeft > 1
+      const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+      setMore((prev) => (prev.left === left && prev.right === right ? prev : { left, right }))
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    // 書体が届くと項目の幅が変わる
+    document.fonts?.ready.then(update).catch(() => {})
+    return () => {
+      el.removeEventListener('scroll', update)
+      ro.disconnect()
+    }
+  }, [])
+
+  return (
+    <div className="site-header__navwrap">
+      <nav className="site-header__nav" ref={ref}>
+        {NAV.map((n) => (
+          <a key={n.id} href={`#${n.id}`}>
+            {n.label}
+          </a>
+        ))}
+        <Link to="/">HOME</Link>
+      </nav>
+      {more.left && (
+        <span className="site-header__more site-header__more--left" aria-hidden="true">
+          ◀
+        </span>
+      )}
+      {more.right && (
+        <span className="site-header__more site-header__more--right" aria-hidden="true">
+          ▶
+        </span>
+      )}
     </div>
   )
 }
